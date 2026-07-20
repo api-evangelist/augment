@@ -1,0 +1,14 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/augment-openapi-original.json
+summary:
+  types:
+  - http
+schemes:
+- name: httpBasic
+  type: http
+  scheme: basic
+  description: Authenticate with HTTP Basic auth by sending an empty username and your API key
+    as the password, equivalent to encoding :<API_KEY> in the Basic credential.
+  sources:
+  - openapi/augment-openapi-original.json
