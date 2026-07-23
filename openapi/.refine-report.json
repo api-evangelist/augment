@@ -1,0 +1,24 @@
+{
+  "provider": "augment",
+  "sources": [
+    "augment-api-key-api-openapi.yml",
+    "augment-carrier-management-api-openapi.yml",
+    "augment-carrier-support-api-openapi.yml",
+    "augment-load-management-api-openapi.yml",
+    "augment-webhook-endpoints-api-openapi.yml",
+    "augment-webhook-event-subscriptions-api-openapi.yml"
+  ],
+  "outputs": [
+    "augment-api-key-api-openapi.yml",
+    "augment-carrier-management-api-openapi.yml",
+    "augment-carrier-support-api-openapi.yml",
+    "augment-load-management-api-openapi.yml",
+    "augment-webhook-endpoints-api-openapi.yml",
+    "augment-webhook-event-subscriptions-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

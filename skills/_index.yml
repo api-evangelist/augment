@@ -1,0 +1,17 @@
+generated: '2026-07-18'
+method: generated
+source: openapi/augment-openapi-original.json
+api: openapi/augment-openapi-original.json
+skills:
+- file: augment-create-load-and-track.md
+  name: Create a load and post tracking updates
+  api: openapi/augment-openapi-original.json
+  operations: [verifyApiKey, createOrUpdateLoad, getLoad, addTrackingEvent]
+- file: augment-onboard-carrier.md
+  name: Onboard and manage carriers
+  api: openapi/augment-openapi-original.json
+  operations: [createOrUpdateCarrier, bulkUpsertCarriers, getCarrierByIdentifier, getCarrierById, archiveCarrier]
+- file: augment-configure-webhooks.md
+  name: Configure webhook endpoints and subscriptions
+  api: openapi/augment-openapi-original.json
+  operations: [createWebhookEndpoint, listWebhookEventTypes, createWebhookSubscription, testWebhookSubscription, listWebhookEndpoints]

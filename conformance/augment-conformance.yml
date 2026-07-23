@@ -1,0 +1,32 @@
+generated: '2026-07-18'
+method: searched
+source: openapi/augment-openapi-original.json + https://trust.goaugment.com/
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: openapi/augment-openapi-original.json declares openapi 3.1.1
+- id: http-basic-auth
+  conforms: true
+  evidence: securitySchemes.httpBasic (RFC 7617) — empty username + API key as password
+- id: oauth2
+  conforms: false
+- id: openid-connect
+  conforms: false
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: errors returned as application/json ApiErrorBody (message/errorCode/details), not application/problem+json
+- id: webhooks
+  conforms: true
+  evidence: webhook endpoint + event-subscription management API with 9 event types (v2 envelope)
+- id: soc2-type-ii
+  conforms: true
+  evidence: https://trust.goaugment.com/ — Augment is SOC 2 Type II certified (stated in OpenAPI info)
+- id: gdpr
+  conforms: true
+  evidence: https://trust.goaugment.com/ trust center references GDPR
+- id: pagination
+  conforms: false
+  evidence: no cursor/offset pagination parameters declared in the spec
+- id: idempotency-key
+  conforms: false
+  evidence: no Idempotency-Key header; upsert semantics via createOrUpdate/bulkUpsert by external reference instead

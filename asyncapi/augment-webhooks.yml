@@ -1,0 +1,48 @@
+generated: '2026-07-18'
+method: searched
+type: Webhooks
+source: >-
+  https://apidocs.goaugment.com/guide/start-developing/webhooks-setup/ +
+  openapi/augment-openapi-original.json
+summary: >-
+  Augment delivers events to caller-registered HTTPS endpoints. Endpoints and
+  event subscriptions are managed through the API (/v2/webhook-endpoints and
+  /v2/webhook-subscriptions). v2 delivers every event inside a shared envelope;
+  v1 is legacy flat payloads. No AsyncAPI document is published; this is the
+  captured webhook catalog. Signature verification is not documented publicly.
+management:
+  register_endpoint: openapi/augment-openapi-original.json#createWebhookEndpoint
+  list_event_types: openapi/augment-openapi-original.json#listWebhookEventTypes
+  subscribe: openapi/augment-openapi-original.json#createWebhookSubscription
+  test_delivery: openapi/augment-openapi-original.json#testWebhookSubscription
+versions:
+  recommended: v2
+  legacy: v1
+event_types:
+- name: TRACKING_UPDATE
+  v1_name: trackingEvent
+  category: Track & Trace
+- name: STOP_UPDATE
+  v1_name: stopUpdate
+  category: Track & Trace
+- name: LOAD_CARRIER_UPDATE
+  v1_name: loadCarrierEvent
+  category: Track & Trace
+- name: SEND_TMS_COMMENT
+  v1_name: comment
+  category: Track & Trace
+- name: SCHEDULED_CARRIER_OUTREACH
+  v1_name: scheduledCarrierOutreach
+  category: Track & Trace
+- name: UPLOAD_FILES
+  v1_name: uploadDocument
+  category: Load Building
+- name: PUSH_BID_TO_TMS
+  v1_name: bidCreated
+  category: Capacity Sourcing
+- name: PUSH_LOAD_DRAFT
+  v1_name: loadDraft
+  category: Load Building
+- name: CARRIER_ISSUE_UPDATED
+  v1_name: null
+  category: Carrier Support

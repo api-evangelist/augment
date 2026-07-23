@@ -1,0 +1,891 @@
+openapi: 3.1.1
+info:
+  title: Augment API Key Carrier Management API
+  description: '<a href="https://trust.goaugment.com/?utm_campaign=api_docs&utm_source=api_docs&utm_medium=api_docs&utm_content=api_docs" target="_blank">Augment is now SOC 2 Type II Certified</a>
+
+
+    The Augment API endpoints are calls your system makes to manage loads,
+
+    carriers, and webhook configuration.
+
+    The latest version of the Augment API is hosted [online](https://apidocs.goaugment.com).
+
+
+    ## API Endpoints
+
+
+    Endpoints your system calls to interact with Augment:
+
+
+    - [Load Management](/reference/tag/load-management)
+
+    - [Carrier Management](/reference/tag/carrier-management)
+
+    - [Models](/reference/models)
+
+    - [Webhook Endpoints](/reference/tag/webhook-endpoints)
+
+    - [Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions)
+
+
+    Webhook management access is gated. Request access from Augment before using
+
+    these endpoints. After access is enabled, you can self-manage the webhook
+
+    endpoints that receive event payloads and the webhook event subscriptions
+
+    that control which events are sent to each endpoint.
+
+
+    Use [Webhook Endpoints](/reference/tag/webhook-endpoints) to create and
+
+    update the HTTPS destinations where Augment sends webhook payloads. Use
+
+    [Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions) to
+
+    choose event types for each endpoint and send test deliveries.
+
+
+    Outbound webhook payloads, including Track & Trace events, are documented
+
+    separately in the [Webhooks](/webhooks) reference. Subscriptions created
+
+    through the public webhook management APIs deliver version 2 webhook payloads only.
+
+
+    ## Resources
+
+
+    * [Homepage](https://www.goaugment.com)
+
+    * [LinkedIn](https://www.linkedin.com/company/goaugment)
+
+    * [Jobs - we''re hiring!](https://jobs.ashbyhq.com/go-augment?utm_source=AMy24qx30n)
+
+
+    ## Developer Notes
+
+
+    All date-time fields are represented as strings. The date-time notation is defined by [RFC 3339, section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6). Examples:
+
+    - `2025-08-21T12:34:56Z`
+
+    - `2025-08-21T04:34:56-08:00`
+
+
+    However, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.
+
+
+    Example:
+
+    - `2025-08-21T12:34:56`
+
+    '
+  version: 20.0.1
+servers:
+- url: https://api.prod.goaugment.com
+security:
+- httpBasic: []
+tags:
+- name: Carrier Management
+  description: 'API endpoints for managing carriers, carrier contacts, and carrier-manager relationships.
+
+    '
+paths:
+  /v1/carriers:
+    post:
+      operationId: createOrUpdateCarrier
+      tags:
+      - Carrier Management
+      summary: Create or update carrier
+      description: "Create a new carrier or update an existing one. This endpoint supports three operations:\n- **Creation**: Provide all required fields to create a new carrier.\n- **Partial Update**: Include only the fields you want to update. Carriers\n  are matched by `tmsId`, so provide the `tmsId` of the carrier you want\n  to update.\n\n- **Full Update**: Include all fields to completely replace the carrier\n  data.\n\nFor updating managers and contacts, it is highly recommended to provide `tmsId` for each manager and contact when creating them. This allows the system to match and update existing managers/contacts by their `tmsId` during subsequent updates. If `tmsId` is not provided for managers or contacts, you will need to clear the entire array and re-add all managers/contacts when updating.\n"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarrierRequest'
+            example:
+              name: Acme Logistics
+              tmsId: acme-tms-001
+              dotNumber: 1234567
+              mcNumber: 765432
+              customData:
+                tier: gold
+                score: 98.5
+                verified: true
+                aliases:
+                - Acme Freight
+                - Acme Carriers LLC
+                routing:
+                  defaultRegion: NS
+                  allowCrossBorder: false
+      responses:
+        '201':
+          description: Carrier created or updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarrierResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '422':
+          description: Unprocessable Entity - Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+    get:
+      operationId: getCarrierByIdentifier
+      tags:
+      - Carrier Management
+      summary: Get carrier by DOT or MC number
+      description: 'Fetch a carrier by its DOT number or MC number. Returns the carrier with associated managers and contacts.
+
+        '
+      parameters:
+      - name: dotNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: DOT number
+      - name: mcNumber
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: MC number
+      responses:
+        '200':
+          description: Carrier found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarrierResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Carrier not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+  /v1/carriers/bulk:
+    post:
+      operationId: bulkUpsertCarriers
+      tags:
+      - Carrier Management
+      summary: Bulk create or update carriers
+      description: 'Create or update multiple carriers in a single request. Maximum 20 carriers per request. Each carrier is processed in its own transaction. Partial success is supported - some carriers may succeed while others fail.
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkUpsertCarriersRequest'
+      responses:
+        '200':
+          description: Bulk operation completed (may have partial success)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkUpsertCarriersResponse'
+        '400':
+          description: Bad request (e.g., exceeds maximum batch size)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '422':
+          description: Unprocessable Entity - Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+  /v1/carriers/{carrierId}:
+    get:
+      operationId: getCarrierById
+      tags:
+      - Carrier Management
+      summary: Get carrier by ID
+      description: 'Fetch a carrier by its carrier ID. Returns the carrier with associated managers and contacts.
+
+        '
+      parameters:
+      - name: carrierId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Augment's carrier identifier, returned as `carrierId` in the create/update carrier response.
+      responses:
+        '200':
+          description: Carrier found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarrierResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Carrier not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+    delete:
+      operationId: archiveCarrier
+      tags:
+      - Carrier Management
+      summary: Archive carrier
+      description: 'Soft delete a carrier. The carrier will no longer be returned in GET requests.
+
+        '
+      parameters:
+      - name: carrierId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Augment's carrier identifier, returned as `carrierId` in the create/update carrier response.
+      responses:
+        '204':
+          description: Carrier archived successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Carrier not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+components:
+  schemas:
+    CarrierContactRequest:
+      type: object
+      x-property-order:
+      - tmsId
+      - name
+      - email
+      - phone
+      - phoneExtension
+      - preferredContactMode
+      - roles
+      properties:
+        name:
+          type: string
+          description: Contact name
+        email:
+          type: string
+          format: email
+          description: Contact email address. Either email or phone is required.
+        phone:
+          type: string
+          description: Phone number in E.164 format (e.g., +13125551234). Either email or phone is required.
+        phoneExtension:
+          type: string
+          description: Phone extension
+        tmsId:
+          type: string
+          description: TMS identifier for matching existing contacts. If provided, the system will match and update the existing contact.
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - ACCOUNTANT
+            - AP_REP
+            - DISPATCHER
+            - DRIVER
+            - OTHER
+          description: 'Carrier contact roles:
+
+            - `ACCOUNTANT` — Accountant
+
+            - `AP_REP` — manages invoices and payments
+
+            - `DISPATCHER` — Dispatcher
+
+            - `DRIVER` — Driver
+
+            - `OTHER` — Other
+
+            '
+        preferredContactMode:
+          type: string
+          enum:
+          - EMAIL
+          - PHONE_CALL
+          - TEXT_MESSAGE
+          - TELEGRAM
+          description: Preferred method of contact
+    CarrierResponse:
+      type: object
+      x-property-order:
+      - id
+      - name
+      - tmsId
+      - status
+      - complianceStatus
+      - mcNumber
+      - dotNumber
+      - scac
+      - address
+      - email
+      - phone
+      - phoneExtension
+      - managers
+      - contacts
+      - notes
+      - customData
+      properties:
+        id:
+          type: string
+          description: Carrier ID (ULID)
+        name:
+          type: string
+          description: Carrier name
+        tmsId:
+          type: string
+          nullable: true
+          description: TMS identifier for the carrier
+        status:
+          type: object
+          nullable: true
+          description: Carrier status
+          x-property-order:
+          - code
+          - reason
+          properties:
+            code:
+              type: string
+              enum:
+              - ACTIVE
+              - DO_NOT_USE
+              description: Status code indicating the carrier's current state
+            reason:
+              type: string
+              nullable: true
+              description: Optional reason for the status
+        complianceStatus:
+          type: object
+          nullable: true
+          description: Compliance status information
+          properties:
+            codes:
+              type: object
+              additionalProperties:
+                type: string
+              description: Compliance codes as key-value pairs
+        mcNumber:
+          type: integer
+          nullable: true
+          description: MC number
+        dotNumber:
+          type: integer
+          nullable: true
+          description: DOT number
+        scac:
+          type: string
+          nullable: true
+          description: SCAC code
+        address:
+          type: object
+          nullable: true
+          description: Carrier address
+          x-property-order:
+          - name
+          - company
+          - street1
+          - street2
+          - city
+          - stateOrProvince
+          - postalCode
+          - country
+          properties:
+            street1:
+              type: string
+              description: Street address line 1
+            street2:
+              type: string
+              nullable: true
+              description: Street address line 2
+            city:
+              type: string
+              description: City name
+            stateOrProvince:
+              type: string
+              nullable: true
+              description: State or province code
+            postalCode:
+              type: string
+              description: Postal or ZIP code
+            country:
+              type: string
+              description: Country code (2-letter ISO)
+            name:
+              type: string
+              nullable: true
+              description: Location name
+            company:
+              type: string
+              nullable: true
+              description: Company name
+        email:
+          type: string
+          nullable: true
+          description: Carrier email address
+        phone:
+          type: string
+          nullable: true
+          description: Phone number in E.164 format (e.g., +13125551234)
+        phoneExtension:
+          type: string
+          nullable: true
+          description: Phone extension
+        managers:
+          type: array
+          description: Array of organization contacts (managers) who manage this carrier
+          items:
+            $ref: '#/components/schemas/BrokerageContactResponse'
+        contacts:
+          type: array
+          description: Array of carrier contacts (carrier employees)
+          items:
+            $ref: '#/components/schemas/CarrierContactResponse'
+        notes:
+          type: string
+          nullable: true
+          description: Free-form notes about the carrier
+        customData:
+          description: 'Optional metadata returned for the carrier; `null` when none is stored.
+
+            '
+          oneOf:
+          - $ref: '#/components/schemas/CarrierCustomData'
+          - type: 'null'
+    BulkUpsertCarriersResponse:
+      type: object
+      x-property-order:
+      - total
+      - successCount
+      - failureCount
+      - errors
+      properties:
+        total:
+          type: integer
+          description: Total number of carriers in the request
+          example: 2
+        successCount:
+          type: integer
+          description: Number of carriers successfully processed
+        failureCount:
+          type: integer
+          description: Number of carriers that failed to process
+        errors:
+          type: array
+          description: Details of failures (if any)
+          items:
+            type: object
+            x-property-order:
+            - index
+            - error
+            properties:
+              index:
+                type: integer
+                description: Index of the carrier in the original request array
+              error:
+                type: string
+                description: Error message
+    CarrierRequest:
+      type: object
+      required:
+      - name
+      - tmsId
+      x-property-order:
+      - name
+      - tmsId
+      - status
+      - complianceStatus
+      - mcNumber
+      - dotNumber
+      - scac
+      - address
+      - email
+      - phone
+      - phoneExtension
+      - managers
+      - contacts
+      - notes
+      - customData
+      properties:
+        name:
+          type: string
+          description: Carrier name (required)
+        tmsId:
+          type: string
+          description: TMS identifier for the carrier. Used for matching existing carriers. Cannot be changed after creation.
+        status:
+          type: object
+          description: Carrier status.
+          x-property-order:
+          - code
+          - reason
+          properties:
+            code:
+              type: string
+              enum:
+              - ACTIVE
+              - DO_NOT_USE
+              description: Status code indicating the carrier's current state
+            reason:
+              type: string
+              description: Optional reason for the status
+        complianceStatus:
+          type: object
+          description: Compliance status information.
+          properties:
+            codes:
+              type: object
+              additionalProperties:
+                type: string
+              description: Compliance codes as key-value pairs
+        mcNumber:
+          type: integer
+          description: MC number
+        dotNumber:
+          type: integer
+          description: DOT number
+        scac:
+          type: string
+          description: SCAC code
+        address:
+          type: object
+          description: Carrier address.
+          x-property-order:
+          - name
+          - company
+          - street1
+          - street2
+          - city
+          - stateOrProvince
+          - postalCode
+          - country
+          properties:
+            street1:
+              type: string
+              description: Street address line 1
+            street2:
+              type: string
+              description: Street address line 2 (optional)
+            city:
+              type: string
+              description: City name
+            stateOrProvince:
+              type: string
+              description: State or province code
+            postalCode:
+              type: string
+              description: Postal or ZIP code
+            country:
+              type: string
+              description: 'Must be 2-letter ISO country code as listed here: https://www.iban.com/country-codes'
+            name:
+              type: string
+              description: Location name (e.g., building name)
+            company:
+              type: string
+              description: Company name
+        email:
+          type: string
+          format: email
+          description: Carrier email address.
+        phone:
+          type: string
+          description: Phone number in E.164 format (e.g., +13125551234).
+        phoneExtension:
+          type: string
+          description: Phone extension.
+        managers:
+          type: array
+          description: Array of organization contacts (managers) who manage this carrier. Pass an empty array [] to clear all managers when updating.
+          items:
+            $ref: '#/components/schemas/BrokerageContactRequest'
+        contacts:
+          type: array
+          description: Array of carrier contacts (carrier employees). Pass an empty array [] to clear all contacts when updating.
+          items:
+            $ref: '#/components/schemas/CarrierContactRequest'
+        notes:
+          type: string
+          description: Free-form notes about the carrier.
+        customData:
+          $ref: '#/components/schemas/CarrierCustomData'
+    BrokerageContactRequest:
+      type: object
+      x-property-order:
+      - tmsId
+      - name
+      - email
+      - phone
+      - phoneExtension
+      - preferredContactMode
+      - roles
+      properties:
+        name:
+          type: string
+          description: Contact name
+        email:
+          type: string
+          format: email
+          description: Contact email address
+        phone:
+          type: string
+          description: Phone number in E.164 format (e.g., +13125551234)
+        phoneExtension:
+          type: string
+          description: Phone extension
+        tmsId:
+          type: string
+          description: TMS identifier for matching existing contacts. If provided, the system will match and update the existing contact.
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - CARRIER_REP
+            - ACCOUNT_MANAGER
+            - OPERATIONS_REP
+            - OPERATIONS_MANAGER
+            - BOOKED_BY
+            - CUSTOMER_REP
+            - CUSTOMER_TEAM
+            - AP_REP
+            - AFTER_HOURS_REP
+          description: 'The employee''s role(s) on each load. Possible values: `CARRIER_REP` — rep who gets commission credit for the load, `OPERATIONS_REP` — manages day-to-day operations on the load, `OPERATIONS_MANAGER` — brokerage-side manager or supervisor, `ACCOUNT_MANAGER` — manages the customer relationship, `CUSTOMER_REP` — sales rep to the customer, `CUSTOMER_TEAM` — part of the broader customer team, `BOOKED_BY` — party who booked the load, `AP_REP` — Accounts Payable Specialist, who manages invoice and payment processes, `AFTER_HOURS_REP` — contact available outside of regular business hours.
+
+            '
+        preferredContactMode:
+          type: string
+          enum:
+          - EMAIL
+          - PHONE_CALL
+          - TEXT_MESSAGE
+          - TELEGRAM
+          description: Preferred method of contact
+    BrokerageContactResponse:
+      type: object
+      x-property-order:
+      - id
+      - tmsId
+      - name
+      - email
+      - phone
+      - phoneExtension
+      - preferredContactMode
+      - roles
+      properties:
+        id:
+          type: string
+          description: Organization contact ID (ULID)
+        name:
+          type: string
+          nullable: true
+          description: Contact name
+        tmsId:
+          type: string
+          nullable: true
+          description: TMS identifier for the contact
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - CARRIER_REP
+            - ACCOUNT_MANAGER
+            - OPERATIONS_REP
+            - OPERATIONS_MANAGER
+            - BOOKED_BY
+            - CUSTOMER_REP
+            - CUSTOMER_TEAM
+            - AP_REP
+            - AFTER_HOURS_REP
+          description: 'The employee''s role(s) on each load. Possible values: `CARRIER_REP` — rep who gets commission credit for the load, `OPERATIONS_REP` — manages day-to-day operations on the load, `OPERATIONS_MANAGER` — brokerage-side manager or supervisor, `ACCOUNT_MANAGER` — manages the customer relationship, `CUSTOMER_REP` — sales rep to the customer, `CUSTOMER_TEAM` — part of the broader customer team, `BOOKED_BY` — party who booked the load, `AP_REP` — Accounts Payable Specialist, who manages invoice and payment processes, `AFTER_HOURS_REP` — contact available outside of regular business hours.
+
+            '
+        preferredContactMode:
+          type: string
+          nullable: true
+          enum:
+          - EMAIL
+          - PHONE_CALL
+          - TEXT_MESSAGE
+          - TELEGRAM
+          description: Preferred method of contact
+        email:
+          type: string
+          nullable: true
+          description: Contact email address
+        phone:
+          type: string
+          nullable: true
+          description: Phone number in E.164 format (e.g., +13125551234)
+        phoneExtension:
+          type: string
+          nullable: true
+          description: Phone extension
+    CarrierCustomData:
+      type: object
+      description: 'Optional metadata for the carrier. Use string keys; each value may be a string, number, boolean, array of JSON-safe values, or nested object with the same rules. Omit or send `{}` when you have nothing to store.
+
+        '
+      additionalProperties: true
+      example:
+        tier: gold
+        score: 98.5
+        verified: true
+        aliases:
+        - Acme Freight
+        - Acme Carriers LLC
+        routing:
+          defaultRegion: NS
+          allowCrossBorder: false
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
+    BulkUpsertCarriersRequest:
+      type: object
+      required:
+      - carriers
+      x-property-order:
+      - carriers
+      properties:
+        carriers:
+          type: array
+          maxItems: 20
+          description: Array of carriers to create or update. Maximum 20 carriers per request.
+          items:
+            $ref: '#/components/schemas/CarrierRequest'
+    CarrierContactResponse:
+      type: object
+      x-property-order:
+      - id
+      - tmsId
+      - name
+      - email
+      - phone
+      - phoneExtension
+      - preferredContactMode
+      - roles
+      properties:
+        id:
+          type: string
+          description: Carrier contact ID (ULID)
+        name:
+          type: string
+          nullable: true
+          description: Contact name
+        tmsId:
+          type: string
+          nullable: true
+          description: TMS identifier for the contact
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - ACCOUNTANT
+            - AP_REP
+            - DISPATCHER
+            - DRIVER
+            - OTHER
+          description: 'Carrier contact roles:
+
+            - `ACCOUNTANT` — Accountant
+
+            - `AP_REP` — manages invoices and payments
+
+            - `DISPATCHER` — Dispatcher
+
+            - `DRIVER` — Driver
+
+            - `OTHER` — Other
+
+            '
+        preferredContactMode:
+          type: string
+          nullable: true
+          enum:
+          - EMAIL
+          - PHONE_CALL
+          - TEXT_MESSAGE
+          - TELEGRAM
+          description: Preferred method of contact
+        email:
+          type: string
+          nullable: true
+          description: Contact email address
+        phone:
+          type: string
+          nullable: true
+          description: Phone number in E.164 format (e.g., +13125551234)
+        phoneExtension:
+          type: string
+          nullable: true
+          description: Phone extension
+  securitySchemes:
+    httpBasic:
+      type: http
+      scheme: basic
+      description: 'Authenticate with HTTP Basic auth by sending an empty username and your API key as the password, equivalent to encoding :<API_KEY> in the Basic credential.
+
+        '
+x-ext-urls: {}

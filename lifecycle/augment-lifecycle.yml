@@ -1,0 +1,24 @@
+generated: '2026-07-18'
+method: searched
+source: openapi/augment-openapi-original.json + https://apidocs.goaugment.com/guide/start-developing/
+versioning:
+  scheme: uri-path
+  current: v2
+  versions: [v1, v2]
+  docs: https://apidocs.goaugment.com/guide/start-developing/migration-guide
+  notes: >-
+    The Augment API mixes path versions — Load Management, webhooks, and carrier
+    support are on /v2; Carrier Management is on /v1. Webhooks are versioned
+    separately (v1 legacy flat payloads vs v2 shared envelope), selectable per
+    endpoint. A migration guide documents moving from Bearer to Basic auth and
+    from v1 to v2 webhook payloads.
+deprecation:
+  policy_url: https://apidocs.goaugment.com/guide/start-developing/migration-guide
+  legacy: v1 webhook payloads (flat) are legacy; v2 shared envelope is recommended for new integrations.
+  sunset_header: false
+sla:
+  url: null
+  uptime_target: null
+  note: No public SLA/uptime commitment was found.
+status_page: null
+deprecated_operations: []

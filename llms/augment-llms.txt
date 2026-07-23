@@ -1,0 +1,8 @@
+- [Webhooks Setup](https://apidocs.goaugment.com/guide/start-developing/webhooks-setup/index.md): How to choose a webhook version, register endpoints, and implement the events your TMS needs.
+- [Authorization](https://apidocs.goaugment.com/index.md): How to use your API key to make authorized requests to the API
+- [Authorization](https://apidocs.goaugment.com/guide/start-developing/authorization/index.md): How to use your API key to make authorized requests to the API
+- [Rate Limits](https://apidocs.goaugment.com/guide/start-developing/rate-limits/index.md): Understanding Augment API rate limits and how to handle transient failures gracefully.
+- [Webhooks Setup](https://apidocs.goaugment.com/v1/guide/start-developing/webhooks-setup/index.md): How to choose a webhook version, register endpoints, and implement the events your TMS needs.
+- [Authorization](https://apidocs.goaugment.com/v1/guide/start-developing/authorization/index.md): How to use your API key to make authorized requests to the API
+- [Rate Limits](https://apidocs.goaugment.com/v1/guide/start-developing/rate-limits/index.md): Understanding Augment API rate limits and how to handle transient failures gracefully.
+- [Authorization](https://apidocs.goaugment.com/v1/index.md): How to use your API key to make authorized requests to the API

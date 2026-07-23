@@ -1,0 +1,516 @@
+openapi: 3.1.1
+info:
+  title: Augment API Key Webhook Endpoints API
+  description: '<a href="https://trust.goaugment.com/?utm_campaign=api_docs&utm_source=api_docs&utm_medium=api_docs&utm_content=api_docs" target="_blank">Augment is now SOC 2 Type II Certified</a>
+
+
+    The Augment API endpoints are calls your system makes to manage loads,
+
+    carriers, and webhook configuration.
+
+    The latest version of the Augment API is hosted [online](https://apidocs.goaugment.com).
+
+
+    ## API Endpoints
+
+
+    Endpoints your system calls to interact with Augment:
+
+
+    - [Load Management](/reference/tag/load-management)
+
+    - [Carrier Management](/reference/tag/carrier-management)
+
+    - [Models](/reference/models)
+
+    - [Webhook Endpoints](/reference/tag/webhook-endpoints)
+
+    - [Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions)
+
+
+    Webhook management access is gated. Request access from Augment before using
+
+    these endpoints. After access is enabled, you can self-manage the webhook
+
+    endpoints that receive event payloads and the webhook event subscriptions
+
+    that control which events are sent to each endpoint.
+
+
+    Use [Webhook Endpoints](/reference/tag/webhook-endpoints) to create and
+
+    update the HTTPS destinations where Augment sends webhook payloads. Use
+
+    [Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions) to
+
+    choose event types for each endpoint and send test deliveries.
+
+
+    Outbound webhook payloads, including Track & Trace events, are documented
+
+    separately in the [Webhooks](/webhooks) reference. Subscriptions created
+
+    through the public webhook management APIs deliver version 2 webhook payloads only.
+
+
+    ## Resources
+
+
+    * [Homepage](https://www.goaugment.com)
+
+    * [LinkedIn](https://www.linkedin.com/company/goaugment)
+
+    * [Jobs - we''re hiring!](https://jobs.ashbyhq.com/go-augment?utm_source=AMy24qx30n)
+
+
+    ## Developer Notes
+
+
+    All date-time fields are represented as strings. The date-time notation is defined by [RFC 3339, section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6). Examples:
+
+    - `2025-08-21T12:34:56Z`
+
+    - `2025-08-21T04:34:56-08:00`
+
+
+    However, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.
+
+
+    Example:
+
+    - `2025-08-21T12:34:56`
+
+    '
+  version: 20.0.1
+servers:
+- url: https://api.prod.goaugment.com
+security:
+- httpBasic: []
+tags:
+- name: Webhook Endpoints
+  description: 'Public API endpoints for approved brokerages to create, update, list, and delete webhook endpoints. Self-service endpoints send version 2 webhook payloads only. Access is gated by brokerage; talk to Augment before using these endpoints.
+
+    '
+paths:
+  /v2/webhook-endpoints:
+    get:
+      tags:
+      - Webhook Endpoints
+      operationId: listWebhookEndpoints
+      summary: List webhook endpoints
+      security:
+      - httpBasic: []
+      description: 'Lists public webhook endpoints for the authenticated brokerage. Customers do not pass `brokerageKey`; the brokerage is resolved from the API key.
+
+
+        Access to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.
+
+        '
+      responses:
+        '200':
+          description: Webhook endpoints returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WebhookEndpoint'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+    post:
+      tags:
+      - Webhook Endpoints
+      operationId: createWebhookEndpoint
+      summary: Create webhook endpoint
+      security:
+      - httpBasic: []
+      description: 'Creates a public webhook endpoint for the authenticated brokerage. The endpoint URL must use HTTPS. Created endpoints use webhook payload version 2 and TLS verification. You cannot create v1 webhook subscriptions through self-service management. After creating an endpoint, create a webhook subscription that points to the returned `id`.
+
+
+        Access to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWebhookEndpointRequest'
+            example:
+              name: Primary Webhook
+              url: https://example.com/webhooks/augment
+              auth:
+                type: bearerToken
+                token: customer-secret-token
+              customHeaders:
+                X-Source: augment
+      responses:
+        '201':
+          description: Webhook endpoint created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEndpoint'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Webhook management access is not enabled for this brokerage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+  /v2/webhook-endpoints/{webhookEndpointId}:
+    parameters:
+    - name: webhookEndpointId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Webhook endpoint ID
+    get:
+      tags:
+      - Webhook Endpoints
+      operationId: getWebhookEndpoint
+      summary: Get webhook endpoint
+      security:
+      - httpBasic: []
+      description: 'Returns one public webhook endpoint for the authenticated brokerage. Returns `404` if the endpoint does not exist or is not a public webhook endpoint for that brokerage.
+
+        '
+      responses:
+        '200':
+          description: Webhook endpoint returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEndpoint'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Webhook endpoint not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+    patch:
+      tags:
+      - Webhook Endpoints
+      operationId: updateWebhookEndpoint
+      summary: Update webhook endpoint
+      security:
+      - httpBasic: []
+      description: 'Partially updates a public webhook endpoint. Supported fields are `name`, `url`, `auth`, and `customHeaders`. At least one field is required. Omitted fields are preserved. Passing `customHeaders: null` clears custom headers. Existing webhook subscriptions stay attached to the same endpoint ID. After changing the endpoint URL or auth, test each affected subscription.
+
+
+        Access to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWebhookEndpointRequest'
+            example:
+              url: https://example.com/webhooks/augment-v2
+              customHeaders: null
+      responses:
+        '200':
+          description: Webhook endpoint updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEndpoint'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Webhook management access is not enabled for this brokerage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Webhook endpoint not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+    delete:
+      tags:
+      - Webhook Endpoints
+      operationId: deleteWebhookEndpoint
+      summary: Delete webhook endpoint
+      security:
+      - httpBasic: []
+      description: 'Deletes a public webhook endpoint. This returns `409` if any webhook subscription still references the endpoint.
+
+
+        Access to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.
+
+        '
+      responses:
+        '204':
+          description: Webhook endpoint deleted successfully
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Webhook management access is not enabled for this brokerage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Webhook endpoint not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '409':
+          description: Webhook endpoint is still referenced by a subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+components:
+  schemas:
+    CreateWebhookEndpointRequest:
+      type: object
+      description: Request body for creating a public webhook endpoint.
+      additionalProperties: false
+      required:
+      - url
+      - auth
+      x-property-order:
+      - name
+      - url
+      - auth
+      - customHeaders
+      properties:
+        name:
+          type: string
+          description: Optional display name for the endpoint
+          example: Primary Webhook
+        url:
+          type: string
+          format: uri
+          description: HTTPS URL that receives Augment webhook deliveries
+          example: https://example.com/webhooks/augment
+        auth:
+          $ref: '#/components/schemas/WebhookEndpointAuth'
+        customHeaders:
+          oneOf:
+          - $ref: '#/components/schemas/WebhookCustomHeaders'
+          - type: 'null'
+          description: Optional custom headers sent with webhook deliveries
+    WebhookEndpointCustomHeadersAuth:
+      type: object
+      description: 'Authentication conveyed via the endpoint''s `customHeaders` field (e.g. `x-api-key`). No bearer token is sent and Augment does not store one.
+
+        '
+      required:
+      - type
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+          - customHeaders
+          description: Custom headers auth.
+    WebhookEndpointBearerTokenAuth:
+      type: object
+      description: Bearer token authentication for webhook delivery requests.
+      required:
+      - type
+      - token
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+          - bearerToken
+          description: Bearer token auth.
+        token:
+          type: string
+          description: 'Secret token sent as `Authorization: Bearer <token>` on webhook delivery. This token is never returned by read or list responses.
+
+            '
+          example: customer-secret-token
+    WebhookEndpointAuth:
+      oneOf:
+      - $ref: '#/components/schemas/WebhookEndpointBearerTokenAuth'
+      - $ref: '#/components/schemas/WebhookEndpointCustomHeadersAuth'
+      discriminator:
+        propertyName: type
+        mapping:
+          bearerToken: '#/components/schemas/WebhookEndpointBearerTokenAuth'
+          customHeaders: '#/components/schemas/WebhookEndpointCustomHeadersAuth'
+      description: 'Outbound auth configuration used when Augment delivers webhooks to your endpoint. This is not the same as the API key auth used to call Augment.
+
+        '
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
+    WebhookCustomHeaders:
+      type: object
+      description: Custom headers sent with webhook deliveries.
+      additionalProperties:
+        type: string
+      example:
+        X-Customer-Header: value
+    UpdateWebhookEndpointRequest:
+      type: object
+      description: 'Request body for partially updating a public webhook endpoint. At least one field is required.
+
+        '
+      additionalProperties: false
+      minProperties: 1
+      x-property-order:
+      - name
+      - url
+      - auth
+      - customHeaders
+      properties:
+        name:
+          type: string
+          description: Display name for the endpoint
+          example: Primary Webhook
+        url:
+          type: string
+          format: uri
+          description: HTTPS URL that receives Augment webhook deliveries
+          example: https://example.com/webhooks/augment-v2
+        auth:
+          $ref: '#/components/schemas/WebhookEndpointAuth'
+        customHeaders:
+          oneOf:
+          - $ref: '#/components/schemas/WebhookCustomHeaders'
+          - type: 'null'
+          description: Optional custom headers. Pass `null` to clear custom headers.
+    WebhookEndpoint:
+      type: object
+      description: Public webhook endpoint configured for outbound webhook delivery.
+      additionalProperties: false
+      required:
+      - id
+      - url
+      - authType
+      x-property-order:
+      - id
+      - name
+      - url
+      - authType
+      - customHeaders
+      properties:
+        id:
+          type: string
+          description: Webhook endpoint ID
+          example: webhook_endpoint_01HY...
+        name:
+          type: string
+          description: Display name for the endpoint
+          example: Primary Webhook
+        url:
+          type: string
+          format: uri
+          description: HTTPS URL that receives Augment webhook deliveries
+          example: https://example.com/webhooks/augment
+        authType:
+          type: string
+          enum:
+          - bearerToken
+          - customHeaders
+          description: 'Outbound delivery auth type. Tokens are never returned by read or list responses.
+
+            '
+        customHeaders:
+          oneOf:
+          - $ref: '#/components/schemas/WebhookCustomHeaders'
+          - type: 'null'
+          description: Optional custom headers sent with webhook deliveries
+  securitySchemes:
+    httpBasic:
+      type: http
+      scheme: basic
+      description: 'Authenticate with HTTP Basic auth by sending an empty username and your API key as the password, equivalent to encoding :<API_KEY> in the Basic credential.
+
+        '
+x-ext-urls: {}

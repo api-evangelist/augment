@@ -1,0 +1,46 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/augment-openapi-original.json
+format: custom-json
+envelope:
+  media_type: application/json
+  schema: ApiErrorBody
+  fields:
+  - name: message
+    required: true
+    description: A human-readable error message.
+  - name: errorCode
+    required: false
+    description: A machine-readable error code string.
+  - name: details
+    required: false
+    description: Additional error details (object or string).
+  auth_check_envelope:
+    schema: AuthCheckError
+    fields: [message, requestId, timestamp]
+    note: The /v2/auth-check endpoint returns a richer error with a requestId (uuid) for troubleshooting and a timestamp.
+problems:
+- status: 400
+  title: Bad Request
+  description: The request was malformed or contained invalid parameters.
+  schema: ApiErrorBody
+- status: 401
+  title: Unauthorized
+  description: Missing or invalid API key. Authenticate with HTTP Basic (empty username, API key as password).
+  schema: ApiErrorBody / AuthCheckError
+- status: 403
+  title: Forbidden
+  description: The API key is valid but not permitted to perform this action.
+  schema: ApiErrorBody
+- status: 404
+  title: Not Found
+  description: The requested resource (load, carrier, webhook endpoint, or subscription) does not exist.
+  schema: ApiErrorBody
+- status: 409
+  title: Conflict
+  description: The request conflicts with the current state of the resource (e.g. duplicate or concurrent modification).
+  schema: ApiErrorBody
+- status: 422
+  title: Unprocessable Entity
+  description: The request was well-formed but failed semantic validation.
+  schema: ApiErrorBody

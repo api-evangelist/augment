@@ -1,0 +1,83 @@
+generated: '2026-07-18'
+method: derived
+status: candidate
+source: openapi/augment-openapi-original.json
+notes: >-
+  No official hosted/remote MCP server was found for Augment (checked docs,
+  npm @modelcontextprotocol, and MCP registries). This is a candidate tool list
+  derived one-to-one from the Augment API OpenAPI operations so an agent surface
+  can be stood up. All calls use HTTP Basic auth (empty username + API key as password).
+server:
+  name: augment
+  transport: http
+  base_url: https://api.prod.goaugment.com
+tools:
+- name: verify_api_key
+  description: Verify that an API key is valid.
+  source_operation: openapi/augment-openapi-original.json#verifyApiKey
+- name: get_load
+  description: Retrieve a load.
+  source_operation: openapi/augment-openapi-original.json#getLoad
+- name: create_or_update_load
+  description: Create or update (upsert) a load with its route stops.
+  source_operation: openapi/augment-openapi-original.json#createOrUpdateLoad
+- name: patch_load
+  description: Partially update a load.
+  source_operation: openapi/augment-openapi-original.json#patchLoad
+- name: add_tracking_event
+  description: Add a tracking event to a load.
+  source_operation: openapi/augment-openapi-original.json#addTrackingEvent
+- name: report_carrier_issue_external_ref
+  description: Report a carrier support issue by external reference.
+  source_operation: openapi/augment-openapi-original.json#reportCarrierIssueExternalId
+- name: create_or_update_carrier
+  description: Create or update (upsert) a carrier.
+  source_operation: openapi/augment-openapi-original.json#createOrUpdateCarrier
+- name: get_carrier_by_identifier
+  description: Look up a carrier by identifier.
+  source_operation: openapi/augment-openapi-original.json#getCarrierByIdentifier
+- name: bulk_upsert_carriers
+  description: Bulk create or update carriers.
+  source_operation: openapi/augment-openapi-original.json#bulkUpsertCarriers
+- name: get_carrier_by_id
+  description: Retrieve a carrier by ID.
+  source_operation: openapi/augment-openapi-original.json#getCarrierById
+- name: archive_carrier
+  description: Archive (soft-delete) a carrier.
+  source_operation: openapi/augment-openapi-original.json#archiveCarrier
+- name: list_webhook_endpoints
+  description: List configured webhook endpoints.
+  source_operation: openapi/augment-openapi-original.json#listWebhookEndpoints
+- name: create_webhook_endpoint
+  description: Create a webhook endpoint.
+  source_operation: openapi/augment-openapi-original.json#createWebhookEndpoint
+- name: get_webhook_endpoint
+  description: Retrieve a webhook endpoint.
+  source_operation: openapi/augment-openapi-original.json#getWebhookEndpoint
+- name: update_webhook_endpoint
+  description: Update a webhook endpoint.
+  source_operation: openapi/augment-openapi-original.json#updateWebhookEndpoint
+- name: delete_webhook_endpoint
+  description: Delete a webhook endpoint.
+  source_operation: openapi/augment-openapi-original.json#deleteWebhookEndpoint
+- name: list_webhook_event_types
+  description: List available webhook event types.
+  source_operation: openapi/augment-openapi-original.json#listWebhookEventTypes
+- name: list_webhook_subscriptions
+  description: List webhook event subscriptions.
+  source_operation: openapi/augment-openapi-original.json#listWebhookSubscriptions
+- name: create_webhook_subscription
+  description: Subscribe an endpoint to webhook event types.
+  source_operation: openapi/augment-openapi-original.json#createWebhookSubscription
+- name: get_webhook_subscription
+  description: Retrieve a webhook subscription.
+  source_operation: openapi/augment-openapi-original.json#getWebhookSubscription
+- name: update_webhook_subscription
+  description: Update a webhook subscription.
+  source_operation: openapi/augment-openapi-original.json#updateWebhookSubscription
+- name: delete_webhook_subscription
+  description: Delete a webhook subscription.
+  source_operation: openapi/augment-openapi-original.json#deleteWebhookSubscription
+- name: test_webhook_subscription
+  description: Send a test delivery for a webhook subscription.
+  source_operation: openapi/augment-openapi-original.json#testWebhookSubscription

@@ -1,0 +1,29 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Augment API
+  version: 1.0.0
+extends: openapi/augment-openapi-original.json
+actions:
+- target: $.info
+  update:
+    x-apievangelist-enriched: '2026-07-18'
+    x-apievangelist-provider: augment
+    x-apievangelist-category: freight-logistics
+    x-apievangelist-auth: http-basic-api-key
+    x-apievangelist-rate-limit: 10 rps / 600 rpm per customer
+    x-apievangelist-trust-center: https://trust.goaugment.com/
+    x-apievangelist-certifications:
+    - SOC 2 Type II
+    - GDPR
+- target: $.info
+  update:
+    x-apievangelist-artifacts:
+      authentication: authentication/augment-authentication.yml
+      conventions: conventions/augment-conventions.yml
+      errors: errors/augment-problem-types.yml
+      lifecycle: lifecycle/augment-lifecycle.yml
+      rate_limits: rate-limits/augment-rate-limits.yml
+      webhooks: asyncapi/augment-webhooks.yml
+      data_model: data-model/augment-data-model.yml
+      mcp: mcp/augment-mcp.yml
+      skills: skills/_index.yml

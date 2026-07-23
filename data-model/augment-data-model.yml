@@ -1,0 +1,53 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/augment-openapi-original.json
+entities:
+- name: Load
+  description: A freight load with pickup/delivery route stops, carrier assignment, and tracking.
+  id_fields: [brokerageLoadId, brokerageLoadInternalId, groupExternalId, customerId]
+  schemas: [Load, LoadV2Response]
+- name: RouteStop
+  description: An individual pickup or delivery stop on a load.
+  id_fields: [externalId]
+  schemas: [LoadRouteStop, RouteStop, StopUpdate]
+- name: Carrier
+  description: A freight carrier that can be assigned to loads.
+  id_fields: [carrierId, tmsId]
+  schemas: [Carrier, CarrierRequest, CarrierResponse]
+- name: CarrierContact
+  description: A contact person associated with a carrier.
+  id_fields: [id, tmsId]
+  schemas: [CarrierContact, CarrierContactRequest, CarrierContactResponse]
+- name: TrackingEvent
+  description: A location/status tracking event posted against a load.
+  id_fields: []
+  schemas: [TrackingEventContact]
+- name: WebhookEndpoint
+  description: An HTTPS destination that receives webhook deliveries.
+  id_fields: [id]
+  schemas: [WebhookEndpoint]
+- name: WebhookSubscription
+  description: A subscription binding a webhook endpoint to event types.
+  id_fields: [id, webhookEndpointId]
+  schemas: [WebhookSubscription]
+relationships:
+- from: Load
+  type: has_many
+  to: RouteStop
+  via: stops
+- from: Load
+  type: has_one
+  to: Carrier
+  via: carrierId
+- from: Load
+  type: has_many
+  to: TrackingEvent
+  via: brokerageLoadInternalId
+- from: Carrier
+  type: has_many
+  to: CarrierContact
+  via: contacts
+- from: WebhookSubscription
+  type: belongs_to
+  to: WebhookEndpoint
+  via: webhookEndpointId

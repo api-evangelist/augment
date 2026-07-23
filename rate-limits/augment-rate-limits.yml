@@ -1,0 +1,25 @@
+generated: '2026-07-18'
+method: searched
+source: https://apidocs.goaugment.com/guide/start-developing/rate-limits/
+scope: per customer
+rate_limits:
+- name: default
+  limit_count: 10
+  interval: second
+  description: Up to 10 requests per second per customer (endpoint-specific variations may apply).
+- name: default-per-minute
+  limit_count: 600
+  interval: minute
+  description: Equivalent to 600 requests per minute per customer.
+retry_guidance:
+  retry_on: [5xx, network-failures]
+  do_not_retry_on: [4xx]
+  strategy: exponential backoff with full jitter
+  initial_delay_ms: 500
+  max_delay_ms: 30000
+  max_attempts: 5
+  max_total_wait_ms: 120000
+notes: >-
+  The rate-limits documentation does not publish explicit 429 status behavior or
+  X-RateLimit-*/Retry-After response headers; guidance emphasizes retrying only
+  transient (5xx / network) failures with capped exponential backoff.

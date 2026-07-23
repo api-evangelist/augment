@@ -1,0 +1,14 @@
+generated: '2026-07-18'
+method: searched
+probe: true
+source: https://trust.goaugment.com/
+url: https://trust.goaugment.com/
+certifications:
+- SOC 2
+- GDPR
+evidence:
+- source: https://trust.goaugment.com/
+  keywords:
+  - soc 2
+  - trust center
+  - gdpr

@@ -1,0 +1,624 @@
+openapi: 3.1.1
+info:
+  title: Augment API Key Webhook Event Subscriptions API
+  description: '<a href="https://trust.goaugment.com/?utm_campaign=api_docs&utm_source=api_docs&utm_medium=api_docs&utm_content=api_docs" target="_blank">Augment is now SOC 2 Type II Certified</a>
+
+
+    The Augment API endpoints are calls your system makes to manage loads,
+
+    carriers, and webhook configuration.
+
+    The latest version of the Augment API is hosted [online](https://apidocs.goaugment.com).
+
+
+    ## API Endpoints
+
+
+    Endpoints your system calls to interact with Augment:
+
+
+    - [Load Management](/reference/tag/load-management)
+
+    - [Carrier Management](/reference/tag/carrier-management)
+
+    - [Models](/reference/models)
+
+    - [Webhook Endpoints](/reference/tag/webhook-endpoints)
+
+    - [Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions)
+
+
+    Webhook management access is gated. Request access from Augment before using
+
+    these endpoints. After access is enabled, you can self-manage the webhook
+
+    endpoints that receive event payloads and the webhook event subscriptions
+
+    that control which events are sent to each endpoint.
+
+
+    Use [Webhook Endpoints](/reference/tag/webhook-endpoints) to create and
+
+    update the HTTPS destinations where Augment sends webhook payloads. Use
+
+    [Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions) to
+
+    choose event types for each endpoint and send test deliveries.
+
+
+    Outbound webhook payloads, including Track & Trace events, are documented
+
+    separately in the [Webhooks](/webhooks) reference. Subscriptions created
+
+    through the public webhook management APIs deliver version 2 webhook payloads only.
+
+
+    ## Resources
+
+
+    * [Homepage](https://www.goaugment.com)
+
+    * [LinkedIn](https://www.linkedin.com/company/goaugment)
+
+    * [Jobs - we''re hiring!](https://jobs.ashbyhq.com/go-augment?utm_source=AMy24qx30n)
+
+
+    ## Developer Notes
+
+
+    All date-time fields are represented as strings. The date-time notation is defined by [RFC 3339, section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6). Examples:
+
+    - `2025-08-21T12:34:56Z`
+
+    - `2025-08-21T04:34:56-08:00`
+
+
+    However, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.
+
+
+    Example:
+
+    - `2025-08-21T12:34:56`
+
+    '
+  version: 20.0.1
+servers:
+- url: https://api.prod.goaugment.com
+security:
+- httpBasic: []
+tags:
+- name: Webhook Event Subscriptions
+  description: 'Public API endpoints for approved brokerages to list supported webhook event types, subscribe endpoints to event types, and send test deliveries. Subscriptions created through these public APIs deliver version 2 webhook event shapes only. Access is gated by brokerage; talk to Augment before using these endpoints.
+
+    '
+paths:
+  /v2/webhook-event-types:
+    get:
+      tags:
+      - Webhook Event Subscriptions
+      operationId: listWebhookEventTypes
+      summary: List webhook event types
+      security:
+      - httpBasic: []
+      description: 'Returns the public event types supported for subscription creation. Use this endpoint as the source of truth for allowed `eventType` values before creating a webhook subscription.
+
+
+        Access to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.
+
+        '
+      responses:
+        '200':
+          description: Webhook event types returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WebhookManagementEventType'
+              example:
+              - TRACKING_UPDATE
+              - STOP_UPDATE
+              - LOAD_CARRIER_UPDATE
+              - SEND_TMS_COMMENT
+              - SCHEDULED_CARRIER_OUTREACH
+              - UPLOAD_FILES
+              - PUSH_BID_TO_TMS
+              - PUSH_LOAD_DRAFT
+              - CARRIER_ISSUE_UPDATED
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+  /v2/webhook-subscriptions:
+    get:
+      tags:
+      - Webhook Event Subscriptions
+      operationId: listWebhookSubscriptions
+      summary: List webhook subscriptions
+      security:
+      - httpBasic: []
+      description: 'Lists public webhook subscriptions for the authenticated brokerage. A subscription connects one public webhook endpoint to one public webhook event type.
+
+
+        Access to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.
+
+        '
+      responses:
+        '200':
+          description: Webhook subscriptions returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WebhookSubscription'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+    post:
+      tags:
+      - Webhook Event Subscriptions
+      operationId: createWebhookSubscription
+      summary: Create webhook subscription
+      security:
+      - httpBasic: []
+      description: 'Creates a subscription from a public webhook endpoint to one public event type. `isActive` is optional and defaults to `true`. The endpoint must exist and must be a public webhook endpoint for the authenticated brokerage. Duplicate subscriptions for the same `webhookEndpointId` and `eventType` are rejected with `409`. After creating the subscription, send a test delivery for the returned subscription `id`. Subscriptions created through these public APIs deliver version 2 webhook event shapes for the selected event type.
+
+
+        Access to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWebhookSubscriptionRequest'
+            example:
+              webhookEndpointId: endpoint-id
+              eventType: TRACKING_UPDATE
+              isActive: true
+      responses:
+        '201':
+          description: Webhook subscription created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookSubscription'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Webhook management access is not enabled for this brokerage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '409':
+          description: Webhook endpoint already has a subscription for this event type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+  /v2/webhook-subscriptions/{subscriptionId}:
+    parameters:
+    - name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Webhook subscription ID
+    get:
+      tags:
+      - Webhook Event Subscriptions
+      operationId: getWebhookSubscription
+      summary: Get webhook subscription
+      security:
+      - httpBasic: []
+      description: 'Returns one public webhook subscription for the authenticated brokerage, or `404` if no matching public subscription exists.
+
+        '
+      responses:
+        '200':
+          description: Webhook subscription returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookSubscription'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Webhook subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+    patch:
+      tags:
+      - Webhook Event Subscriptions
+      operationId: updateWebhookSubscription
+      summary: Update webhook subscription
+      security:
+      - httpBasic: []
+      description: 'Partially updates a public webhook subscription. Only `webhookEndpointId` and `isActive` are updatable. `eventType` is not updatable; create a new subscription to change event type. At least one field is required.
+
+
+        Access to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWebhookSubscriptionRequest'
+            example:
+              webhookEndpointId: new-endpoint-id
+              isActive: false
+      responses:
+        '200':
+          description: Webhook subscription updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookSubscription'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Webhook management access is not enabled for this brokerage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Webhook subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '409':
+          description: Webhook endpoint already has a subscription for this event type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+    delete:
+      tags:
+      - Webhook Event Subscriptions
+      operationId: deleteWebhookSubscription
+      summary: Delete webhook subscription
+      security:
+      - httpBasic: []
+      description: 'Deletes a public webhook subscription. This returns `409` if the subscription has group overrides; those overrides must be removed first.
+
+
+        Access to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.
+
+        '
+      responses:
+        '204':
+          description: Webhook subscription deleted successfully
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Webhook management access is not enabled for this brokerage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Webhook subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '409':
+          description: Webhook subscription has group overrides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+  /v2/webhook-subscriptions/{subscriptionId}/test:
+    parameters:
+    - name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Webhook subscription ID
+    post:
+      tags:
+      - Webhook Event Subscriptions
+      operationId: testWebhookSubscription
+      summary: Test webhook subscription
+      security:
+      - httpBasic: []
+      description: 'Sends a test delivery for a public webhook subscription. The request body is optional. If omitted, Augment sends a default test payload for the subscription''s event type.
+
+
+        To send your own test payload, the API request body must be an object with a `payload` key. The value of `payload` should be the webhook event body you want Augment to send. Augment unwraps this field and sends only the `payload` value as the HTTP request body to your webhook endpoint. Use a payload value that matches the webhook event you are testing. For subscriptions created through these public APIs, refer to the version 2 event shapes documented in the [Webhooks reference](/webhooks). You cannot create v1 webhook subscriptions through self-service management.
+
+
+        Use this after creating a subscription or updating the endpoint URL, auth token, or custom headers.
+
+        '
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestWebhookSubscriptionRequest'
+            example:
+              payload:
+                id: test-event-10507012-001
+                workflow: TRACK_AND_TRACE
+                occurredAt: '2026-06-08T12:00:00.000Z'
+                loadNumber: '10507012'
+                customerLoadInternalId: null
+                eventType: TRACKING_UPDATE
+                data:
+                  nextSequence: 1
+                  nextEtaUtc: '2026-06-09T14:00:00.000Z'
+                  eventType: PING
+                  eventSource: PHONE_EMAIL
+                  eventUtc: '2026-06-08T12:00:00.000Z'
+                  city: Ashland
+                  stateOrProvince: VA
+                  latitude: 37.759
+                  longitude: -77.479
+                  notes: Driver in Ashland, VA; in transit to Westfield, MA delivery by 10:00 AM tomorrow.
+      responses:
+        '200':
+          description: Test delivery result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestWebhookSubscriptionResponse'
+              example:
+                statusCode: 200
+                body: {}
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Webhook subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+components:
+  schemas:
+    UpdateWebhookSubscriptionRequest:
+      type: object
+      description: 'Request body for partially updating a public webhook subscription. At least one field is required. `eventType` is not updatable.
+
+        '
+      additionalProperties: false
+      minProperties: 1
+      x-property-order:
+      - webhookEndpointId
+      - isActive
+      properties:
+        webhookEndpointId:
+          type: string
+          description: New webhook endpoint ID for this subscription
+          example: webhook_endpoint_01HZ...
+        isActive:
+          type: boolean
+          description: Whether this subscription should be active
+          example: false
+    TestWebhookSubscriptionRequest:
+      type: object
+      description: 'Optional request body for a test webhook delivery. The request body uses a `payload` wrapper: the `payload` key is part of this API request, and the `payload` value is the webhook event body that Augment sends to the configured endpoint.
+
+        '
+      additionalProperties: false
+      properties:
+        payload:
+          type: object
+          additionalProperties: true
+          description: 'Custom webhook event body to send to the subscription endpoint. Augment sends this object exactly as the webhook POST body. It should match the version 2 event shape your listener expects, such as a Track & Trace event envelope from the Webhooks reference.
+
+            '
+    CreateWebhookSubscriptionRequest:
+      type: object
+      description: Request body for creating a public webhook subscription.
+      additionalProperties: false
+      required:
+      - webhookEndpointId
+      - eventType
+      x-property-order:
+      - webhookEndpointId
+      - eventType
+      - isActive
+      properties:
+        webhookEndpointId:
+          type: string
+          description: Webhook endpoint ID that should receive this event type
+          example: webhook_endpoint_01HY...
+        eventType:
+          $ref: '#/components/schemas/WebhookManagementEventType'
+        isActive:
+          type: boolean
+          description: Whether this subscription should be active. Defaults to `true`.
+          default: true
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
+    TestWebhookSubscriptionResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - statusCode
+      - body
+      x-property-order:
+      - statusCode
+      - body
+      properties:
+        statusCode:
+          type: number
+          format: double
+          description: HTTP status code returned by the webhook endpoint
+          example: 200
+        body:
+          description: Response body returned by the webhook endpoint
+    WebhookSubscription:
+      type: object
+      description: 'Public webhook subscription connecting one webhook endpoint to one event type.
+
+        '
+      additionalProperties: false
+      required:
+      - id
+      - webhookEndpointId
+      - eventType
+      - isActive
+      x-property-order:
+      - id
+      - webhookEndpointId
+      - eventType
+      - isActive
+      properties:
+        id:
+          type: string
+          description: Webhook subscription ID
+          example: webhook_subscription_01HY...
+        webhookEndpointId:
+          type: string
+          description: Webhook endpoint ID that receives this event type
+          example: webhook_endpoint_01HY...
+        eventType:
+          $ref: '#/components/schemas/WebhookManagementEventType'
+        isActive:
+          type: boolean
+          description: Whether this subscription is active
+          example: true
+    WebhookManagementEventType:
+      type: string
+      description: 'Public event type for webhook subscription creation. Call `GET /v2/webhook-event-types` for the current source of truth.
+
+        '
+      enum:
+      - TRACKING_UPDATE
+      - STOP_UPDATE
+      - LOAD_CARRIER_UPDATE
+      - SEND_TMS_COMMENT
+      - SCHEDULED_CARRIER_OUTREACH
+      - UPLOAD_FILES
+      - PUSH_BID_TO_TMS
+      - PUSH_LOAD_DRAFT
+      - CARRIER_ISSUE_UPDATED
+  securitySchemes:
+    httpBasic:
+      type: http
+      scheme: basic
+      description: 'Authenticate with HTTP Basic auth by sending an empty username and your API key as the password, equivalent to encoding :<API_KEY> in the Basic credential.
+
+        '
+x-ext-urls: {}

@@ -1,0 +1,38 @@
+generated: '2026-07-18'
+method: searched
+source: >-
+  openapi/augment-openapi-original.json +
+  https://apidocs.goaugment.com/guide/start-developing/
+authentication:
+  style: http-basic
+  detail: Empty username + API key as the Basic password (equivalent to base64 of ":<API_KEY>").
+  migration: Legacy integrations used Bearer; current guidance is Basic. See authentication/augment-authentication.yml.
+idempotency:
+  supported: false
+  mechanism: none
+  note: >-
+    No Idempotency-Key header is documented. Write endpoints instead use upsert
+    semantics keyed on caller-supplied external references — createOrUpdateLoad,
+    createOrUpdateCarrier, and bulkUpsertCarriers are naturally idempotent on
+    replay because they match on external id, but there is no idempotency-key
+    contract for arbitrary POSTs.
+pagination:
+  supported: false
+  note: No cursor/offset pagination parameters are declared in the spec.
+versioning:
+  style: uri-path
+  detail: Mixed /v1 (carriers) and /v2 (loads, webhooks, carrier support); webhooks separately versioned v1/v2.
+request_tracing:
+  supported: partial
+  detail: The /v2/auth-check error (AuthCheckError) returns a requestId (uuid) and timestamp for troubleshooting.
+error_envelope:
+  media_type: application/json
+  schema: ApiErrorBody (message, errorCode, details)
+  reference: errors/augment-problem-types.yml
+rate_limit_signaling:
+  documented: partial
+  detail: 10 rps / 600 rpm per customer; no documented 429 headers. See rate-limits/augment-rate-limits.yml.
+webhooks:
+  supported: true
+  detail: Endpoint + event-subscription management with 9 event types; v2 shared-envelope payloads.
+  reference: asyncapi/augment-webhooks.yml
