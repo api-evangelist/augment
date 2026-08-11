@@ -162,7 +162,7 @@ common:
 - type: Authentication
   url: authentication/augment-authentication.yml
 - type: OpenAPI
-  url: openapi/augment-openapi-original.json
+  url: openapi/_original/augment-openapi-original.json
 - type: Overlay
   url: overlays/augment-openapi-overlay.yaml
 - type: MCPServer
