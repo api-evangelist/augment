@@ -1,0 +1,181 @@
+{
+  "item": [
+    {
+      "id": "03067748-5e2e-45d3-bbcf-9b8854e5e4ed",
+      "name": "API Key",
+      "description": {
+        "content": "API key based authorization. Please refer to the\n[authorization documentation](docs/authorization.md) for details.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "1a87a8f8-4cf4-4273-8d03-fa8e6fba3a44",
+          "name": "Verify your API key",
+          "request": {
+            "name": "Verify your API key",
+            "description": {
+              "content": "Verify your API key is valid and not revoked. Use our auth check endpoint to verify your API key without writing data to your account. Great for setup and troubleshooting, but not intended for automated production health checks.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "auth-check"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/plain"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{basicAuthUsername}}"
+                },
+                {
+                  "key": "password",
+                  "value": "{{basicAuthPassword}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "1fb44a8b-c2d9-4ded-a21a-7e17f034ff83",
+              "name": "API key is verified",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "auth-check"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/plain"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "string",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "dc16bdd6-fbed-4c34-887b-2b21f29e182c",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "auth-check"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Invalid key\",\n  \"requestId\": \"a1b0fce9-075a-4ad3-87fd-f307c51d2298\",\n  \"timestamp\": \"1760136207000\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.prod.goaugment.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{basicAuthUsername}}"
+      },
+      {
+        "key": "password",
+        "value": "{{basicAuthPassword}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "738cdcd6-31de-408a-b5db-b46bc118a20b",
+    "name": "Augment API Key API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "<a href=\"https://trust.goaugment.com/?utm_campaign=api_docs&utm_source=api_docs&utm_medium=api_docs&utm_content=api_docs\" target=\"_blank\">Augment is now SOC 2 Type II Certified</a>\n\nThe Augment API endpoints are calls your system makes to manage loads,\ncarriers, and webhook configuration.\nThe latest version of the Augment API is hosted [online](https://apidocs.goaugment.com).\n\n## API Endpoints\n\nEndpoints your system calls to interact with Augment:\n\n- [Load Management](/reference/tag/load-management)\n- [Carrier Management](/reference/tag/carrier-management)\n- [Models](/reference/models)\n- [Webhook Endpoints](/reference/tag/webhook-endpoints)\n- [Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions)\n\nWebhook management access is gated. Request access from Augment before using\nthese endpoints. After access is enabled, you can self-manage the webhook\nendpoints that receive event payloads and the webhook event subscriptions\nthat control which events are sent to each endpoint.\n\nUse [Webhook Endpoints](/reference/tag/webhook-endpoints) to create and\nupdate the HTTPS destinations where Augment sends webhook payloads. Use\n[Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions) to\nchoose event types for each endpoint and send test deliveries.\n\nOutbound webhook payloads, including Track & Trace events, are documented\nseparately in the [Webhooks](/webhooks) reference. Subscriptions created\nthrough the public webhook management APIs deliver version 2 webhook payloads only.\n\n## Resources\n\n* [Homepage](https://www.goaugment.com)\n* [LinkedIn](https://www.linkedin.com/company/goaugment)\n* [Jobs - we're hiring!](https://jobs.ashbyhq.com/go-augment?utm_source=AMy24qx30n)\n\n## Developer Notes\n\nAll date-time fields are represented as strings. The date-time notation is defined by [RFC 3339, section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6). Examples:\n- `2025-08-21T12:34:56Z`\n- `2025-08-21T04:34:56-08:00`\n\nHowever, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.\n\nExample:\n- `2025-08-21T12:34:56`\n",
+      "type": "text/plain"
+    }
+  }
+}

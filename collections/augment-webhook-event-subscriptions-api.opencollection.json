@@ -1,0 +1,181 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Augment API Key Webhook Event Subscriptions API",
+    "version": "20.0.1"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Webhook Event Subscriptions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List webhook event types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.prod.goaugment.com/v2/webhook-event-types",
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Returns the public event types supported for subscription creation. Use this endpoint as the source of truth for allowed `eventType` values before creating a webhook subscription.\n\nAccess to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "List webhook subscriptions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.prod.goaugment.com/v2/webhook-subscriptions",
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Lists public webhook subscriptions for the authenticated brokerage. A subscription connects one public webhook endpoint to one public webhook event type.\n\nAccess to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Create webhook subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.prod.goaugment.com/v2/webhook-subscriptions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Creates a subscription from a public webhook endpoint to one public event type. `isActive` is optional and defaults to `true`. The endpoint must exist and must be a public webhook endpoint for the authenticated brokerage. Duplicate subscriptions for the same `webhookEndpointId` and `eventType` are rejected with `409`. After creating the subscription, send a test delivery for the returned subscription `id`. Subscriptions created through these public APIs deliver version 2 webhook event shapes for"
+        },
+        {
+          "info": {
+            "name": "Get webhook subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.prod.goaugment.com/v2/webhook-subscriptions/:subscriptionId",
+            "params": [
+              {
+                "name": "subscriptionId",
+                "value": "",
+                "type": "path",
+                "description": "Webhook subscription ID"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Returns one public webhook subscription for the authenticated brokerage, or `404` if no matching public subscription exists.\n"
+        },
+        {
+          "info": {
+            "name": "Update webhook subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.prod.goaugment.com/v2/webhook-subscriptions/:subscriptionId",
+            "params": [
+              {
+                "name": "subscriptionId",
+                "value": "",
+                "type": "path",
+                "description": "Webhook subscription ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Partially updates a public webhook subscription. Only `webhookEndpointId` and `isActive` are updatable. `eventType` is not updatable; create a new subscription to change event type. At least one field is required.\n\nAccess to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Delete webhook subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.prod.goaugment.com/v2/webhook-subscriptions/:subscriptionId",
+            "params": [
+              {
+                "name": "subscriptionId",
+                "value": "",
+                "type": "path",
+                "description": "Webhook subscription ID"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Deletes a public webhook subscription. This returns `409` if the subscription has group overrides; those overrides must be removed first.\n\nAccess to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Test webhook subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.prod.goaugment.com/v2/webhook-subscriptions/:subscriptionId/test",
+            "params": [
+              {
+                "name": "subscriptionId",
+                "value": "",
+                "type": "path",
+                "description": "Webhook subscription ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Sends a test delivery for a public webhook subscription. The request body is optional. If omitted, Augment sends a default test payload for the subscription's event type.\n\nTo send your own test payload, the API request body must be an object with a `payload` key. The value of `payload` should be the webhook event body you want Augment to send. Augment unwraps this field and sends only the `payload` value as the HTTP request body to your webhook endpoint. Use a payload value that matches the webh"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

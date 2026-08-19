@@ -1,0 +1,41 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Augment API Key API",
+    "version": "20.0.1"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "API Key",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Verify your API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.prod.goaugment.com/v2/auth-check",
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Verify your API key is valid and not revoked. Use our auth check endpoint to verify your API key without writing data to your account. Great for setup and troubleshooting, but not intended for automated production health checks.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

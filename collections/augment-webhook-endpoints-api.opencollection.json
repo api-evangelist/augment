@@ -1,0 +1,137 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Augment API Key Webhook Endpoints API",
+    "version": "20.0.1"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Webhook Endpoints",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List webhook endpoints",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.prod.goaugment.com/v2/webhook-endpoints",
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Lists public webhook endpoints for the authenticated brokerage. Customers do not pass `brokerageKey`; the brokerage is resolved from the API key.\n\nAccess to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Create webhook endpoint",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.prod.goaugment.com/v2/webhook-endpoints",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Creates a public webhook endpoint for the authenticated brokerage. The endpoint URL must use HTTPS. Created endpoints use webhook payload version 2 and TLS verification. You cannot create v1 webhook subscriptions through self-service management. After creating an endpoint, create a webhook subscription that points to the returned `id`.\n\nAccess to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Get webhook endpoint",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.prod.goaugment.com/v2/webhook-endpoints/:webhookEndpointId",
+            "params": [
+              {
+                "name": "webhookEndpointId",
+                "value": "",
+                "type": "path",
+                "description": "Webhook endpoint ID"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Returns one public webhook endpoint for the authenticated brokerage. Returns `404` if the endpoint does not exist or is not a public webhook endpoint for that brokerage.\n"
+        },
+        {
+          "info": {
+            "name": "Update webhook endpoint",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.prod.goaugment.com/v2/webhook-endpoints/:webhookEndpointId",
+            "params": [
+              {
+                "name": "webhookEndpointId",
+                "value": "",
+                "type": "path",
+                "description": "Webhook endpoint ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Partially updates a public webhook endpoint. Supported fields are `name`, `url`, `auth`, and `customHeaders`. At least one field is required. Omitted fields are preserved. Passing `customHeaders: null` clears custom headers. Existing webhook subscriptions stay attached to the same endpoint ID. After changing the endpoint URL or auth, test each affected subscription.\n\nAccess to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Delete webhook endpoint",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.prod.goaugment.com/v2/webhook-endpoints/:webhookEndpointId",
+            "params": [
+              {
+                "name": "webhookEndpointId",
+                "value": "",
+                "type": "path",
+                "description": "Webhook endpoint ID"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "username": "{{username}}",
+              "password": "{{password}}"
+            }
+          },
+          "docs": "Deletes a public webhook endpoint. This returns `409` if any webhook subscription still references the endpoint.\n\nAccess to webhook management is gated by brokerage. Talk to Augment to enable access before relying on this endpoint.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

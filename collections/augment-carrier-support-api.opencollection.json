@@ -1,0 +1,40 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Augment API Key Carrier Support API",
+    "version": "20.0.1"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Carrier Support",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Report the external incident id for a carrier issue",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.prod.goaugment.com/v2/carrier-issues/external-ref",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "After you receive a `CARRIER_ISSUE_UPDATED` webhook and create the incident in your own TMS, call this endpoint with the `carrierIssueId` from that webhook and your incident id (`externalId`). Augment stores the correlation so subsequent `CARRIER_ISSUE_UPDATED` events for the same issue include your `externalId` — letting you update the existing incident in place instead of creating a duplicate.\n\nThe call is idempotent: sending it again for the same `carrierIssueId` just updates the stored `exte"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

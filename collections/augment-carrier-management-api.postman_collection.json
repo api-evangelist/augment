@@ -1,0 +1,1176 @@
+{
+  "item": [
+    {
+      "id": "b4518410-c637-4450-b433-8fa71ce43ba7",
+      "name": "Carrier Management",
+      "description": {
+        "content": "API endpoints for managing carriers, carrier contacts, and carrier-manager relationships.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "0148c5a2-6368-424e-b8d8-38aa530c62d9",
+          "name": "Create or update carrier",
+          "request": {
+            "name": "Create or update carrier",
+            "description": {
+              "content": "Create a new carrier or update an existing one. This endpoint supports three operations:\n- **Creation**: Provide all required fields to create a new carrier.\n- **Partial Update**: Include only the fields you want to update. Carriers\n  are matched by `tmsId`, so provide the `tmsId` of the carrier you want\n  to update.\n\n- **Full Update**: Include all fields to completely replace the carrier\n  data.\n\nFor updating managers and contacts, it is highly recommended to provide `tmsId` for each manager and contact when creating them. This allows the system to match and update existing managers/contacts by their `tmsId` during subsequent updates. If `tmsId` is not provided for managers or contacts, you will need to clear the entire array and re-add all managers/contacts when updating.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "carriers"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"tmsId\": \"<string>\",\n  \"status\": {\n    \"code\": \"<string>\",\n    \"reason\": \"<string>\"\n  },\n  \"complianceStatus\": {\n    \"codes\": {\n      \"key_0\": \"<string>\"\n    }\n  },\n  \"mcNumber\": \"<integer>\",\n  \"dotNumber\": \"<integer>\",\n  \"scac\": \"<string>\",\n  \"address\": {\n    \"street1\": \"<string>\",\n    \"street2\": \"<string>\",\n    \"city\": \"<string>\",\n    \"stateOrProvince\": \"<string>\",\n    \"postalCode\": \"<string>\",\n    \"country\": \"<string>\",\n    \"name\": \"<string>\",\n    \"company\": \"<string>\"\n  },\n  \"email\": \"<email>\",\n  \"phone\": \"<string>\",\n  \"phoneExtension\": \"<string>\",\n  \"managers\": [\n    {\n      \"name\": \"<string>\",\n      \"email\": \"<email>\",\n      \"phone\": \"<string>\",\n      \"phoneExtension\": \"<string>\",\n      \"tmsId\": \"<string>\",\n      \"roles\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"preferredContactMode\": \"<string>\"\n    },\n    {\n      \"name\": \"<string>\",\n      \"email\": \"<email>\",\n      \"phone\": \"<string>\",\n      \"phoneExtension\": \"<string>\",\n      \"tmsId\": \"<string>\",\n      \"roles\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"preferredContactMode\": \"<string>\"\n    }\n  ],\n  \"contacts\": [\n    {\n      \"name\": \"<string>\",\n      \"email\": \"<email>\",\n      \"phone\": \"<string>\",\n      \"phoneExtension\": \"<string>\",\n      \"tmsId\": \"<string>\",\n      \"roles\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"preferredContactMode\": \"<string>\"\n    },\n    {\n      \"name\": \"<string>\",\n      \"email\": \"<email>\",\n      \"phone\": \"<string>\",\n      \"phoneExtension\": \"<string>\",\n      \"tmsId\": \"<string>\",\n      \"roles\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"preferredContactMode\": \"<string>\"\n    }\n  ],\n  \"notes\": \"<string>\",\n  \"customData\": {\n    \"key_0\": 6669,\n    \"key_1\": 816.1676870501666\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "f44f9c3e-a1d5-447b-ab08-d9d5e72bf43d",
+              "name": "Carrier created or updated successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Acme Logistics\",\n  \"tmsId\": \"acme-tms-001\",\n  \"dotNumber\": 1234567,\n  \"mcNumber\": 765432,\n  \"customData\": {\n    \"tier\": \"gold\",\n    \"score\": 98.5,\n    \"verified\": true,\n    \"aliases\": [\n      \"Acme Freight\",\n      \"Acme Carriers LLC\"\n    ],\n    \"routing\": {\n      \"defaultRegion\": \"NS\",\n      \"allowCrossBorder\": false\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"name\": \"string\",\n  \"tmsId\": \"string\",\n  \"status\": {\n    \"code\": \"DO_NOT_USE\",\n    \"reason\": \"string\"\n  },\n  \"complianceStatus\": {\n    \"codes\": {\n      \"key_0\": \"string\"\n    }\n  },\n  \"mcNumber\": 3572,\n  \"dotNumber\": 9932,\n  \"scac\": \"string\",\n  \"address\": {\n    \"street1\": \"string\",\n    \"street2\": \"string\",\n    \"city\": \"string\",\n    \"stateOrProvince\": \"string\",\n    \"postalCode\": \"string\",\n    \"country\": \"string\",\n    \"name\": \"string\",\n    \"company\": \"string\"\n  },\n  \"email\": \"string\",\n  \"phone\": \"string\",\n  \"phoneExtension\": \"string\",\n  \"managers\": [\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"ACCOUNT_MANAGER\",\n        \"CARRIER_REP\"\n      ],\n      \"preferredContactMode\": \"TELEGRAM\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    },\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"CUSTOMER_REP\",\n        \"OPERATIONS_MANAGER\"\n      ],\n      \"preferredContactMode\": \"EMAIL\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    }\n  ],\n  \"contacts\": [\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"OTHER\",\n        \"AP_REP\"\n      ],\n      \"preferredContactMode\": \"TEXT_MESSAGE\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    },\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"DISPATCHER\",\n        \"DRIVER\"\n      ],\n      \"preferredContactMode\": \"PHONE_CALL\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    }\n  ],\n  \"notes\": \"string\",\n  \"customData\": {\n    \"tier\": \"gold\",\n    \"score\": 98.5,\n    \"verified\": true,\n    \"aliases\": [\n      \"Acme Freight\",\n      \"Acme Carriers LLC\"\n    ],\n    \"routing\": {\n      \"defaultRegion\": \"NS\",\n      \"allowCrossBorder\": false\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "dfa982bb-b606-42a2-a457-ca3247f648c3",
+              "name": "Bad request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Acme Logistics\",\n  \"tmsId\": \"acme-tms-001\",\n  \"dotNumber\": 1234567,\n  \"mcNumber\": 765432,\n  \"customData\": {\n    \"tier\": \"gold\",\n    \"score\": 98.5,\n    \"verified\": true,\n    \"aliases\": [\n      \"Acme Freight\",\n      \"Acme Carriers LLC\"\n    ],\n    \"routing\": {\n      \"defaultRegion\": \"NS\",\n      \"allowCrossBorder\": false\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "23588119-582a-46e7-92f4-d72bcc6b71ae",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Acme Logistics\",\n  \"tmsId\": \"acme-tms-001\",\n  \"dotNumber\": 1234567,\n  \"mcNumber\": 765432,\n  \"customData\": {\n    \"tier\": \"gold\",\n    \"score\": 98.5,\n    \"verified\": true,\n    \"aliases\": [\n      \"Acme Freight\",\n      \"Acme Carriers LLC\"\n    ],\n    \"routing\": {\n      \"defaultRegion\": \"NS\",\n      \"allowCrossBorder\": false\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b4adde9e-bf2b-4b5a-9e7f-29fca3f19af6",
+              "name": "Unprocessable Entity - Validation errors",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Acme Logistics\",\n  \"tmsId\": \"acme-tms-001\",\n  \"dotNumber\": 1234567,\n  \"mcNumber\": 765432,\n  \"customData\": {\n    \"tier\": \"gold\",\n    \"score\": 98.5,\n    \"verified\": true,\n    \"aliases\": [\n      \"Acme Freight\",\n      \"Acme Carriers LLC\"\n    ],\n    \"routing\": {\n      \"defaultRegion\": \"NS\",\n      \"allowCrossBorder\": false\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "2ca285ae-ac76-4aed-abe1-fb42223b05c4",
+          "name": "Get carrier by DOT or MC number",
+          "request": {
+            "name": "Get carrier by DOT or MC number",
+            "description": {
+              "content": "Fetch a carrier by its DOT number or MC number. Returns the carrier with associated managers and contacts.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "carriers"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "dotNumber",
+                  "value": "<integer>",
+                  "description": "DOT number"
+                },
+                {
+                  "disabled": false,
+                  "key": "mcNumber",
+                  "value": "<integer>",
+                  "description": "MC number"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "e9846638-4803-4478-9401-ca430cb8d5fb",
+              "name": "Carrier found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "dotNumber",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "mcNumber",
+                      "value": "<integer>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"name\": \"string\",\n  \"tmsId\": \"string\",\n  \"status\": {\n    \"code\": \"DO_NOT_USE\",\n    \"reason\": \"string\"\n  },\n  \"complianceStatus\": {\n    \"codes\": {\n      \"key_0\": \"string\"\n    }\n  },\n  \"mcNumber\": 3572,\n  \"dotNumber\": 9932,\n  \"scac\": \"string\",\n  \"address\": {\n    \"street1\": \"string\",\n    \"street2\": \"string\",\n    \"city\": \"string\",\n    \"stateOrProvince\": \"string\",\n    \"postalCode\": \"string\",\n    \"country\": \"string\",\n    \"name\": \"string\",\n    \"company\": \"string\"\n  },\n  \"email\": \"string\",\n  \"phone\": \"string\",\n  \"phoneExtension\": \"string\",\n  \"managers\": [\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"ACCOUNT_MANAGER\",\n        \"CARRIER_REP\"\n      ],\n      \"preferredContactMode\": \"TELEGRAM\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    },\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"CUSTOMER_REP\",\n        \"OPERATIONS_MANAGER\"\n      ],\n      \"preferredContactMode\": \"EMAIL\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    }\n  ],\n  \"contacts\": [\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"OTHER\",\n        \"AP_REP\"\n      ],\n      \"preferredContactMode\": \"TEXT_MESSAGE\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    },\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"DISPATCHER\",\n        \"DRIVER\"\n      ],\n      \"preferredContactMode\": \"PHONE_CALL\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    }\n  ],\n  \"notes\": \"string\",\n  \"customData\": {\n    \"tier\": \"gold\",\n    \"score\": 98.5,\n    \"verified\": true,\n    \"aliases\": [\n      \"Acme Freight\",\n      \"Acme Carriers LLC\"\n    ],\n    \"routing\": {\n      \"defaultRegion\": \"NS\",\n      \"allowCrossBorder\": false\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "71f3a6d2-faf1-402a-bf28-1b5a65b587c3",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "dotNumber",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "mcNumber",
+                      "value": "<integer>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "97da8173-76fc-42cb-8553-d65f94b31d18",
+              "name": "Carrier not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "dotNumber",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "mcNumber",
+                      "value": "<integer>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "394aa541-30fc-4d8e-8a45-54155f05083e",
+          "name": "Bulk create or update carriers",
+          "request": {
+            "name": "Bulk create or update carriers",
+            "description": {
+              "content": "Create or update multiple carriers in a single request. Maximum 20 carriers per request. Each carrier is processed in its own transaction. Partial success is supported - some carriers may succeed while others fail.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "carriers",
+                "bulk"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"carriers\": [\n    {\n      \"name\": \"<string>\",\n      \"tmsId\": \"<string>\",\n      \"status\": {\n        \"code\": \"<string>\",\n        \"reason\": \"<string>\"\n      },\n      \"complianceStatus\": {\n        \"codes\": {\n          \"key_0\": \"<string>\",\n          \"key_1\": \"<string>\",\n          \"key_2\": \"<string>\"\n        }\n      },\n      \"mcNumber\": \"<integer>\",\n      \"dotNumber\": \"<integer>\",\n      \"scac\": \"<string>\",\n      \"address\": {\n        \"street1\": \"<string>\",\n        \"street2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"stateOrProvince\": \"<string>\",\n        \"postalCode\": \"<string>\",\n        \"country\": \"<string>\",\n        \"name\": \"<string>\",\n        \"company\": \"<string>\"\n      },\n      \"email\": \"<email>\",\n      \"phone\": \"<string>\",\n      \"phoneExtension\": \"<string>\",\n      \"managers\": [\n        {\n          \"name\": \"<string>\",\n          \"email\": \"<email>\",\n          \"phone\": \"<string>\",\n          \"phoneExtension\": \"<string>\",\n          \"tmsId\": \"<string>\",\n          \"roles\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"preferredContactMode\": \"<string>\"\n        },\n        {\n          \"name\": \"<string>\",\n          \"email\": \"<email>\",\n          \"phone\": \"<string>\",\n          \"phoneExtension\": \"<string>\",\n          \"tmsId\": \"<string>\",\n          \"roles\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"preferredContactMode\": \"<string>\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"<string>\",\n          \"email\": \"<email>\",\n          \"phone\": \"<string>\",\n          \"phoneExtension\": \"<string>\",\n          \"tmsId\": \"<string>\",\n          \"roles\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"preferredContactMode\": \"<string>\"\n        },\n        {\n          \"name\": \"<string>\",\n          \"email\": \"<email>\",\n          \"phone\": \"<string>\",\n          \"phoneExtension\": \"<string>\",\n          \"tmsId\": \"<string>\",\n          \"roles\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"preferredContactMode\": \"<string>\"\n        }\n      ],\n      \"notes\": \"<string>\",\n      \"customData\": {\n        \"key_0\": \"string\",\n        \"key_1\": 8846.562139479069\n      }\n    },\n    {\n      \"name\": \"<string>\",\n      \"tmsId\": \"<string>\",\n      \"status\": {\n        \"code\": \"<string>\",\n        \"reason\": \"<string>\"\n      },\n      \"complianceStatus\": {\n        \"codes\": {\n          \"key_0\": \"<string>\",\n          \"key_1\": \"<string>\",\n          \"key_2\": \"<string>\"\n        }\n      },\n      \"mcNumber\": \"<integer>\",\n      \"dotNumber\": \"<integer>\",\n      \"scac\": \"<string>\",\n      \"address\": {\n        \"street1\": \"<string>\",\n        \"street2\": \"<string>\",\n        \"city\": \"<string>\",\n        \"stateOrProvince\": \"<string>\",\n        \"postalCode\": \"<string>\",\n        \"country\": \"<string>\",\n        \"name\": \"<string>\",\n        \"company\": \"<string>\"\n      },\n      \"email\": \"<email>\",\n      \"phone\": \"<string>\",\n      \"phoneExtension\": \"<string>\",\n      \"managers\": [\n        {\n          \"name\": \"<string>\",\n          \"email\": \"<email>\",\n          \"phone\": \"<string>\",\n          \"phoneExtension\": \"<string>\",\n          \"tmsId\": \"<string>\",\n          \"roles\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"preferredContactMode\": \"<string>\"\n        },\n        {\n          \"name\": \"<string>\",\n          \"email\": \"<email>\",\n          \"phone\": \"<string>\",\n          \"phoneExtension\": \"<string>\",\n          \"tmsId\": \"<string>\",\n          \"roles\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"preferredContactMode\": \"<string>\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"<string>\",\n          \"email\": \"<email>\",\n          \"phone\": \"<string>\",\n          \"phoneExtension\": \"<string>\",\n          \"tmsId\": \"<string>\",\n          \"roles\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"preferredContactMode\": \"<string>\"\n        },\n        {\n          \"name\": \"<string>\",\n          \"email\": \"<email>\",\n          \"phone\": \"<string>\",\n          \"phoneExtension\": \"<string>\",\n          \"tmsId\": \"<string>\",\n          \"roles\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"preferredContactMode\": \"<string>\"\n        }\n      ],\n      \"notes\": \"<string>\",\n      \"customData\": {\n        \"key_0\": true,\n        \"key_1\": 1538\n      }\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "e0dbc155-c2b0-4cda-881a-9bbc37c164d4",
+              "name": "Bulk operation completed (may have partial success)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers",
+                    "bulk"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"carriers\": [\n    {\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"status\": {\n        \"code\": \"DO_NOT_USE\",\n        \"reason\": \"string\"\n      },\n      \"complianceStatus\": {\n        \"codes\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\",\n          \"key_2\": \"string\"\n        }\n      },\n      \"mcNumber\": 8804,\n      \"dotNumber\": 8364,\n      \"scac\": \"string\",\n      \"address\": {\n        \"street1\": \"string\",\n        \"street2\": \"string\",\n        \"city\": \"string\",\n        \"stateOrProvince\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\",\n        \"name\": \"string\",\n        \"company\": \"string\"\n      },\n      \"email\": \"heKiP@AUHVqEYbLzgipGkzKGkZYuX.thi\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\",\n      \"managers\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"V8iE3G@yhESPgQkthKSLVwAiMJoWRlPYyKo.iw\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"CUSTOMER_TEAM\",\n            \"OPERATIONS_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"Cs3RbQ7lo8uMTDA@xyFXrjiwRiWzlAnpAzeHGq.vfxl\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AFTER_HOURS_REP\",\n            \"OPERATIONS_REP\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"o6fPBzACjYFfB@zMovgdOl.uc\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"hKN@JmTrq.mipa\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"DRIVER\",\n            \"ACCOUNTANT\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"notes\": \"string\",\n      \"customData\": {\n        \"tier\": \"gold\",\n        \"score\": 98.5,\n        \"verified\": true,\n        \"aliases\": [\n          \"Acme Freight\",\n          \"Acme Carriers LLC\"\n        ],\n        \"routing\": {\n          \"defaultRegion\": \"NS\",\n          \"allowCrossBorder\": false\n        }\n      }\n    },\n    {\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"status\": {\n        \"code\": \"ACTIVE\",\n        \"reason\": \"string\"\n      },\n      \"complianceStatus\": {\n        \"codes\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        }\n      },\n      \"mcNumber\": 3855,\n      \"dotNumber\": 5437,\n      \"scac\": \"string\",\n      \"address\": {\n        \"street1\": \"string\",\n        \"street2\": \"string\",\n        \"city\": \"string\",\n        \"stateOrProvince\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\",\n        \"name\": \"string\",\n        \"company\": \"string\"\n      },\n      \"email\": \"T1WSVMSE@JZFHAiggygbhGtchVWKwTtP.ciuy\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\",\n      \"managers\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"DWiJ@JNipTQHOrKsQpZ.ajq\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AP_REP\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"TeperzWagXjGR@uKAhICgnrqMERzR.am\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AP_REP\",\n            \"CUSTOMER_TEAM\"\n          ],\n          \"preferredContactMode\": \"EMAIL\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"GjuztyFDM0@aKlqNIRpptvXtpRVmCBcVmFovpos.zqw\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TELEGRAM\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"LIUI@ewVXKHXqlPUyCQpfGlj.hedp\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"OTHER\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"notes\": \"string\",\n      \"customData\": {\n        \"tier\": \"gold\",\n        \"score\": 98.5,\n        \"verified\": true,\n        \"aliases\": [\n          \"Acme Freight\",\n          \"Acme Carriers LLC\"\n        ],\n        \"routing\": {\n          \"defaultRegion\": \"NS\",\n          \"allowCrossBorder\": false\n        }\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"total\": 2,\n  \"successCount\": 4541,\n  \"failureCount\": 4312,\n  \"errors\": [\n    {\n      \"index\": 8696,\n      \"error\": \"string\"\n    },\n    {\n      \"index\": 9465,\n      \"error\": \"string\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "454b8987-73f6-40be-aeed-24804b3248f6",
+              "name": "Bad request (e.g., exceeds maximum batch size)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers",
+                    "bulk"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"carriers\": [\n    {\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"status\": {\n        \"code\": \"DO_NOT_USE\",\n        \"reason\": \"string\"\n      },\n      \"complianceStatus\": {\n        \"codes\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\",\n          \"key_2\": \"string\"\n        }\n      },\n      \"mcNumber\": 8804,\n      \"dotNumber\": 8364,\n      \"scac\": \"string\",\n      \"address\": {\n        \"street1\": \"string\",\n        \"street2\": \"string\",\n        \"city\": \"string\",\n        \"stateOrProvince\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\",\n        \"name\": \"string\",\n        \"company\": \"string\"\n      },\n      \"email\": \"heKiP@AUHVqEYbLzgipGkzKGkZYuX.thi\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\",\n      \"managers\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"V8iE3G@yhESPgQkthKSLVwAiMJoWRlPYyKo.iw\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"CUSTOMER_TEAM\",\n            \"OPERATIONS_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"Cs3RbQ7lo8uMTDA@xyFXrjiwRiWzlAnpAzeHGq.vfxl\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AFTER_HOURS_REP\",\n            \"OPERATIONS_REP\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"o6fPBzACjYFfB@zMovgdOl.uc\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"hKN@JmTrq.mipa\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"DRIVER\",\n            \"ACCOUNTANT\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"notes\": \"string\",\n      \"customData\": {\n        \"tier\": \"gold\",\n        \"score\": 98.5,\n        \"verified\": true,\n        \"aliases\": [\n          \"Acme Freight\",\n          \"Acme Carriers LLC\"\n        ],\n        \"routing\": {\n          \"defaultRegion\": \"NS\",\n          \"allowCrossBorder\": false\n        }\n      }\n    },\n    {\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"status\": {\n        \"code\": \"ACTIVE\",\n        \"reason\": \"string\"\n      },\n      \"complianceStatus\": {\n        \"codes\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        }\n      },\n      \"mcNumber\": 3855,\n      \"dotNumber\": 5437,\n      \"scac\": \"string\",\n      \"address\": {\n        \"street1\": \"string\",\n        \"street2\": \"string\",\n        \"city\": \"string\",\n        \"stateOrProvince\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\",\n        \"name\": \"string\",\n        \"company\": \"string\"\n      },\n      \"email\": \"T1WSVMSE@JZFHAiggygbhGtchVWKwTtP.ciuy\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\",\n      \"managers\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"DWiJ@JNipTQHOrKsQpZ.ajq\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AP_REP\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"TeperzWagXjGR@uKAhICgnrqMERzR.am\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AP_REP\",\n            \"CUSTOMER_TEAM\"\n          ],\n          \"preferredContactMode\": \"EMAIL\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"GjuztyFDM0@aKlqNIRpptvXtpRVmCBcVmFovpos.zqw\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TELEGRAM\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"LIUI@ewVXKHXqlPUyCQpfGlj.hedp\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"OTHER\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"notes\": \"string\",\n      \"customData\": {\n        \"tier\": \"gold\",\n        \"score\": 98.5,\n        \"verified\": true,\n        \"aliases\": [\n          \"Acme Freight\",\n          \"Acme Carriers LLC\"\n        ],\n        \"routing\": {\n          \"defaultRegion\": \"NS\",\n          \"allowCrossBorder\": false\n        }\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ca49a889-10c3-462f-8e03-e1799a2448da",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers",
+                    "bulk"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"carriers\": [\n    {\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"status\": {\n        \"code\": \"DO_NOT_USE\",\n        \"reason\": \"string\"\n      },\n      \"complianceStatus\": {\n        \"codes\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\",\n          \"key_2\": \"string\"\n        }\n      },\n      \"mcNumber\": 8804,\n      \"dotNumber\": 8364,\n      \"scac\": \"string\",\n      \"address\": {\n        \"street1\": \"string\",\n        \"street2\": \"string\",\n        \"city\": \"string\",\n        \"stateOrProvince\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\",\n        \"name\": \"string\",\n        \"company\": \"string\"\n      },\n      \"email\": \"heKiP@AUHVqEYbLzgipGkzKGkZYuX.thi\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\",\n      \"managers\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"V8iE3G@yhESPgQkthKSLVwAiMJoWRlPYyKo.iw\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"CUSTOMER_TEAM\",\n            \"OPERATIONS_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"Cs3RbQ7lo8uMTDA@xyFXrjiwRiWzlAnpAzeHGq.vfxl\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AFTER_HOURS_REP\",\n            \"OPERATIONS_REP\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"o6fPBzACjYFfB@zMovgdOl.uc\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"hKN@JmTrq.mipa\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"DRIVER\",\n            \"ACCOUNTANT\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"notes\": \"string\",\n      \"customData\": {\n        \"tier\": \"gold\",\n        \"score\": 98.5,\n        \"verified\": true,\n        \"aliases\": [\n          \"Acme Freight\",\n          \"Acme Carriers LLC\"\n        ],\n        \"routing\": {\n          \"defaultRegion\": \"NS\",\n          \"allowCrossBorder\": false\n        }\n      }\n    },\n    {\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"status\": {\n        \"code\": \"ACTIVE\",\n        \"reason\": \"string\"\n      },\n      \"complianceStatus\": {\n        \"codes\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        }\n      },\n      \"mcNumber\": 3855,\n      \"dotNumber\": 5437,\n      \"scac\": \"string\",\n      \"address\": {\n        \"street1\": \"string\",\n        \"street2\": \"string\",\n        \"city\": \"string\",\n        \"stateOrProvince\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\",\n        \"name\": \"string\",\n        \"company\": \"string\"\n      },\n      \"email\": \"T1WSVMSE@JZFHAiggygbhGtchVWKwTtP.ciuy\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\",\n      \"managers\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"DWiJ@JNipTQHOrKsQpZ.ajq\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AP_REP\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"TeperzWagXjGR@uKAhICgnrqMERzR.am\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AP_REP\",\n            \"CUSTOMER_TEAM\"\n          ],\n          \"preferredContactMode\": \"EMAIL\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"GjuztyFDM0@aKlqNIRpptvXtpRVmCBcVmFovpos.zqw\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TELEGRAM\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"LIUI@ewVXKHXqlPUyCQpfGlj.hedp\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"OTHER\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"notes\": \"string\",\n      \"customData\": {\n        \"tier\": \"gold\",\n        \"score\": 98.5,\n        \"verified\": true,\n        \"aliases\": [\n          \"Acme Freight\",\n          \"Acme Carriers LLC\"\n        ],\n        \"routing\": {\n          \"defaultRegion\": \"NS\",\n          \"allowCrossBorder\": false\n        }\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a8282284-bc8b-4e52-b9b9-9d68a6a9417f",
+              "name": "Unprocessable Entity - Validation errors",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers",
+                    "bulk"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"carriers\": [\n    {\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"status\": {\n        \"code\": \"DO_NOT_USE\",\n        \"reason\": \"string\"\n      },\n      \"complianceStatus\": {\n        \"codes\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\",\n          \"key_2\": \"string\"\n        }\n      },\n      \"mcNumber\": 8804,\n      \"dotNumber\": 8364,\n      \"scac\": \"string\",\n      \"address\": {\n        \"street1\": \"string\",\n        \"street2\": \"string\",\n        \"city\": \"string\",\n        \"stateOrProvince\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\",\n        \"name\": \"string\",\n        \"company\": \"string\"\n      },\n      \"email\": \"heKiP@AUHVqEYbLzgipGkzKGkZYuX.thi\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\",\n      \"managers\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"V8iE3G@yhESPgQkthKSLVwAiMJoWRlPYyKo.iw\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"CUSTOMER_TEAM\",\n            \"OPERATIONS_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"Cs3RbQ7lo8uMTDA@xyFXrjiwRiWzlAnpAzeHGq.vfxl\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AFTER_HOURS_REP\",\n            \"OPERATIONS_REP\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"o6fPBzACjYFfB@zMovgdOl.uc\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"hKN@JmTrq.mipa\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"DRIVER\",\n            \"ACCOUNTANT\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"notes\": \"string\",\n      \"customData\": {\n        \"tier\": \"gold\",\n        \"score\": 98.5,\n        \"verified\": true,\n        \"aliases\": [\n          \"Acme Freight\",\n          \"Acme Carriers LLC\"\n        ],\n        \"routing\": {\n          \"defaultRegion\": \"NS\",\n          \"allowCrossBorder\": false\n        }\n      }\n    },\n    {\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"status\": {\n        \"code\": \"ACTIVE\",\n        \"reason\": \"string\"\n      },\n      \"complianceStatus\": {\n        \"codes\": {\n          \"key_0\": \"string\",\n          \"key_1\": \"string\"\n        }\n      },\n      \"mcNumber\": 3855,\n      \"dotNumber\": 5437,\n      \"scac\": \"string\",\n      \"address\": {\n        \"street1\": \"string\",\n        \"street2\": \"string\",\n        \"city\": \"string\",\n        \"stateOrProvince\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\",\n        \"name\": \"string\",\n        \"company\": \"string\"\n      },\n      \"email\": \"T1WSVMSE@JZFHAiggygbhGtchVWKwTtP.ciuy\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\",\n      \"managers\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"DWiJ@JNipTQHOrKsQpZ.ajq\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AP_REP\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TEXT_MESSAGE\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"TeperzWagXjGR@uKAhICgnrqMERzR.am\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"AP_REP\",\n            \"CUSTOMER_TEAM\"\n          ],\n          \"preferredContactMode\": \"EMAIL\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"string\",\n          \"email\": \"GjuztyFDM0@aKlqNIRpptvXtpRVmCBcVmFovpos.zqw\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"AP_REP\"\n          ],\n          \"preferredContactMode\": \"TELEGRAM\"\n        },\n        {\n          \"name\": \"string\",\n          \"email\": \"LIUI@ewVXKHXqlPUyCQpfGlj.hedp\",\n          \"phone\": \"string\",\n          \"phoneExtension\": \"string\",\n          \"tmsId\": \"string\",\n          \"roles\": [\n            \"OTHER\",\n            \"OTHER\"\n          ],\n          \"preferredContactMode\": \"PHONE_CALL\"\n        }\n      ],\n      \"notes\": \"string\",\n      \"customData\": {\n        \"tier\": \"gold\",\n        \"score\": 98.5,\n        \"verified\": true,\n        \"aliases\": [\n          \"Acme Freight\",\n          \"Acme Carriers LLC\"\n        ],\n        \"routing\": {\n          \"defaultRegion\": \"NS\",\n          \"allowCrossBorder\": false\n        }\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d5727208-4453-439b-a275-351b7c05a10d",
+          "name": "Get carrier by ID",
+          "request": {
+            "name": "Get carrier by ID",
+            "description": {
+              "content": "Fetch a carrier by its carrier ID. Returns the carrier with associated managers and contacts.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "carriers",
+                ":carrierId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "carrierId",
+                  "description": "(Required) Augment's carrier identifier, returned as `carrierId` in the create/update carrier response."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "fb61c47b-2e7f-4da2-a637-39d12da57c0d",
+              "name": "Carrier found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers",
+                    ":carrierId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "carrierId",
+                      "description": "(Required) Augment's carrier identifier, returned as `carrierId` in the create/update carrier response."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"name\": \"string\",\n  \"tmsId\": \"string\",\n  \"status\": {\n    \"code\": \"DO_NOT_USE\",\n    \"reason\": \"string\"\n  },\n  \"complianceStatus\": {\n    \"codes\": {\n      \"key_0\": \"string\"\n    }\n  },\n  \"mcNumber\": 3572,\n  \"dotNumber\": 9932,\n  \"scac\": \"string\",\n  \"address\": {\n    \"street1\": \"string\",\n    \"street2\": \"string\",\n    \"city\": \"string\",\n    \"stateOrProvince\": \"string\",\n    \"postalCode\": \"string\",\n    \"country\": \"string\",\n    \"name\": \"string\",\n    \"company\": \"string\"\n  },\n  \"email\": \"string\",\n  \"phone\": \"string\",\n  \"phoneExtension\": \"string\",\n  \"managers\": [\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"ACCOUNT_MANAGER\",\n        \"CARRIER_REP\"\n      ],\n      \"preferredContactMode\": \"TELEGRAM\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    },\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"CUSTOMER_REP\",\n        \"OPERATIONS_MANAGER\"\n      ],\n      \"preferredContactMode\": \"EMAIL\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    }\n  ],\n  \"contacts\": [\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"OTHER\",\n        \"AP_REP\"\n      ],\n      \"preferredContactMode\": \"TEXT_MESSAGE\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    },\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"tmsId\": \"string\",\n      \"roles\": [\n        \"DISPATCHER\",\n        \"DRIVER\"\n      ],\n      \"preferredContactMode\": \"PHONE_CALL\",\n      \"email\": \"string\",\n      \"phone\": \"string\",\n      \"phoneExtension\": \"string\"\n    }\n  ],\n  \"notes\": \"string\",\n  \"customData\": {\n    \"tier\": \"gold\",\n    \"score\": 98.5,\n    \"verified\": true,\n    \"aliases\": [\n      \"Acme Freight\",\n      \"Acme Carriers LLC\"\n    ],\n    \"routing\": {\n      \"defaultRegion\": \"NS\",\n      \"allowCrossBorder\": false\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e37c1d6b-7566-4714-9bef-7e8d264f7460",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers",
+                    ":carrierId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "carrierId",
+                      "description": "(Required) Augment's carrier identifier, returned as `carrierId` in the create/update carrier response."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "554c4623-a844-4488-b5c6-61cf060ca532",
+              "name": "Carrier not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers",
+                    ":carrierId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "carrierId",
+                      "description": "(Required) Augment's carrier identifier, returned as `carrierId` in the create/update carrier response."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "7020b94f-bfb1-4e01-b5c2-4f59af18a014",
+          "name": "Archive carrier",
+          "request": {
+            "name": "Archive carrier",
+            "description": {
+              "content": "Soft delete a carrier. The carrier will no longer be returned in GET requests.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "carriers",
+                ":carrierId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "carrierId",
+                  "description": "(Required) Augment's carrier identifier, returned as `carrierId` in the create/update carrier response."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "8bd2f01b-b1b8-494e-8f86-e7538bbb013f",
+              "name": "Carrier archived successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers",
+                    ":carrierId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "carrierId",
+                      "description": "(Required) Augment's carrier identifier, returned as `carrierId` in the create/update carrier response."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "54a1e754-1918-40bf-809a-8972f3651ff0",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers",
+                    ":carrierId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "carrierId",
+                      "description": "(Required) Augment's carrier identifier, returned as `carrierId` in the create/update carrier response."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7372363c-951d-4319-a064-62a01ea73975",
+              "name": "Carrier not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "carriers",
+                    ":carrierId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "carrierId",
+                      "description": "(Required) Augment's carrier identifier, returned as `carrierId` in the create/update carrier response."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.prod.goaugment.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{basicAuthUsername}}"
+      },
+      {
+        "key": "password",
+        "value": "{{basicAuthPassword}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "166eaeeb-fd49-42ea-a371-c7c0208a0ce8",
+    "name": "Augment API Key Carrier Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "<a href=\"https://trust.goaugment.com/?utm_campaign=api_docs&utm_source=api_docs&utm_medium=api_docs&utm_content=api_docs\" target=\"_blank\">Augment is now SOC 2 Type II Certified</a>\n\nThe Augment API endpoints are calls your system makes to manage loads,\ncarriers, and webhook configuration.\nThe latest version of the Augment API is hosted [online](https://apidocs.goaugment.com).\n\n## API Endpoints\n\nEndpoints your system calls to interact with Augment:\n\n- [Load Management](/reference/tag/load-management)\n- [Carrier Management](/reference/tag/carrier-management)\n- [Models](/reference/models)\n- [Webhook Endpoints](/reference/tag/webhook-endpoints)\n- [Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions)\n\nWebhook management access is gated. Request access from Augment before using\nthese endpoints. After access is enabled, you can self-manage the webhook\nendpoints that receive event payloads and the webhook event subscriptions\nthat control which events are sent to each endpoint.\n\nUse [Webhook Endpoints](/reference/tag/webhook-endpoints) to create and\nupdate the HTTPS destinations where Augment sends webhook payloads. Use\n[Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions) to\nchoose event types for each endpoint and send test deliveries.\n\nOutbound webhook payloads, including Track & Trace events, are documented\nseparately in the [Webhooks](/webhooks) reference. Subscriptions created\nthrough the public webhook management APIs deliver version 2 webhook payloads only.\n\n## Resources\n\n* [Homepage](https://www.goaugment.com)\n* [LinkedIn](https://www.linkedin.com/company/goaugment)\n* [Jobs - we're hiring!](https://jobs.ashbyhq.com/go-augment?utm_source=AMy24qx30n)\n\n## Developer Notes\n\nAll date-time fields are represented as strings. The date-time notation is defined by [RFC 3339, section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6). Examples:\n- `2025-08-21T12:34:56Z`\n- `2025-08-21T04:34:56-08:00`\n\nHowever, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.\n\nExample:\n- `2025-08-21T12:34:56`\n",
+      "type": "text/plain"
+    }
+  }
+}

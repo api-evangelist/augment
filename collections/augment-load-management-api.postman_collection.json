@@ -1,0 +1,816 @@
+{
+  "item": [
+    {
+      "id": "d7dc8c1d-3c6d-46f3-beda-b92e34b98c52",
+      "name": "Load Management",
+      "description": {
+        "content": "API endpoints for creating, updating, and retrieving loads.\n",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "cdd92c92-21e3-4e78-b8a1-9738d6416dcb",
+          "name": "Get load by load number",
+          "request": {
+            "name": "Get load by load number",
+            "description": {
+              "content": "Retrieve enriched load data by load number (brokerage load ID). Returns the full LoadV2 format including carrier details, tracking events, reference numbers, notes, subscribers, and shipment information.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "loads"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "loadNumber",
+                  "value": "<string>",
+                  "description": "(Required) The load number (brokerage load ID)"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5a564732-a13c-47b0-819e-0419fef77ecb",
+              "name": "Load found and returned successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "loadNumber",
+                      "value": "LOAD-12345"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"brokerageLoadId\": \"LOAD-12345\",\n  \"status\": \"string\",\n  \"route\": [\n    {\n      \"sequenceNumber\": 1,\n      \"activityType\": \"DELIVERY\",\n      \"address\": {\n        \"name\": \"string\",\n        \"company\": \"string\",\n        \"street1\": \"string\",\n        \"street2\": \"string\",\n        \"city\": \"string\",\n        \"stateOrProvince\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\"\n      },\n      \"externalId\": \"string\",\n      \"timezone\": \"America/Los_Angeles\",\n      \"stopNotes\": \"string\",\n      \"facilityCode\": \"string\",\n      \"scheduleTypes\": [\n        \"FIRST_COME_FIRST_SERVE\",\n        \"APPOINTMENT\"\n      ],\n      \"expectedStopWindowStart\": \"1998-01-18T08:40:44.363Z\",\n      \"expectedStopWindowEnd\": \"1967-04-25T01:16:18.628Z\",\n      \"expectedDropWindowStart\": \"2017-10-16T21:01:58.285Z\",\n      \"expectedDropWindowEnd\": \"1970-06-03T12:08:09.922Z\",\n      \"actualArrivalTime\": \"2019-05-13T12:58:30.796Z\",\n      \"actualDepartureTime\": \"1951-01-28T11:45:00.910Z\",\n      \"mustArriveByDate\": \"2018-10-22T14:26:24.155Z\"\n    },\n    {\n      \"sequenceNumber\": 1,\n      \"activityType\": \"DELIVERY\",\n      \"address\": {\n        \"name\": \"string\",\n        \"company\": \"string\",\n        \"street1\": \"string\",\n        \"street2\": \"string\",\n        \"city\": \"string\",\n        \"stateOrProvince\": \"string\",\n        \"postalCode\": \"string\",\n        \"country\": \"string\"\n      },\n      \"externalId\": \"string\",\n      \"timezone\": \"America/Los_Angeles\",\n      \"stopNotes\": \"string\",\n      \"facilityCode\": \"string\",\n      \"scheduleTypes\": [\n        \"FIRST_COME_FIRST_SERVE\",\n        \"FIRST_COME_FIRST_SERVE\"\n      ],\n      \"expectedStopWindowStart\": \"2002-01-29T02:23:23.712Z\",\n      \"expectedStopWindowEnd\": \"1998-08-08T13:29:26.845Z\",\n      \"expectedDropWindowStart\": \"2015-11-27T19:12:29.711Z\",\n      \"expectedDropWindowEnd\": \"1962-03-26T19:17:35.315Z\",\n      \"actualArrivalTime\": \"1947-11-13T19:51:23.267Z\",\n      \"actualDepartureTime\": \"1992-07-07T08:20:38.227Z\",\n      \"mustArriveByDate\": \"1985-12-07T10:38:05.012Z\"\n    }\n  ],\n  \"referenceNumbers\": [\n    {\n      \"name\": \"string\",\n      \"value\": \"string\"\n    },\n    {\n      \"name\": \"string\",\n      \"value\": \"string\"\n    }\n  ],\n  \"trackingEvents\": [\n    {\n      \"eventType\": \"string\",\n      \"eventSource\": \"string\",\n      \"eventUtc\": \"2025-08-21T12:34:56Z\",\n      \"nextSequence\": 8328,\n      \"nextEtaUtc\": \"2025-08-21T12:34:56Z\",\n      \"city\": \"string\",\n      \"stateOrProvince\": \"string\",\n      \"postalCode\": \"string\",\n      \"latitude\": 1979.4497876719463,\n      \"longitude\": 700.334656043784,\n      \"temperatureF\": 3974.0828395964854,\n      \"notes\": \"string\",\n      \"dispatcher\": {\n        \"id\": \"string\",\n        \"name\": \"string\",\n        \"phone\": \"+12081234567\",\n        \"phoneExtension\": \"string\",\n        \"email\": \"string\"\n      },\n      \"driver\": {\n        \"id\": \"string\",\n        \"name\": \"string\",\n        \"phone\": \"+12081234567\",\n        \"phoneExtension\": \"string\",\n        \"email\": \"string\"\n      }\n    },\n    {\n      \"eventType\": \"string\",\n      \"eventSource\": \"string\",\n      \"eventUtc\": \"2025-08-21T12:34:56Z\",\n      \"nextSequence\": 9093,\n      \"nextEtaUtc\": \"2025-08-21T12:34:56Z\",\n      \"city\": \"string\",\n      \"stateOrProvince\": \"string\",\n      \"postalCode\": \"string\",\n      \"latitude\": 8885.272420030713,\n      \"longitude\": 1698.3639867462707,\n      \"temperatureF\": 6221.526912205657,\n      \"notes\": \"string\",\n      \"dispatcher\": {\n        \"id\": \"string\",\n        \"name\": \"string\",\n        \"phone\": \"+12081234567\",\n        \"phoneExtension\": \"string\",\n        \"email\": \"string\"\n      },\n      \"driver\": {\n        \"id\": \"string\",\n        \"name\": \"string\",\n        \"phone\": \"+12081234567\",\n        \"phoneExtension\": \"string\",\n        \"email\": \"string\"\n      }\n    }\n  ],\n  \"notes\": [\n    {\n      \"timestamp\": \"2009-01-08T12:23:01.650Z\",\n      \"text\": \"string\",\n      \"author\": \"string\"\n    },\n    {\n      \"timestamp\": \"1988-09-18T12:08:12.256Z\",\n      \"text\": \"string\",\n      \"author\": \"string\"\n    }\n  ],\n  \"accessorials\": [\n    \"string\",\n    \"string\"\n  ],\n  \"isPostedToDAT\": false,\n  \"podCollectionStatus\": \"FAILED\",\n  \"customers\": [\n    {\n      \"name\": \"Acme Corporation\",\n      \"customerId\": \"ACME-001\",\n      \"customerContact\": \"string\"\n    },\n    {\n      \"name\": \"Acme Corporation\",\n      \"customerId\": \"ACME-001\",\n      \"customerContact\": \"string\"\n    }\n  ],\n  \"loadShipments\": [\n    {\n      \"loadShipmentRef\": \"string\",\n      \"loadShipmentInternalRef\": \"string\",\n      \"shipmentRef\": \"string\",\n      \"status\": \"string\",\n      \"referenceNumbers\": [\n        {\n          \"name\": \"string\",\n          \"value\": \"string\"\n        },\n        {\n          \"name\": \"string\",\n          \"value\": \"string\"\n        }\n      ],\n      \"accessorials\": [\n        \"AFTER_HOURS\",\n        \"AFTER_HOURS\"\n      ],\n      \"notes\": [\n        {\n          \"timestamp\": \"1983-05-24T10:36:19.028Z\",\n          \"text\": \"string\",\n          \"author\": \"string\"\n        },\n        {\n          \"timestamp\": \"2007-04-29T10:28:47.011Z\",\n          \"text\": \"string\",\n          \"author\": \"string\"\n        }\n      ],\n      \"route\": {\n        \"address\": {\n          \"street1\": \"string\",\n          \"city\": \"string\",\n          \"stateOrProvince\": \"string\",\n          \"postalCode\": \"string\",\n          \"country\": \"string\",\n          \"company\": \"string\",\n          \"locationName\": \"string\",\n          \"street2\": \"string\"\n        },\n        \"expectedArrivalWindowEnd\": \"2025-08-21T12:34:56Z\",\n        \"expectedArrivalWindowStart\": \"2025-08-21T12:34:56Z\",\n        \"loadSequence\": 3168,\n        \"sequence\": 3006,\n        \"stopActivity\": \"string\",\n        \"externalId\": \"string\",\n        \"notes\": \"string\",\n        \"actualArrivalTime\": \"2025-08-21T12:34:56Z\",\n        \"actualCompletionTime\": \"2025-08-21T12:34:56Z\",\n        \"expectedDropWindowStart\": \"2025-08-21T12:34:56Z\",\n        \"expectedDropWindowEnd\": \"2025-08-21T12:34:56Z\",\n        \"mustArriveByDate\": \"2025-08-21T12:34:56Z\",\n        \"isLocalTime\": true,\n        \"schedulingType\": \"string\",\n        \"handlingType\": \"string\"\n      },\n      \"items\": [\n        {\n          \"quantity\": 5664,\n          \"totalWeightLbs\": 8299.440754038027,\n          \"packagingUnit\": {\n            \"unitType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"quantity\": 6157.241983302142\n          },\n          \"handlingUnit\": {\n            \"unitType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"quantity\": 5736.0316450168\n          },\n          \"description\": \"string\",\n          \"lengthInches\": 4522,\n          \"widthInches\": 1851,\n          \"heightInches\": 4889,\n          \"freightClass\": \"60\",\n          \"nmfc\": \"string\",\n          \"density\": 9666.634414748554,\n          \"pickupSequence\": 9289,\n          \"deliverySequence\": 6030\n        },\n        {\n          \"quantity\": 3905,\n          \"totalWeightLbs\": 4316.806560720885,\n          \"packagingUnit\": {\n            \"unitType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"quantity\": 5279.876096962199\n          },\n          \"handlingUnit\": {\n            \"unitType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"quantity\": 6733.731724002453\n          },\n          \"description\": \"string\",\n          \"lengthInches\": 1295,\n          \"widthInches\": 1814,\n          \"heightInches\": 7086,\n          \"freightClass\": \"200\",\n          \"nmfc\": \"string\",\n          \"density\": 920.7463300195195,\n          \"pickupSequence\": 1513,\n          \"deliverySequence\": 6986\n        }\n      ],\n      \"minTemperatureF\": 5461.176848518705,\n      \"maxTemperatureF\": 4423.34302365485,\n      \"service\": \"string\",\n      \"customer\": {\n        \"name\": \"string\",\n        \"customerId\": \"string\"\n      }\n    },\n    {\n      \"loadShipmentRef\": \"string\",\n      \"loadShipmentInternalRef\": \"string\",\n      \"shipmentRef\": \"string\",\n      \"status\": \"string\",\n      \"referenceNumbers\": [\n        {\n          \"name\": \"string\",\n          \"value\": \"string\"\n        },\n        {\n          \"name\": \"string\",\n          \"value\": \"string\"\n        }\n      ],\n      \"accessorials\": [\n        \"AFTER_HOURS\",\n        \"AFTER_HOURS\"\n      ],\n      \"notes\": [\n        {\n          \"timestamp\": \"1999-05-12T17:20:32.051Z\",\n          \"text\": \"string\",\n          \"author\": \"string\"\n        },\n        {\n          \"timestamp\": \"2015-02-15T22:53:48.084Z\",\n          \"text\": \"string\",\n          \"author\": \"string\"\n        }\n      ],\n      \"route\": {\n        \"address\": {\n          \"street1\": \"string\",\n          \"city\": \"string\",\n          \"stateOrProvince\": \"string\",\n          \"postalCode\": \"string\",\n          \"country\": \"string\",\n          \"company\": \"string\",\n          \"locationName\": \"string\",\n          \"street2\": \"string\"\n        },\n        \"expectedArrivalWindowEnd\": \"2025-08-21T12:34:56Z\",\n        \"expectedArrivalWindowStart\": \"2025-08-21T12:34:56Z\",\n        \"loadSequence\": 5975,\n        \"sequence\": 3499,\n        \"stopActivity\": \"string\",\n        \"externalId\": \"string\",\n        \"notes\": \"string\",\n        \"actualArrivalTime\": \"2025-08-21T12:34:56Z\",\n        \"actualCompletionTime\": \"2025-08-21T12:34:56Z\",\n        \"expectedDropWindowStart\": \"2025-08-21T12:34:56Z\",\n        \"expectedDropWindowEnd\": \"2025-08-21T12:34:56Z\",\n        \"mustArriveByDate\": \"2025-08-21T12:34:56Z\",\n        \"isLocalTime\": false,\n        \"schedulingType\": \"string\",\n        \"handlingType\": \"string\"\n      },\n      \"items\": [\n        {\n          \"quantity\": 1561,\n          \"totalWeightLbs\": 4017.930977191759,\n          \"packagingUnit\": {\n            \"unitType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"quantity\": 55.65320309824817\n          },\n          \"handlingUnit\": {\n            \"unitType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"quantity\": 9304.373761512741\n          },\n          \"description\": \"string\",\n          \"lengthInches\": 4857,\n          \"widthInches\": 5537,\n          \"heightInches\": 6340,\n          \"freightClass\": \"175\",\n          \"nmfc\": \"string\",\n          \"density\": 3831.331750826291,\n          \"pickupSequence\": 7574,\n          \"deliverySequence\": 6304\n        },\n        {\n          \"quantity\": 2194,\n          \"totalWeightLbs\": 2513.200940990983,\n          \"packagingUnit\": {\n            \"unitType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"quantity\": 4685.587206124216\n          },\n          \"handlingUnit\": {\n            \"unitType\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"quantity\": 6430.801463581162\n          },\n          \"description\": \"string\",\n          \"lengthInches\": 999,\n          \"widthInches\": 4977,\n          \"heightInches\": 4403,\n          \"freightClass\": \"50\",\n          \"nmfc\": \"string\",\n          \"density\": 4028.5415743034637,\n          \"pickupSequence\": 5364,\n          \"deliverySequence\": 7192\n        }\n      ],\n      \"minTemperatureF\": 5045.440052808862,\n      \"maxTemperatureF\": 4320.520716528245,\n      \"service\": \"string\",\n      \"customer\": {\n        \"name\": \"string\",\n        \"customerId\": \"string\"\n      }\n    }\n  ],\n  \"createdAt\": \"1983-10-29T07:13:49.791Z\",\n  \"updatedAt\": \"2005-11-22T02:23:05.112Z\",\n  \"brokerageLoadInternalId\": \"string\",\n  \"mode\": \"DRAYAGE\",\n  \"loadType\": \"CONTRACT\",\n  \"totalMiles\": 1175.0016980894861,\n  \"equipment\": \"REEFER\",\n  \"equipmentDescription\": \"string\",\n  \"weight\": {\n    \"value\": 4653.541735216964,\n    \"unit\": \"KG\"\n  },\n  \"dimensions\": {\n    \"lengthInches\": 1103,\n    \"widthInches\": 1165,\n    \"heightInches\": 4886\n  },\n  \"minimumTemperature\": {\n    \"value\": 2454.6610645002097,\n    \"unit\": \"F\"\n  },\n  \"maximumTemperature\": {\n    \"value\": 8279.163267312006,\n    \"unit\": \"F\"\n  },\n  \"tarpSize\": \"string\",\n  \"minimumBulkHeadTemperature\": {\n    \"value\": 3154.319146689251,\n    \"unit\": \"string\"\n  },\n  \"maximumBulkHeadTemperature\": {\n    \"value\": 9806.26437158828,\n    \"unit\": \"string\"\n  },\n  \"commodity\": \"string\",\n  \"commodityItems\": [\n    {\n      \"quantity\": 3765,\n      \"description\": \"string\",\n      \"totalWeightLbs\": 4498.283831583602,\n      \"lengthInches\": 380,\n      \"widthInches\": 3479,\n      \"heightInches\": 4964,\n      \"freightClass\": \"string\",\n      \"nmfc\": \"string\",\n      \"density\": 6690.931428744088,\n      \"pickupSequence\": 8931,\n      \"deliverySequence\": 7336\n    },\n    {\n      \"quantity\": 858,\n      \"description\": \"string\",\n      \"totalWeightLbs\": 2935.5003202466,\n      \"lengthInches\": 8626,\n      \"widthInches\": 9449,\n      \"heightInches\": 5791,\n      \"freightClass\": \"string\",\n      \"nmfc\": \"string\",\n      \"density\": 3761.354153020888,\n      \"pickupSequence\": 5719,\n      \"deliverySequence\": 3811\n    }\n  ],\n  \"service\": \"TIME_CRITICAL\",\n  \"highValueAmount\": 3318.529614406117,\n  \"targetRate\": 7454.7107068338355,\n  \"maxRate\": 4220.208838608995,\n  \"totalRate\": 4151.036189109376,\n  \"totalCarrierRate\": 3332.0497853406537,\n  \"bidExpiration\": \"1999-02-02T00:57:47.852Z\",\n  \"bidCustomValues\": [\n    {\n      \"name\": \"string\",\n      \"value\": \"string\"\n    },\n    {\n      \"name\": \"string\",\n      \"value\": \"string\"\n    }\n  ],\n  \"isPostedToHighway\": true,\n  \"customerName\": \"string\",\n  \"customerId\": \"string\",\n  \"externalTrackingStatus\": {\n    \"source\": \"string\",\n    \"message\": \"Tracking Now\",\n    \"code\": \"string\",\n    \"updatedAt\": \"2025-08-21T12:34:56Z\"\n  },\n  \"lastLocationUpdate\": \"2008-11-26T06:12:26.262Z\",\n  \"groupExternalId\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a5d9a2d6-304b-44c2-9278-d8acc0c0d446",
+              "name": "Bad request - loadNumber query parameter is required",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "loadNumber",
+                      "value": "LOAD-12345"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2834fa13-8432-4a8d-8087-581b7ef32946",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "loadNumber",
+                      "value": "LOAD-12345"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "473bcc61-a6f7-4411-afe5-5c3c665c77db",
+              "name": "Load not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "loadNumber",
+                      "value": "LOAD-12345"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5d6d44d3-33c1-4a5e-a51e-44b39f725f1b",
+          "name": "Create or update load",
+          "request": {
+            "name": "Create or update load",
+            "description": {},
+            "url": {
+              "path": [
+                "v2",
+                "loads"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"load\": {\n    \"loadNumber\": \"<string>\",\n    \"status\": \"<string>\",\n    \"mode\": \"<string>\",\n    \"route\": [\n      {\n        \"sequence\": \"<integer>\",\n        \"stopActivity\": \"<string>\",\n        \"address\": {\n          \"street1\": \"<string>\",\n          \"city\": \"<string>\",\n          \"stateOrProvince\": \"<string>\",\n          \"postalCode\": \"<string>\",\n          \"country\": \"<string>\",\n          \"company\": \"<string>\",\n          \"locationName\": \"<string>\",\n          \"street2\": \"<string>\"\n        },\n        \"expectedArrivalWindowStart\": \"<dateTime>\",\n        \"expectedArrivalWindowEnd\": \"<dateTime>\",\n        \"externalId\": \"<string>\",\n        \"notes\": \"<string>\",\n        \"actualArrivalTime\": \"<dateTime>\",\n        \"actualCompletionTime\": \"<dateTime>\",\n        \"expectedDropWindowStart\": \"<dateTime>\",\n        \"expectedDropWindowEnd\": \"<dateTime>\",\n        \"mustArriveByDate\": \"<dateTime>\",\n        \"isLocalTime\": \"<boolean>\",\n        \"schedulingType\": \"<string>\",\n        \"handlingType\": \"<string>\"\n      },\n      {\n        \"sequence\": \"<integer>\",\n        \"stopActivity\": \"<string>\",\n        \"address\": {\n          \"street1\": \"<string>\",\n          \"city\": \"<string>\",\n          \"stateOrProvince\": \"<string>\",\n          \"postalCode\": \"<string>\",\n          \"country\": \"<string>\",\n          \"company\": \"<string>\",\n          \"locationName\": \"<string>\",\n          \"street2\": \"<string>\"\n        },\n        \"expectedArrivalWindowStart\": \"<dateTime>\",\n        \"expectedArrivalWindowEnd\": \"<dateTime>\",\n        \"externalId\": \"<string>\",\n        \"notes\": \"<string>\",\n        \"actualArrivalTime\": \"<dateTime>\",\n        \"actualCompletionTime\": \"<dateTime>\",\n        \"expectedDropWindowStart\": \"<dateTime>\",\n        \"expectedDropWindowEnd\": \"<dateTime>\",\n        \"mustArriveByDate\": \"<dateTime>\",\n        \"isLocalTime\": \"<boolean>\",\n        \"schedulingType\": \"<string>\",\n        \"handlingType\": \"<string>\"\n      }\n    ],\n    \"brokerageLoadInternalId\": \"<string>\",\n    \"rateType\": \"<string>\",\n    \"referenceNumbers\": [\n      {\n        \"name\": \"<string>\",\n        \"value\": \"<string>\"\n      },\n      {\n        \"name\": \"<string>\",\n        \"value\": \"<string>\"\n      }\n    ],\n    \"equipment\": {\n      \"equipmentType\": \"<string>\",\n      \"description\": \"<string>\"\n    },\n    \"accessorials\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"items\": [\n      {\n        \"quantity\": \"<integer>\",\n        \"totalWeightLbs\": \"<number>\",\n        \"packagingUnit\": {\n          \"unitType\": \"<string>\",\n          \"quantity\": \"<number>\"\n        },\n        \"handlingUnit\": {\n          \"unitType\": \"<string>\",\n          \"quantity\": \"<number>\"\n        },\n        \"description\": \"<string>\",\n        \"lengthInches\": \"<integer>\",\n        \"widthInches\": \"<integer>\",\n        \"heightInches\": \"<integer>\",\n        \"freightClass\": \"<string>\",\n        \"nmfc\": \"<string>\",\n        \"density\": \"<number>\",\n        \"pickupSequence\": \"<integer>\",\n        \"deliverySequence\": \"<integer>\"\n      },\n      {\n        \"quantity\": \"<integer>\",\n        \"totalWeightLbs\": \"<number>\",\n        \"packagingUnit\": {\n          \"unitType\": \"<string>\",\n          \"quantity\": \"<number>\"\n        },\n        \"handlingUnit\": {\n          \"unitType\": \"<string>\",\n          \"quantity\": \"<number>\"\n        },\n        \"description\": \"<string>\",\n        \"lengthInches\": \"<integer>\",\n        \"widthInches\": \"<integer>\",\n        \"heightInches\": \"<integer>\",\n        \"freightClass\": \"<string>\",\n        \"nmfc\": \"<string>\",\n        \"density\": \"<number>\",\n        \"pickupSequence\": \"<integer>\",\n        \"deliverySequence\": \"<integer>\"\n      }\n    ],\n    \"externalTrackingStatus\": {\n      \"source\": \"<string>\",\n      \"message\": \"<string>\",\n      \"code\": \"<string>\",\n      \"updatedAt\": \"<dateTime>\"\n    },\n    \"isPostedToDAT\": \"<boolean>\",\n    \"weight\": \"<number>\",\n    \"totalMiles\": \"<number>\",\n    \"maxRate\": \"<number>\",\n    \"targetRate\": \"<number>\",\n    \"highValueAmount\": \"<number>\",\n    \"dimensions\": {\n      \"heightInches\": \"<integer>\",\n      \"lengthInches\": \"<integer>\",\n      \"widthInches\": \"<integer>\"\n    },\n    \"minimumTemperature\": \"<number>\",\n    \"maximumTemperature\": \"<number>\",\n    \"service\": \"<string>\",\n    \"bidExpiration\": \"<dateTime>\",\n    \"notes\": [\n      {\n        \"timestamp\": \"<dateTime>\",\n        \"text\": \"<string>\",\n        \"author\": \"<string>\"\n      },\n      {\n        \"timestamp\": \"<dateTime>\",\n        \"text\": \"<string>\",\n        \"author\": \"<string>\"\n      }\n    ],\n    \"bookedRate\": \"<number>\",\n    \"shipperRate\": \"<number>\",\n    \"tarpSize\": \"<string>\",\n    \"minimumBulkHeadTemperature\": \"<number>\",\n    \"maximumBulkHeadTemperature\": \"<number>\",\n    \"groupExternalId\": \"<string,null>\",\n    \"customData\": {\n      \"key_0\": 4101\n    }\n  },\n  \"brokerage\": {\n    \"contacts\": [\n      {\n        \"role\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"name\": \"<string>\",\n        \"id\": \"<string>\",\n        \"phone\": \"<string>\",\n        \"phoneExtension\": \"<string>\",\n        \"email\": \"<string>\"\n      },\n      {\n        \"role\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"name\": \"<string>\",\n        \"id\": \"<string>\",\n        \"phone\": \"<string>\",\n        \"phoneExtension\": \"<string>\",\n        \"email\": \"<string>\"\n      }\n    ]\n  },\n  \"trackingEvents\": [\n    {\n      \"eventType\": \"<string>\",\n      \"eventSource\": \"<string>\",\n      \"eventUtc\": \"<dateTime>\",\n      \"nextSequence\": \"<integer>\",\n      \"nextEtaUtc\": \"<dateTime>\",\n      \"city\": \"<string>\",\n      \"stateOrProvince\": \"<string>\",\n      \"postalCode\": \"<string>\",\n      \"latitude\": \"<number>\",\n      \"longitude\": \"<number>\",\n      \"temperatureF\": \"<number>\",\n      \"notes\": \"<string>\",\n      \"dispatcher\": {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"phone\": \"<string>\",\n        \"phoneExtension\": \"<string>\",\n        \"email\": \"<string>\"\n      },\n      \"driver\": {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"phone\": \"<string>\",\n        \"phoneExtension\": \"<string>\",\n        \"email\": \"<string>\"\n      }\n    },\n    {\n      \"eventType\": \"<string>\",\n      \"eventSource\": \"<string>\",\n      \"eventUtc\": \"<dateTime>\",\n      \"nextSequence\": \"<integer>\",\n      \"nextEtaUtc\": \"<dateTime>\",\n      \"city\": \"<string>\",\n      \"stateOrProvince\": \"<string>\",\n      \"postalCode\": \"<string>\",\n      \"latitude\": \"<number>\",\n      \"longitude\": \"<number>\",\n      \"temperatureF\": \"<number>\",\n      \"notes\": \"<string>\",\n      \"dispatcher\": {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"phone\": \"<string>\",\n        \"phoneExtension\": \"<string>\",\n        \"email\": \"<string>\"\n      },\n      \"driver\": {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"phone\": \"<string>\",\n        \"phoneExtension\": \"<string>\",\n        \"email\": \"<string>\"\n      }\n    }\n  ],\n  \"carrier\": {\n    \"name\": \"<string>\",\n    \"dotNumber\": \"<integer>\",\n    \"carrierId\": \"<string>\",\n    \"mcNumber\": \"<integer>\",\n    \"scac\": \"<string>\",\n    \"address\": {\n      \"street1\": \"<string>\",\n      \"city\": \"<string>\",\n      \"stateOrProvince\": \"<string>\",\n      \"postalCode\": \"<string>\",\n      \"country\": \"<string>\",\n      \"company\": \"<string>\",\n      \"locationName\": \"<string>\",\n      \"street2\": \"<string>\"\n    },\n    \"contacts\": [\n      {\n        \"role\": \"<string>\",\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"phone\": \"<string>\",\n        \"phoneExtension\": \"<string>\",\n        \"email\": \"<string>\"\n      },\n      {\n        \"role\": \"<string>\",\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"phone\": \"<string>\",\n        \"phoneExtension\": \"<string>\",\n        \"email\": \"<string>\"\n      }\n    ],\n    \"drivers\": [\n      {\n        \"phone\": \"<string>\",\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"phoneExtension\": \"<string>\"\n      },\n      {\n        \"phone\": \"<string>\",\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"phoneExtension\": \"<string>\"\n      }\n    ]\n  },\n  \"customer\": {\n    \"name\": \"<string>\",\n    \"customerId\": \"<string>\"\n  },\n  \"carrierPaymentStatuses\": [\n    {\n      \"carrierId\": \"<string>\",\n      \"status\": \"<string>\",\n      \"scheduledPaymentDate\": \"<date>\",\n      \"actualPaymentDate\": \"<date>\",\n      \"paymentMethod\": \"<string>\",\n      \"paymentReferenceNumbers\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"carrierId\": \"<string>\",\n      \"status\": \"<string>\",\n      \"scheduledPaymentDate\": \"<date>\",\n      \"actualPaymentDate\": \"<date>\",\n      \"paymentMethod\": \"<string>\",\n      \"paymentReferenceNumbers\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "d517928b-5a97-45b0-9913-fb0325db1b9a",
+              "name": "Load created successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"brokerage\": {},\n  \"load\": {\n    \"loadNumber\": \"1\",\n    \"mode\": \"FTL\",\n    \"status\": \"DRAFT\",\n    \"isPostedToDAT\": false,\n    \"route\": [\n      {\n        \"sequence\": 1,\n        \"stopActivity\": \"PICKUP\",\n        \"expectedArrivalWindowStart\": \"2025-09-01T12:00:00Z\",\n        \"expectedArrivalWindowEnd\": \"2025-09-01T14:00:00Z\",\n        \"address\": {\n          \"street1\": \"1 Santa Monica Blvd\",\n          \"city\": \"Santa Monica\",\n          \"stateOrProvince\": \"CA\",\n          \"postalCode\": \"90401\",\n          \"country\": \"US\"\n        }\n      },\n      {\n        \"sequence\": 2,\n        \"stopActivity\": \"DELIVERY\",\n        \"expectedArrivalWindowStart\": \"2025-09-02T12:00:00Z\",\n        \"expectedArrivalWindowEnd\": \"2025-09-02T14:00:00Z\",\n        \"address\": {\n          \"street1\": \"1 Market St\",\n          \"city\": \"San Francisco\",\n          \"stateOrProvince\": \"CA\",\n          \"postalCode\": \"94105\",\n          \"country\": \"US\"\n        }\n      }\n    ],\n    \"items\": [\n      {\n        \"quantity\": 600,\n        \"packagingUnit\": {\n          \"unitType\": \"CARTON\",\n          \"quantity\": 60\n        },\n        \"handlingUnit\": {\n          \"unitType\": \"PALLET\",\n          \"quantity\": 3\n        },\n        \"description\": \"600 pieces packed in 60 cartons on 3 pallets\",\n        \"totalWeightLbs\": 12000,\n        \"lengthInches\": 48,\n        \"widthInches\": 40,\n        \"heightInches\": 60,\n        \"freightClass\": \"70\",\n        \"nmfc\": \"123456\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "51642a90-e2ca-499b-a550-e9dad9249280",
+              "name": "Bad request (work in progress)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"brokerage\": {},\n  \"load\": {\n    \"loadNumber\": \"1\",\n    \"mode\": \"FTL\",\n    \"status\": \"DRAFT\",\n    \"isPostedToDAT\": false,\n    \"route\": [\n      {\n        \"sequence\": 1,\n        \"stopActivity\": \"PICKUP\",\n        \"expectedArrivalWindowStart\": \"2025-09-01T12:00:00Z\",\n        \"expectedArrivalWindowEnd\": \"2025-09-01T14:00:00Z\",\n        \"address\": {\n          \"street1\": \"1 Santa Monica Blvd\",\n          \"city\": \"Santa Monica\",\n          \"stateOrProvince\": \"CA\",\n          \"postalCode\": \"90401\",\n          \"country\": \"US\"\n        }\n      },\n      {\n        \"sequence\": 2,\n        \"stopActivity\": \"DELIVERY\",\n        \"expectedArrivalWindowStart\": \"2025-09-02T12:00:00Z\",\n        \"expectedArrivalWindowEnd\": \"2025-09-02T14:00:00Z\",\n        \"address\": {\n          \"street1\": \"1 Market St\",\n          \"city\": \"San Francisco\",\n          \"stateOrProvince\": \"CA\",\n          \"postalCode\": \"94105\",\n          \"country\": \"US\"\n        }\n      }\n    ],\n    \"items\": [\n      {\n        \"quantity\": 600,\n        \"packagingUnit\": {\n          \"unitType\": \"CARTON\",\n          \"quantity\": 60\n        },\n        \"handlingUnit\": {\n          \"unitType\": \"PALLET\",\n          \"quantity\": 3\n        },\n        \"description\": \"600 pieces packed in 60 cartons on 3 pallets\",\n        \"totalWeightLbs\": 12000,\n        \"lengthInches\": 48,\n        \"widthInches\": 40,\n        \"heightInches\": 60,\n        \"freightClass\": \"70\",\n        \"nmfc\": \"123456\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1fdaceee-520a-4ff0-9992-81c57cf289ee",
+          "name": "Patch a load",
+          "request": {
+            "name": "Patch a load",
+            "description": {
+              "content": "Apply one or more patch operations to an existing load using a JSON Patch-inspired format ([RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)).\n\nEach operation targets a specific field by JSON Pointer path and specifies how to change it.\n\n## Supported operations\n\n| `op` | Description |\n|---------|-------------|\n| `add` | Set a value or insert into an array at a specific index. |\n| `remove` | Remove a value or array element. |\n| `replace` | Replace an existing value. |\n| `append` | *(Custom)* Append an item to the end of an array. |\n| `upsert` | *(Custom)* Update an existing array element matching the `where` condition, or insert a new one if no match is found. |\n\n## Allowed paths\n\nOperations are validated against an allowlist of supported paths. Attempts to modify other paths will be rejected.\n\n| `path` | Supported operations | Value example |\n|--------|---------------------|---------------|\n| `/status` | `add`, `replace` | `\"DISPATCHED\"` |\n| `/mode` | `add`, `replace` | `\"FTL\"` |\n| `/loadType` | `add`, `replace` | `\"SPOT\"` |\n| `/equipment` | `add`, `replace` | `\"DRY_VAN\"` |\n| `/equipmentDescription` | `add`, `replace` | `\"53ft Dry Van\"` |\n| `/commodity` | `add`, `replace` | `\"Electronics\"` |\n| `/service` | `add`, `replace` | `\"STANDARD\"` |\n| `/targetRate` | `add`, `replace` | `1250.00` |\n| `/maxRate` | `add`, `replace` | `3000.00` |\n| `/totalRate` | `add`, `replace` | `2750.00` |\n| `/highValueAmount` | `add`, `replace` | `50000` |\n| `/totalMiles` | `add`, `replace` | `1200` |\n| `/tarpSize` | `add`, `replace` | `\"40x48\"` |\n| `/customerName` | `add`, `replace` | `\"Acme Corp\"` |\n| `/customerContact` | `add`, `replace` | `\"Jane Smith\"` |\n| `/customerNotes` | `add`, `replace` | `\"Call before delivery\"` |\n| `/customerId` | `add`, `replace` | `\"ACME-001\"` |\n| `/isPostedToDAT` | `add`, `replace` | `true` |\n| `/bidExpiration` | `add`, `replace` | `\"2025-08-21T12:34:56Z\"` |\n| `/lastLocationUpdate` | `add`, `replace` | `\"2025-10-15T20:20:00Z\"` |\n| `/weight` | `add`, `replace` | `{\"value\": 45000, \"unit\": \"LB\"}` |\n| `/dimensions` | `add`, `replace` | `{\"lengthInches\": 600, \"widthInches\": 96, \"heightInches\": 108}` |\n| `/minimumTemperature` | `add`, `replace` | `{\"value\": 32, \"unit\": \"F\"}` |\n| `/maximumTemperature` | `add`, `replace` | `{\"value\": 68, \"unit\": \"F\"}` |\n| `/minimumBulkHeadTemperature` | `add`, `replace` | `{\"value\": 35, \"unit\": \"F\"}` |\n| `/maximumBulkHeadTemperature` | `add`, `replace` | `{\"value\": 65, \"unit\": \"F\"}` |\n| `/externalTrackingStatus` | `add`, `replace` | `{\"source\": \"MACROPOINT\", \"code\": \"READY\"}` |\n| `/customData` | `add`, `replace` | `{\"key\": \"value\"}` |\n| `/notes` | `add`, `remove`, `append`, `upsert` | `{\"text\": \"Driver is 30 min out\"}` |\n| `/accessorials` | `add`, `remove`, `append`, `upsert` | `\"HAZMAT\"` |\n| `/referenceNumbers` | `add`, `remove`, `append`, `upsert` | `{\"name\": \"PO_NUMBER\", \"value\": \"PO-12345\"}` |\n| `/trackingEvents` | `add`, `remove`, `append`, `upsert` | `{\"eventType\": \"PICKED_UP\", \"eventSource\": \"CARRIER_API\", \"eventUtc\": \"2025-08-21T12:34:56Z\"}` |\n| `/bidCustomValues` | `add`, `remove`, `append`, `upsert` | `{\"name\": \"rush\", \"value\": \"true\"}` |\n| `/commodityItems` | `add`, `remove`, `append`, `upsert` | `{\"quantity\": 10, \"description\": \"boxes\"}` |\n| `/route` | `add`, `remove`, `append`, `upsert` | `{\"sequence\": 1, \"stopActivity\": \"PICKUP\"}` |\n| `/carrier` | `add`, `remove`, `replace` | `add`: assign a carrier when the load has none.<br>`replace`: replace the carrier already on the load.<br>Both use `value` shaped as [**LoadPatchCarrier**](#model/LoadPatchCarrier).<br>`remove`: unassign the carrier (omit `value`). |\n| `/carrier/drivers` | `append`, `replace` | `append`: one [**LoadPatchCarrierDriver**](#model/LoadPatchCarrierDriver).<br>`replace`: array of the same schema (replaces the full drivers list). |\n| `/carrier/contacts` | `append`, `replace` | `append`: one [**LoadPatchCarrierContact**](#model/LoadPatchCarrierContact).<br>`replace`: array of the same schema (replaces the full contacts list). |\n\n## Examples\n\n**Replace a simple field:**\n\n```json\n{ \"op\": \"replace\", \"path\": \"/status\", \"value\": \"IN_TRANSIT\" }\n```\n\n**Append to an array:**\n\n```json\n{ \"op\": \"append\", \"path\": \"/notes\", \"value\": { \"text\": \"Driver is 30 min out\" } }\n```\n\n**Upsert an array element (update stop 1 if it exists, insert if not):**\n\n```json\n{ \"op\": \"upsert\", \"path\": \"/route\", \"value\": { \"sequence\": 1, \"stopActivity\": \"PICKUP\" }, \"where\": { \"sequence\": 1 } }\n```\n\n**Assign carrier on load:**\n\n```json\n{\n  \"op\": \"add\",\n  \"path\": \"/carrier\",\n  \"value\": {\n    \"carrierId\": \"tms-carrier-42\",\n    \"name\": \"Acme Trucking\",\n    \"dotNumber\": 1234567,\n    \"drivers\": [{ \"id\": \"drv-1\", \"name\": \"Driver One\", \"phone\": \"+12081234567\" }],\n    \"contacts\": [\n      { \"role\": \"DISPATCHER\", \"name\": \"Dispatch\", \"email\": \"dispatch@example.com\" },\n      { \"role\": \"AP_REP\", \"name\": \"AP\", \"email\": \"ap@example.com\" }\n    ]\n  }\n}\n```\n\n**Clear carrier from load:**\n\n```json\n{ \"op\": \"remove\", \"path\": \"/carrier\" }\n```\n\n**Append a driver:**\n\n```json\n{\n  \"op\": \"append\",\n  \"path\": \"/carrier/drivers\",\n  \"value\": {\n    \"id\": \"drv-2\",\n    \"name\": \"Jane Driver\",\n    \"phone\": \"+12081234568\",\n    \"phoneExtension\": \"101\"\n  }\n}\n```\n\n**Replace carrier contacts:**\n\n```json\n{\n  \"loadReference\": \"LOAD-12345\",\n  \"operations\": [\n    {\n      \"op\": \"replace\",\n      \"path\": \"/carrier/contacts\",\n      \"value\": [\n        {\n          \"id\": \"contact-dispatch-1\",\n          \"role\": \"DISPATCHER\",\n          \"name\": \"Night dispatch\",\n          \"email\": \"dispatch@example.com\",\n          \"phone\": \"+12081234569\",\n          \"phoneExtension\": \"202\"\n        },\n        {\n          \"id\": \"contact-ap-1\",\n          \"role\": \"AP_REP\",\n          \"name\": \"Accounts payable\",\n          \"email\": \"ap@example.com\",\n          \"phone\": \"+12081234570\",\n          \"phoneExtension\": \"303\"\n        }\n      ]\n    }\n  ]\n}\n```\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "loads"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loadReference\": \"<string>\",\n  \"operations\": [\n    {\n      \"op\": \"<string>\",\n      \"path\": \"<string>\"\n    },\n    {\n      \"op\": \"<string>\",\n      \"path\": \"<string>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "cdfd4b36-f116-4c69-ab88-eb26dec4aebd",
+              "name": "Load patched successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"loadReference\": \"LOAD-12345\",\n  \"operations\": [\n    {\n      \"op\": \"replace\",\n      \"path\": \"/status\",\n      \"value\": \"IN_TRANSIT\"\n    },\n    {\n      \"op\": \"append\",\n      \"path\": \"/notes\",\n      \"value\": {\n        \"text\": \"Driver is 30 min out\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "d2464bba-2468-4c81-b24a-38a1e99762c8",
+              "name": "Bad request — invalid operation, disallowed path, or missing required field",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"loadReference\": \"LOAD-12345\",\n  \"operations\": [\n    {\n      \"op\": \"replace\",\n      \"path\": \"/status\",\n      \"value\": \"IN_TRANSIT\"\n    },\n    {\n      \"op\": \"append\",\n      \"path\": \"/notes\",\n      \"value\": {\n        \"text\": \"Driver is 30 min out\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7c4c1984-9242-4e15-a358-781c64102e06",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"loadReference\": \"LOAD-12345\",\n  \"operations\": [\n    {\n      \"op\": \"replace\",\n      \"path\": \"/status\",\n      \"value\": \"IN_TRANSIT\"\n    },\n    {\n      \"op\": \"append\",\n      \"path\": \"/notes\",\n      \"value\": {\n        \"text\": \"Driver is 30 min out\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "890e7c82-f440-49f5-bb01-67fcb9b0145a",
+              "name": "Load not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"loadReference\": \"LOAD-12345\",\n  \"operations\": [\n    {\n      \"op\": \"replace\",\n      \"path\": \"/status\",\n      \"value\": \"IN_TRANSIT\"\n    },\n    {\n      \"op\": \"append\",\n      \"path\": \"/notes\",\n      \"value\": {\n        \"text\": \"Driver is 30 min out\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"string\",\n  \"errorCode\": \"string\",\n  \"details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "bc0fe064-5f8b-4bb7-95b0-9be9a5a3991c",
+          "name": "Add a tracking event",
+          "request": {
+            "name": "Add a tracking event",
+            "description": {},
+            "url": {
+              "path": [
+                "v2",
+                "loads",
+                "tracking"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loadNumber\": \"<string>\",\n  \"trackingEvent\": {\n    \"eventType\": \"<string>\",\n    \"eventSource\": \"<string>\",\n    \"eventUtc\": \"<dateTime>\",\n    \"nextSequence\": \"<integer>\",\n    \"nextEtaUtc\": \"<dateTime>\",\n    \"city\": \"<string>\",\n    \"stateOrProvince\": \"<string>\",\n    \"postalCode\": \"<string>\",\n    \"latitude\": \"<number>\",\n    \"longitude\": \"<number>\",\n    \"temperatureF\": \"<number>\",\n    \"notes\": \"<string>\",\n    \"dispatcher\": {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"phone\": \"<string>\",\n      \"phoneExtension\": \"<string>\",\n      \"email\": \"<string>\"\n    },\n    \"driver\": {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"phone\": \"<string>\",\n      \"phoneExtension\": \"<string>\",\n      \"email\": \"<string>\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "831d78f2-d527-4f59-9c8f-b4d187280157",
+              "name": "Load updated successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads",
+                    "tracking"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"loadNumber\": \"<string>\",\n  \"trackingEvent\": {\n    \"eventType\": \"string\",\n    \"eventSource\": \"string\",\n    \"eventUtc\": \"2025-08-21T12:34:56Z\",\n    \"nextSequence\": 6448,\n    \"nextEtaUtc\": \"2025-08-21T12:34:56Z\",\n    \"city\": \"string\",\n    \"stateOrProvince\": \"string\",\n    \"postalCode\": \"string\",\n    \"latitude\": 9858.611594117257,\n    \"longitude\": 3458.2461028353728,\n    \"temperatureF\": 503.43497255579183,\n    \"notes\": \"string\",\n    \"dispatcher\": {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"phone\": \"+12081234567\",\n      \"phoneExtension\": \"string\",\n      \"email\": \"string\"\n    },\n    \"driver\": {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"phone\": \"+12081234567\",\n      \"phoneExtension\": \"string\",\n      \"email\": \"string\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "e506d4cf-5207-4255-bade-3ff147dbe98b",
+              "name": "Bad request (work in progress)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "loads",
+                    "tracking"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: basic",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Basic <credentials>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"loadNumber\": \"<string>\",\n  \"trackingEvent\": {\n    \"eventType\": \"string\",\n    \"eventSource\": \"string\",\n    \"eventUtc\": \"2025-08-21T12:34:56Z\",\n    \"nextSequence\": 6448,\n    \"nextEtaUtc\": \"2025-08-21T12:34:56Z\",\n    \"city\": \"string\",\n    \"stateOrProvince\": \"string\",\n    \"postalCode\": \"string\",\n    \"latitude\": 9858.611594117257,\n    \"longitude\": 3458.2461028353728,\n    \"temperatureF\": 503.43497255579183,\n    \"notes\": \"string\",\n    \"dispatcher\": {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"phone\": \"+12081234567\",\n      \"phoneExtension\": \"string\",\n      \"email\": \"string\"\n    },\n    \"driver\": {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"phone\": \"+12081234567\",\n      \"phoneExtension\": \"string\",\n      \"email\": \"string\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.prod.goaugment.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{basicAuthUsername}}"
+      },
+      {
+        "key": "password",
+        "value": "{{basicAuthPassword}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "880b59b1-8be0-4e2b-82ab-254435f2eb8c",
+    "name": "Augment API Key Load Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "<a href=\"https://trust.goaugment.com/?utm_campaign=api_docs&utm_source=api_docs&utm_medium=api_docs&utm_content=api_docs\" target=\"_blank\">Augment is now SOC 2 Type II Certified</a>\n\nThe Augment API endpoints are calls your system makes to manage loads,\ncarriers, and webhook configuration.\nThe latest version of the Augment API is hosted [online](https://apidocs.goaugment.com).\n\n## API Endpoints\n\nEndpoints your system calls to interact with Augment:\n\n- [Load Management](/reference/tag/load-management)\n- [Carrier Management](/reference/tag/carrier-management)\n- [Models](/reference/models)\n- [Webhook Endpoints](/reference/tag/webhook-endpoints)\n- [Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions)\n\nWebhook management access is gated. Request access from Augment before using\nthese endpoints. After access is enabled, you can self-manage the webhook\nendpoints that receive event payloads and the webhook event subscriptions\nthat control which events are sent to each endpoint.\n\nUse [Webhook Endpoints](/reference/tag/webhook-endpoints) to create and\nupdate the HTTPS destinations where Augment sends webhook payloads. Use\n[Webhook Event Subscriptions](/reference/tag/webhook-event-subscriptions) to\nchoose event types for each endpoint and send test deliveries.\n\nOutbound webhook payloads, including Track & Trace events, are documented\nseparately in the [Webhooks](/webhooks) reference. Subscriptions created\nthrough the public webhook management APIs deliver version 2 webhook payloads only.\n\n## Resources\n\n* [Homepage](https://www.goaugment.com)\n* [LinkedIn](https://www.linkedin.com/company/goaugment)\n* [Jobs - we're hiring!](https://jobs.ashbyhq.com/go-augment?utm_source=AMy24qx30n)\n\n## Developer Notes\n\nAll date-time fields are represented as strings. The date-time notation is defined by [RFC 3339, section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6). Examples:\n- `2025-08-21T12:34:56Z`\n- `2025-08-21T04:34:56-08:00`\n\nHowever, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.\n\nExample:\n- `2025-08-21T12:34:56`\n",
+      "type": "text/plain"
+    }
+  }
+}

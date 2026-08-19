@@ -1,0 +1,89 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Augment API Key Load Management API",
+    "version": "20.0.1"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Load Management",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get load by load number",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.prod.goaugment.com/v2/loads",
+            "params": [
+              {
+                "name": "loadNumber",
+                "value": "LOAD-12345",
+                "type": "query",
+                "description": "The load number (brokerage load ID)"
+              }
+            ]
+          },
+          "docs": "Retrieve enriched load data by load number (brokerage load ID). Returns the full LoadV2 format including carrier details, tracking events, reference numbers, notes, subscribers, and shipment information.\n"
+        },
+        {
+          "info": {
+            "name": "Create or update load",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.prod.goaugment.com/v2/loads",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create or update load"
+        },
+        {
+          "info": {
+            "name": "Patch a load",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.prod.goaugment.com/v2/loads",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Apply one or more patch operations to an existing load using a JSON Patch-inspired format ([RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902)).\n\nEach operation targets a specific field by JSON Pointer path and specifies how to change it.\n\n## Supported operations\n\n| `op` | Description |\n|---------|-------------|\n| `add` | Set a value or insert into an array at a specific index. |\n| `remove` | Remove a value or array element. |\n| `replace` | Replace an existing value. |\n| `append` | *(Custo"
+        },
+        {
+          "info": {
+            "name": "Add a tracking event",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.prod.goaugment.com/v2/loads/tracking",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add a tracking event"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

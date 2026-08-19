@@ -1,0 +1,118 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Augment API Key Carrier Management API",
+    "version": "20.0.1"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Carrier Management",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get carrier by DOT or MC number",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.prod.goaugment.com/v1/carriers",
+            "params": [
+              {
+                "name": "dotNumber",
+                "value": "",
+                "type": "query",
+                "description": "DOT number"
+              },
+              {
+                "name": "mcNumber",
+                "value": "",
+                "type": "query",
+                "description": "MC number"
+              }
+            ]
+          },
+          "docs": "Fetch a carrier by its DOT number or MC number. Returns the carrier with associated managers and contacts.\n"
+        },
+        {
+          "info": {
+            "name": "Create or update carrier",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.prod.goaugment.com/v1/carriers",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new carrier or update an existing one. This endpoint supports three operations:\n- **Creation**: Provide all required fields to create a new carrier.\n- **Partial Update**: Include only the fields you want to update. Carriers\n  are matched by `tmsId`, so provide the `tmsId` of the carrier you want\n  to update.\n\n- **Full Update**: Include all fields to completely replace the carrier\n  data.\n\nFor updating managers and contacts, it is highly recommended to provide `tmsId` for each manager an"
+        },
+        {
+          "info": {
+            "name": "Bulk create or update carriers",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.prod.goaugment.com/v1/carriers/bulk",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create or update multiple carriers in a single request. Maximum 20 carriers per request. Each carrier is processed in its own transaction. Partial success is supported - some carriers may succeed while others fail.\n"
+        },
+        {
+          "info": {
+            "name": "Get carrier by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.prod.goaugment.com/v1/carriers/:carrierId",
+            "params": [
+              {
+                "name": "carrierId",
+                "value": "",
+                "type": "path",
+                "description": "Augment's carrier identifier, returned as `carrierId` in the create/update carrier response."
+              }
+            ]
+          },
+          "docs": "Fetch a carrier by its carrier ID. Returns the carrier with associated managers and contacts.\n"
+        },
+        {
+          "info": {
+            "name": "Archive carrier",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.prod.goaugment.com/v1/carriers/:carrierId",
+            "params": [
+              {
+                "name": "carrierId",
+                "value": "",
+                "type": "path",
+                "description": "Augment's carrier identifier, returned as `carrierId` in the create/update carrier response."
+              }
+            ]
+          },
+          "docs": "Soft delete a carrier. The carrier will no longer be returned in GET requests.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

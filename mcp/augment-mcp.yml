@@ -2,11 +2,9 @@ generated: '2026-07-18'
 method: derived
 status: candidate
 source: openapi/augment-openapi-original.json
-notes: >-
-  No official hosted/remote MCP server was found for Augment (checked docs,
-  npm @modelcontextprotocol, and MCP registries). This is a candidate tool list
-  derived one-to-one from the Augment API OpenAPI operations so an agent surface
-  can be stood up. All calls use HTTP Basic auth (empty username + API key as password).
+notes: No official hosted/remote MCP server was found for Augment (checked docs, npm @modelcontextprotocol,
+  and MCP registries). This is a candidate tool list derived one-to-one from the Augment API OpenAPI operations
+  so an agent surface can be stood up. All calls use HTTP Basic auth (empty username + API key as password).
 server:
   name: augment
   transport: http
@@ -81,3 +79,9 @@ tools:
 - name: test_webhook_subscription
   description: Send a test delivery for a webhook subscription.
   source_operation: openapi/augment-openapi-original.json#testWebhookSubscription
+deployment:
+  mode: none
+  verified: derived
+  tools: 23
+  checked: '2026-08-12'
+  source: catalog MCP census
