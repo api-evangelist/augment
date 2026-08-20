@@ -42,6 +42,15 @@ tags:
 - Freight
 - Supply Chain
 - Transportation
+- Webhook
+- Artificial Intelligence
+- Automation
+tags_raw:
+- Company
+- Logistics
+- Freight
+- Supply Chain
+- Transportation
 - Webhooks
 - Artificial Intelligence
 - Automation
@@ -55,6 +64,8 @@ apis:
   humanURL: https://apidocs.goaugment.com/
   baseURL: https://api.prod.goaugment.com
   tags:
+  - APIKeys
+  tags_raw:
   - API Key
   properties:
   - type: OpenAPI
