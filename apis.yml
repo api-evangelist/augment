@@ -160,6 +160,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/augment-capability-edges.yml
+  name: Augment Business Capability Map
 - type: Website
   url: https://goaugment.com
 - type: DeveloperPortal
