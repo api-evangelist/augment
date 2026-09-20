@@ -165,6 +165,10 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Pricing
+  url: https://www.goaugment.com/pricing
+- type: Plans
+  url: plans/augment-plans-pricing.yml
 - type: CapabilityMap
   url: capabilities/augment-capability-edges.yml
   name: Augment Business Capability Map
