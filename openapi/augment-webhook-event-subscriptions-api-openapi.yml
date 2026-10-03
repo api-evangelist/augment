@@ -387,6 +387,41 @@ paths:
                 $ref: '#/components/schemas/ApiErrorBody'
 components:
   schemas:
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
+    WebhookManagementEventType:
+      type: string
+      description: 'Public event type for webhook subscription creation. Call `GET /v2/webhook-event-types` for the current source of truth.
+
+        '
+      enum:
+      - TRACKING_UPDATE
+      - STOP_UPDATE
+      - LOAD_CARRIER_UPDATE
+      - SEND_TMS_COMMENT
+      - SCHEDULED_CARRIER_OUTREACH
+      - UPLOAD_FILES
+      - PUSH_BID_TO_TMS
+      - PUSH_LOAD_DRAFT
+      - CARRIER_ISSUE_UPDATED
     WebhookSubscription:
       type: object
       description: 'Public webhook subscription connecting one webhook endpoint to one event type.
@@ -418,26 +453,23 @@ components:
           type: boolean
           description: Whether this subscription is active
           example: true
-    ApiErrorBody:
+    TestWebhookSubscriptionResponse:
       type: object
+      additionalProperties: false
       required:
-      - message
+      - statusCode
+      - body
       x-property-order:
-      - message
-      - errorCode
-      - details
+      - statusCode
+      - body
       properties:
-        message:
-          type: string
-          description: An error message
-        errorCode:
-          type: string
-          description: An error code
-        details:
-          oneOf:
-          - type: object
-          - type: string
-          description: Additional error details
+        statusCode:
+          type: number
+          format: double
+          description: HTTP status code returned by the webhook endpoint
+          example: 200
+        body:
+          description: Response body returned by the webhook endpoint
     CreateWebhookSubscriptionRequest:
       type: object
       description: Request body for creating a public webhook subscription.
@@ -460,6 +492,19 @@ components:
           type: boolean
           description: Whether this subscription should be active. Defaults to `true`.
           default: true
+    TestWebhookSubscriptionRequest:
+      type: object
+      description: 'Optional request body for a test webhook delivery. The request body uses a `payload` wrapper: the `payload` key is part of this API request, and the `payload` value is the webhook event body that Augment sends to the configured endpoint.
+
+        '
+      additionalProperties: false
+      properties:
+        payload:
+          type: object
+          additionalProperties: true
+          description: 'Custom webhook event body to send to the subscription endpoint. Augment sends this object exactly as the webhook POST body. It should match the version 2 event shape your listener expects, such as a Track & Trace event envelope from the Webhooks reference.
+
+            '
     UpdateWebhookSubscriptionRequest:
       type: object
       description: 'Request body for partially updating a public webhook subscription. At least one field is required. `eventType` is not updatable.
@@ -479,51 +524,6 @@ components:
           type: boolean
           description: Whether this subscription should be active
           example: false
-    WebhookManagementEventType:
-      type: string
-      description: 'Public event type for webhook subscription creation. Call `GET /v2/webhook-event-types` for the current source of truth.
-
-        '
-      enum:
-      - TRACKING_UPDATE
-      - STOP_UPDATE
-      - LOAD_CARRIER_UPDATE
-      - SEND_TMS_COMMENT
-      - SCHEDULED_CARRIER_OUTREACH
-      - UPLOAD_FILES
-      - PUSH_BID_TO_TMS
-      - PUSH_LOAD_DRAFT
-      - CARRIER_ISSUE_UPDATED
-    TestWebhookSubscriptionRequest:
-      type: object
-      description: 'Optional request body for a test webhook delivery. The request body uses a `payload` wrapper: the `payload` key is part of this API request, and the `payload` value is the webhook event body that Augment sends to the configured endpoint.
-
-        '
-      additionalProperties: false
-      properties:
-        payload:
-          type: object
-          additionalProperties: true
-          description: 'Custom webhook event body to send to the subscription endpoint. Augment sends this object exactly as the webhook POST body. It should match the version 2 event shape your listener expects, such as a Track & Trace event envelope from the Webhooks reference.
-
-            '
-    TestWebhookSubscriptionResponse:
-      type: object
-      additionalProperties: false
-      required:
-      - statusCode
-      - body
-      x-property-order:
-      - statusCode
-      - body
-      properties:
-        statusCode:
-          type: number
-          format: double
-          description: HTTP status code returned by the webhook endpoint
-          example: 200
-        body:
-          description: Response body returned by the webhook endpoint
   securitySchemes:
     httpBasic:
       type: http

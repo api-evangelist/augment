@@ -249,6 +249,26 @@ paths:
                 $ref: '#/components/schemas/ApiErrorBody'
 components:
   schemas:
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
     WebhookEndpointBearerTokenAuth:
       type: object
       description: Bearer token authentication for webhook delivery requests.
@@ -268,6 +288,61 @@ components:
 
             '
           example: customer-secret-token
+    WebhookEndpointAuth:
+      oneOf:
+      - $ref: '#/components/schemas/WebhookEndpointBearerTokenAuth'
+      - $ref: '#/components/schemas/WebhookEndpointCustomHeadersAuth'
+      discriminator:
+        propertyName: type
+        mapping:
+          bearerToken: '#/components/schemas/WebhookEndpointBearerTokenAuth'
+          customHeaders: '#/components/schemas/WebhookEndpointCustomHeadersAuth'
+      description: 'Outbound auth configuration used when Augment delivers webhooks to your endpoint. This is not the same as the API key auth used to call Augment.
+
+        '
+    UpdateWebhookEndpointRequest:
+      type: object
+      description: 'Request body for partially updating a public webhook endpoint. At least one field is required.
+
+        '
+      additionalProperties: false
+      minProperties: 1
+      x-property-order:
+      - name
+      - url
+      - auth
+      - customHeaders
+      properties:
+        name:
+          type: string
+          description: Display name for the endpoint
+          example: Primary Webhook
+        url:
+          type: string
+          format: uri
+          description: HTTPS URL that receives Augment webhook deliveries
+          example: https://example.com/webhooks/augment-v2
+        auth:
+          $ref: '#/components/schemas/WebhookEndpointAuth'
+        customHeaders:
+          oneOf:
+          - $ref: '#/components/schemas/WebhookCustomHeaders'
+          - type: 'null'
+          description: Optional custom headers. Pass `null` to clear custom headers.
+    WebhookEndpointCustomHeadersAuth:
+      type: object
+      description: 'Authentication conveyed via the endpoint''s `customHeaders` field (e.g. `x-api-key`). No bearer token is sent and Augment does not store one.
+
+        '
+      required:
+      - type
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+          - customHeaders
+          description: Custom headers auth.
     WebhookEndpoint:
       type: object
       description: Public webhook endpoint configured for outbound webhook delivery.
@@ -309,38 +384,6 @@ components:
           - $ref: '#/components/schemas/WebhookCustomHeaders'
           - type: 'null'
           description: Optional custom headers sent with webhook deliveries
-    WebhookEndpointAuth:
-      oneOf:
-      - $ref: '#/components/schemas/WebhookEndpointBearerTokenAuth'
-      - $ref: '#/components/schemas/WebhookEndpointCustomHeadersAuth'
-      discriminator:
-        propertyName: type
-        mapping:
-          bearerToken: '#/components/schemas/WebhookEndpointBearerTokenAuth'
-          customHeaders: '#/components/schemas/WebhookEndpointCustomHeadersAuth'
-      description: 'Outbound auth configuration used when Augment delivers webhooks to your endpoint. This is not the same as the API key auth used to call Augment.
-
-        '
-    ApiErrorBody:
-      type: object
-      required:
-      - message
-      x-property-order:
-      - message
-      - errorCode
-      - details
-      properties:
-        message:
-          type: string
-          description: An error message
-        errorCode:
-          type: string
-          description: An error code
-        details:
-          oneOf:
-          - type: object
-          - type: string
-          description: Additional error details
     CreateWebhookEndpointRequest:
       type: object
       description: Request body for creating a public webhook endpoint.
@@ -370,35 +413,6 @@ components:
           - $ref: '#/components/schemas/WebhookCustomHeaders'
           - type: 'null'
           description: Optional custom headers sent with webhook deliveries
-    UpdateWebhookEndpointRequest:
-      type: object
-      description: 'Request body for partially updating a public webhook endpoint. At least one field is required.
-
-        '
-      additionalProperties: false
-      minProperties: 1
-      x-property-order:
-      - name
-      - url
-      - auth
-      - customHeaders
-      properties:
-        name:
-          type: string
-          description: Display name for the endpoint
-          example: Primary Webhook
-        url:
-          type: string
-          format: uri
-          description: HTTPS URL that receives Augment webhook deliveries
-          example: https://example.com/webhooks/augment-v2
-        auth:
-          $ref: '#/components/schemas/WebhookEndpointAuth'
-        customHeaders:
-          oneOf:
-          - $ref: '#/components/schemas/WebhookCustomHeaders'
-          - type: 'null'
-          description: Optional custom headers. Pass `null` to clear custom headers.
     WebhookCustomHeaders:
       type: object
       description: Custom headers sent with webhook deliveries.
@@ -406,20 +420,6 @@ components:
         type: string
       example:
         X-Customer-Header: value
-    WebhookEndpointCustomHeadersAuth:
-      type: object
-      description: 'Authentication conveyed via the endpoint''s `customHeaders` field (e.g. `x-api-key`). No bearer token is sent and Augment does not store one.
-
-        '
-      required:
-      - type
-      additionalProperties: false
-      properties:
-        type:
-          type: string
-          enum:
-          - customHeaders
-          description: Custom headers auth.
   securitySchemes:
     httpBasic:
       type: http
