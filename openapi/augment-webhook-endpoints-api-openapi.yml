@@ -249,32 +249,6 @@ paths:
                 $ref: '#/components/schemas/ApiErrorBody'
 components:
   schemas:
-    WebhookCustomHeaders:
-      type: object
-      description: Custom headers sent with webhook deliveries.
-      additionalProperties:
-        type: string
-      example:
-        X-Customer-Header: value
-    WebhookEndpointBearerTokenAuth:
-      type: object
-      description: Bearer token authentication for webhook delivery requests.
-      required:
-      - type
-      - token
-      additionalProperties: false
-      properties:
-        type:
-          type: string
-          enum:
-          - bearerToken
-          description: Bearer token auth.
-        token:
-          type: string
-          description: 'Secret token sent as `Authorization: Bearer <token>` on webhook delivery. This token is never returned by read or list responses.
-
-            '
-          example: customer-secret-token
     WebhookEndpointAuth:
       oneOf:
       - $ref: '#/components/schemas/WebhookEndpointBearerTokenAuth'
@@ -287,76 +261,6 @@ components:
       description: 'Outbound auth configuration used when Augment delivers webhooks to your endpoint. This is not the same as the API key auth used to call Augment.
 
         '
-    WebhookEndpoint:
-      type: object
-      description: Public webhook endpoint configured for outbound webhook delivery.
-      additionalProperties: false
-      required:
-      - id
-      - url
-      - authType
-      x-property-order:
-      - id
-      - name
-      - url
-      - authType
-      - customHeaders
-      properties:
-        id:
-          type: string
-          description: Webhook endpoint ID
-          example: webhook_endpoint_01HY...
-        name:
-          type: string
-          description: Display name for the endpoint
-          example: Primary Webhook
-        url:
-          type: string
-          format: uri
-          description: HTTPS URL that receives Augment webhook deliveries
-          example: https://example.com/webhooks/augment
-        authType:
-          type: string
-          enum:
-          - bearerToken
-          - customHeaders
-          description: 'Outbound delivery auth type. Tokens are never returned by read or list responses.
-
-            '
-        customHeaders:
-          oneOf:
-          - $ref: '#/components/schemas/WebhookCustomHeaders'
-          - type: 'null'
-          description: Optional custom headers sent with webhook deliveries
-    UpdateWebhookEndpointRequest:
-      type: object
-      description: 'Request body for partially updating a public webhook endpoint. At least one field is required.
-
-        '
-      additionalProperties: false
-      minProperties: 1
-      x-property-order:
-      - name
-      - url
-      - auth
-      - customHeaders
-      properties:
-        name:
-          type: string
-          description: Display name for the endpoint
-          example: Primary Webhook
-        url:
-          type: string
-          format: uri
-          description: HTTPS URL that receives Augment webhook deliveries
-          example: https://example.com/webhooks/augment-v2
-        auth:
-          $ref: '#/components/schemas/WebhookEndpointAuth'
-        customHeaders:
-          oneOf:
-          - $ref: '#/components/schemas/WebhookCustomHeaders'
-          - type: 'null'
-          description: Optional custom headers. Pass `null` to clear custom headers.
     CreateWebhookEndpointRequest:
       type: object
       description: Request body for creating a public webhook endpoint.
@@ -406,6 +310,102 @@ components:
           - type: object
           - type: string
           description: Additional error details
+    WebhookEndpoint:
+      type: object
+      description: Public webhook endpoint configured for outbound webhook delivery.
+      additionalProperties: false
+      required:
+      - id
+      - url
+      - authType
+      x-property-order:
+      - id
+      - name
+      - url
+      - authType
+      - customHeaders
+      properties:
+        id:
+          type: string
+          description: Webhook endpoint ID
+          example: webhook_endpoint_01HY...
+        name:
+          type: string
+          description: Display name for the endpoint
+          example: Primary Webhook
+        url:
+          type: string
+          format: uri
+          description: HTTPS URL that receives Augment webhook deliveries
+          example: https://example.com/webhooks/augment
+        authType:
+          type: string
+          enum:
+          - bearerToken
+          - customHeaders
+          description: 'Outbound delivery auth type. Tokens are never returned by read or list responses.
+
+            '
+        customHeaders:
+          oneOf:
+          - $ref: '#/components/schemas/WebhookCustomHeaders'
+          - type: 'null'
+          description: Optional custom headers sent with webhook deliveries
+    WebhookCustomHeaders:
+      type: object
+      description: Custom headers sent with webhook deliveries.
+      additionalProperties:
+        type: string
+      example:
+        X-Customer-Header: value
+    WebhookEndpointBearerTokenAuth:
+      type: object
+      description: Bearer token authentication for webhook delivery requests.
+      required:
+      - type
+      - token
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+          - bearerToken
+          description: Bearer token auth.
+        token:
+          type: string
+          description: 'Secret token sent as `Authorization: Bearer <token>` on webhook delivery. This token is never returned by read or list responses.
+
+            '
+          example: customer-secret-token
+    UpdateWebhookEndpointRequest:
+      type: object
+      description: 'Request body for partially updating a public webhook endpoint. At least one field is required.
+
+        '
+      additionalProperties: false
+      minProperties: 1
+      x-property-order:
+      - name
+      - url
+      - auth
+      - customHeaders
+      properties:
+        name:
+          type: string
+          description: Display name for the endpoint
+          example: Primary Webhook
+        url:
+          type: string
+          format: uri
+          description: HTTPS URL that receives Augment webhook deliveries
+          example: https://example.com/webhooks/augment-v2
+        auth:
+          $ref: '#/components/schemas/WebhookEndpointAuth'
+        customHeaders:
+          oneOf:
+          - $ref: '#/components/schemas/WebhookCustomHeaders'
+          - type: 'null'
+          description: Optional custom headers. Pass `null` to clear custom headers.
     WebhookEndpointCustomHeadersAuth:
       type: object
       description: 'Authentication conveyed via the endpoint''s `customHeaders` field (e.g. `x-api-key`). No bearer token is sent and Augment does not store one.

@@ -387,37 +387,58 @@ paths:
                 $ref: '#/components/schemas/ApiErrorBody'
 components:
   schemas:
-    WebhookSubscription:
-      type: object
-      description: 'Public webhook subscription connecting one webhook endpoint to one event type.
+    WebhookManagementEventType:
+      type: string
+      description: 'Public event type for webhook subscription creation. Call `GET /v2/webhook-event-types` for the current source of truth.
 
         '
+      enum:
+      - TRACKING_UPDATE
+      - STOP_UPDATE
+      - LOAD_CARRIER_UPDATE
+      - SEND_TMS_COMMENT
+      - SCHEDULED_CARRIER_OUTREACH
+      - UPLOAD_FILES
+      - PUSH_BID_TO_TMS
+      - PUSH_LOAD_DRAFT
+      - CARRIER_ISSUE_UPDATED
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
+    TestWebhookSubscriptionResponse:
+      type: object
       additionalProperties: false
       required:
-      - id
-      - webhookEndpointId
-      - eventType
-      - isActive
+      - statusCode
+      - body
       x-property-order:
-      - id
-      - webhookEndpointId
-      - eventType
-      - isActive
+      - statusCode
+      - body
       properties:
-        id:
-          type: string
-          description: Webhook subscription ID
-          example: webhook_subscription_01HY...
-        webhookEndpointId:
-          type: string
-          description: Webhook endpoint ID that receives this event type
-          example: webhook_endpoint_01HY...
-        eventType:
-          $ref: '#/components/schemas/WebhookManagementEventType'
-        isActive:
-          type: boolean
-          description: Whether this subscription is active
-          example: true
+        statusCode:
+          type: number
+          format: double
+          description: HTTP status code returned by the webhook endpoint
+          example: 200
+        body:
+          description: Response body returned by the webhook endpoint
     TestWebhookSubscriptionRequest:
       type: object
       description: 'Optional request body for a test webhook delivery. The request body uses a `payload` wrapper: the `payload` key is part of this API request, and the `payload` value is the webhook event body that Augment sends to the configured endpoint.
@@ -450,6 +471,37 @@ components:
           type: boolean
           description: Whether this subscription should be active
           example: false
+    WebhookSubscription:
+      type: object
+      description: 'Public webhook subscription connecting one webhook endpoint to one event type.
+
+        '
+      additionalProperties: false
+      required:
+      - id
+      - webhookEndpointId
+      - eventType
+      - isActive
+      x-property-order:
+      - id
+      - webhookEndpointId
+      - eventType
+      - isActive
+      properties:
+        id:
+          type: string
+          description: Webhook subscription ID
+          example: webhook_subscription_01HY...
+        webhookEndpointId:
+          type: string
+          description: Webhook endpoint ID that receives this event type
+          example: webhook_endpoint_01HY...
+        eventType:
+          $ref: '#/components/schemas/WebhookManagementEventType'
+        isActive:
+          type: boolean
+          description: Whether this subscription is active
+          example: true
     CreateWebhookSubscriptionRequest:
       type: object
       description: Request body for creating a public webhook subscription.
@@ -472,58 +524,6 @@ components:
           type: boolean
           description: Whether this subscription should be active. Defaults to `true`.
           default: true
-    ApiErrorBody:
-      type: object
-      required:
-      - message
-      x-property-order:
-      - message
-      - errorCode
-      - details
-      properties:
-        message:
-          type: string
-          description: An error message
-        errorCode:
-          type: string
-          description: An error code
-        details:
-          oneOf:
-          - type: object
-          - type: string
-          description: Additional error details
-    WebhookManagementEventType:
-      type: string
-      description: 'Public event type for webhook subscription creation. Call `GET /v2/webhook-event-types` for the current source of truth.
-
-        '
-      enum:
-      - TRACKING_UPDATE
-      - STOP_UPDATE
-      - LOAD_CARRIER_UPDATE
-      - SEND_TMS_COMMENT
-      - SCHEDULED_CARRIER_OUTREACH
-      - UPLOAD_FILES
-      - PUSH_BID_TO_TMS
-      - PUSH_LOAD_DRAFT
-      - CARRIER_ISSUE_UPDATED
-    TestWebhookSubscriptionResponse:
-      type: object
-      additionalProperties: false
-      required:
-      - statusCode
-      - body
-      x-property-order:
-      - statusCode
-      - body
-      properties:
-        statusCode:
-          type: number
-          format: double
-          description: HTTP status code returned by the webhook endpoint
-          example: 200
-        body:
-          description: Response body returned by the webhook endpoint
   securitySchemes:
     httpBasic:
       type: http
