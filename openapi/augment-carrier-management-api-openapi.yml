@@ -6,8 +6,93 @@ info:
 
     The Augment API endpoints are calls your system makes to manage loads,
 
-    carriers, and webhook configuration.'
-  version: 20.0.1
+    carriers, and webhook configuration.
+
+    The latest version of the Augment API is hosted online.
+
+
+    ## API Endpoints
+
+
+    Endpoints your system calls to interact with Augment:
+
+
+    - Load Management
+
+    - Carrier Management
+
+    - CSV Imports
+
+    - Quote Management - implemented by the
+
+    rate provider and called by Augment
+
+    - Models
+
+    - Webhook Endpoints
+
+    - Webhook Event Subscriptions
+
+
+    Webhook management access is gated. Request access from Augment before using
+
+    these endpoints. After access is enabled, you can self-manage the webhook
+
+    endpoints that receive event payloads and the webhook event subscriptions
+
+    that control which events are sent to each endpoint.
+
+
+    Use Webhook Endpoints to create and
+
+    update the HTTPS destinations where Augment sends webhook payloads. Use
+
+    Webhook Event Subscriptions to
+
+    choose event types for each endpoint and send test deliveries.
+
+
+    Outbound webhook payloads, including Track & Trace events, are documented
+
+    separately in the Webhooks reference. Subscriptions created
+
+    through the public webhook management APIs deliver version 2 webhook payloads only.
+
+
+    Quote Management is the exception to all
+
+    of the above: that endpoint is implemented by the rate provider and called by
+
+    Augment, which cannot retrieve quotes until it is live.
+
+
+    ## Resources
+
+
+    * Homepage
+
+    * LinkedIn
+
+    * Jobs - we''re hiring!
+
+
+    ## Developer Notes
+
+
+    All date-time fields are represented as strings. The date-time notation is defined by RFC 3339, section 5.6. Examples:
+
+    - `2025-08-21T12:34:56Z`
+
+    - `2025-08-21T04:34:56-08:00`
+
+
+    However, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.
+
+
+    Example:
+
+    - `2025-08-21T12:34:56`'
+  version: 2.90.1
 servers:
 - url: https://api.prod.goaugment.com
 security:
@@ -348,26 +433,6 @@ components:
           description: Free-form notes about the carrier.
         customData:
           $ref: '#/components/schemas/CarrierCustomData'
-    ApiErrorBody:
-      type: object
-      required:
-      - message
-      x-property-order:
-      - message
-      - errorCode
-      - details
-      properties:
-        message:
-          type: string
-          description: An error message
-        errorCode:
-          type: string
-          description: An error code
-        details:
-          oneOf:
-          - type: object
-          - type: string
-          description: Additional error details
     BrokerageContactResponse:
       type: object
       x-property-order:
@@ -403,9 +468,10 @@ components:
             - BOOKED_BY
             - CUSTOMER_REP
             - CUSTOMER_TEAM
+            - CARRIER_TEAM
             - AP_REP
             - AFTER_HOURS_REP
-          description: 'The employee''s role(s) on each load. Possible values: `CARRIER_REP` — rep who gets commission credit for the load, `OPERATIONS_REP` — manages day-to-day operations on the load, `OPERATIONS_MANAGER` — brokerage-side manager or supervisor, `ACCOUNT_MANAGER` — manages the customer relationship, `CUSTOMER_REP` — sales rep to the customer, `CUSTOMER_TEAM` — part of the broader customer team, `BOOKED_BY` — party who booked the load, `AP_REP` — Accounts Payable Specialist, who manages invoice and payment processes, `AFTER_HOURS_REP` — contact available outside of regular business hours.
+          description: 'The employee''s role(s) on each load. Possible values: `CARRIER_REP` — rep who gets commission credit for the load, `OPERATIONS_REP` — manages day-to-day operations on the load, `OPERATIONS_MANAGER` — brokerage-side manager or supervisor, `ACCOUNT_MANAGER` — manages the customer relationship, `CUSTOMER_REP` — sales rep to the customer, `CUSTOMER_TEAM` — part of the broader customer team, `CARRIER_TEAM` — team responsible for carrier-facing operations and relationships, `BOOKED_BY` — party who booked the load, `AP_REP` — Accounts Payable Specialist, who manages invoice and payment processes, `AFTER_HOURS_REP` — contact available outside of regular business hours.
 
             '
         preferredContactMode:
@@ -429,6 +495,59 @@ components:
           type: string
           nullable: true
           description: Phone extension
+    BrokerageContactRequest:
+      type: object
+      x-property-order:
+      - tmsId
+      - name
+      - email
+      - phone
+      - phoneExtension
+      - preferredContactMode
+      - roles
+      properties:
+        name:
+          type: string
+          description: Contact name
+        email:
+          type: string
+          format: email
+          description: Contact email address
+        phone:
+          type: string
+          description: Phone number in E.164 format (e.g., +13125551234)
+        phoneExtension:
+          type: string
+          description: Phone extension
+        tmsId:
+          type: string
+          description: TMS identifier for matching existing contacts. If provided, the system will match and update the existing contact.
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - CARRIER_REP
+            - ACCOUNT_MANAGER
+            - OPERATIONS_REP
+            - OPERATIONS_MANAGER
+            - BOOKED_BY
+            - CUSTOMER_REP
+            - CUSTOMER_TEAM
+            - CARRIER_TEAM
+            - AP_REP
+            - AFTER_HOURS_REP
+          description: 'The employee''s role(s) on each load. Possible values: `CARRIER_REP` — rep who gets commission credit for the load, `OPERATIONS_REP` — manages day-to-day operations on the load, `OPERATIONS_MANAGER` — brokerage-side manager or supervisor, `ACCOUNT_MANAGER` — manages the customer relationship, `CUSTOMER_REP` — sales rep to the customer, `CUSTOMER_TEAM` — part of the broader customer team, `CARRIER_TEAM` — team responsible for carrier-facing operations and relationships, `BOOKED_BY` — party who booked the load, `AP_REP` — Accounts Payable Specialist, who manages invoice and payment processes, `AFTER_HOURS_REP` — contact available outside of regular business hours.
+
+            '
+        preferredContactMode:
+          type: string
+          enum:
+          - EMAIL
+          - PHONE_CALL
+          - TEXT_MESSAGE
+          - TELEGRAM
+          description: Preferred method of contact
     CarrierContactResponse:
       type: object
       x-property-order:
@@ -460,6 +579,10 @@ components:
             - ACCOUNTANT
             - AP_REP
             - DISPATCHER
+            - AFTER_HOURS_DISPATCHER
+            - WEEKEND_DISPATCHER
+            - BOOKING
+            - TRACKING
             - DRIVER
             - OTHER
           description: 'Carrier contact roles:
@@ -469,6 +592,14 @@ components:
             - `AP_REP` — manages invoices and payments
 
             - `DISPATCHER` — Dispatcher
+
+            - `AFTER_HOURS_DISPATCHER` — dispatcher to contact outside of regular business hours
+
+            - `WEEKEND_DISPATCHER` — dispatcher to contact on weekends
+
+            - `BOOKING` — handles load booking
+
+            - `TRACKING` — handles load tracking
 
             - `DRIVER` — Driver
 
@@ -496,39 +627,109 @@ components:
           type: string
           nullable: true
           description: Phone extension
-    BulkUpsertCarriersResponse:
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
+    BulkUpsertCarriersRequest:
+      type: object
+      required:
+      - carriers
+      x-property-order:
+      - carriers
+      properties:
+        carriers:
+          type: array
+          maxItems: 20
+          description: Array of carriers to create or update. Maximum 20 carriers per request.
+          items:
+            $ref: '#/components/schemas/CarrierRequest'
+    CarrierContactRequest:
       type: object
       x-property-order:
-      - total
-      - successCount
-      - failureCount
-      - errors
+      - tmsId
+      - name
+      - email
+      - phone
+      - phoneExtension
+      - preferredContactMode
+      - roles
       properties:
-        total:
-          type: integer
-          description: Total number of carriers in the request
-          example: 2
-        successCount:
-          type: integer
-          description: Number of carriers successfully processed
-        failureCount:
-          type: integer
-          description: Number of carriers that failed to process
-        errors:
+        name:
+          type: string
+          description: Contact name
+        email:
+          type: string
+          format: email
+          description: Contact email address. Either email or phone is required.
+        phone:
+          type: string
+          description: Phone number in E.164 format (e.g., +13125551234). Either email or phone is required.
+        phoneExtension:
+          type: string
+          description: Phone extension
+        tmsId:
+          type: string
+          description: TMS identifier for matching existing contacts. If provided, the system will match and update the existing contact.
+        roles:
           type: array
-          description: Details of failures (if any)
           items:
-            type: object
-            x-property-order:
-            - index
-            - error
-            properties:
-              index:
-                type: integer
-                description: Index of the carrier in the original request array
-              error:
-                type: string
-                description: Error message
+            type: string
+            enum:
+            - ACCOUNTANT
+            - AP_REP
+            - DISPATCHER
+            - AFTER_HOURS_DISPATCHER
+            - WEEKEND_DISPATCHER
+            - BOOKING
+            - TRACKING
+            - DRIVER
+            - OTHER
+          description: 'Carrier contact roles:
+
+            - `ACCOUNTANT` — Accountant
+
+            - `AP_REP` — manages invoices and payments
+
+            - `DISPATCHER` — Dispatcher
+
+            - `AFTER_HOURS_DISPATCHER` — dispatcher to contact outside of regular business hours
+
+            - `WEEKEND_DISPATCHER` — dispatcher to contact on weekends
+
+            - `BOOKING` — handles load booking
+
+            - `TRACKING` — handles load tracking
+
+            - `DRIVER` — Driver
+
+            - `OTHER` — Other
+
+            '
+        preferredContactMode:
+          type: string
+          enum:
+          - EMAIL
+          - PHONE_CALL
+          - TEXT_MESSAGE
+          - TELEGRAM
+          description: Preferred method of contact
     CarrierResponse:
       type: object
       x-property-order:
@@ -674,6 +875,39 @@ components:
           oneOf:
           - $ref: '#/components/schemas/CarrierCustomData'
           - type: 'null'
+    BulkUpsertCarriersResponse:
+      type: object
+      x-property-order:
+      - total
+      - successCount
+      - failureCount
+      - errors
+      properties:
+        total:
+          type: integer
+          description: Total number of carriers in the request
+          example: 2
+        successCount:
+          type: integer
+          description: Number of carriers successfully processed
+        failureCount:
+          type: integer
+          description: Number of carriers that failed to process
+        errors:
+          type: array
+          description: Details of failures (if any)
+          items:
+            type: object
+            x-property-order:
+            - index
+            - error
+            properties:
+              index:
+                type: integer
+                description: Index of the carrier in the original request array
+              error:
+                type: string
+                description: Error message
     CarrierCustomData:
       type: object
       description: 'Optional metadata for the carrier. Use string keys; each value may be a string, number, boolean, array of JSON-safe values, or nested object with the same rules. Omit or send `{}` when you have nothing to store.
@@ -690,129 +924,6 @@ components:
         routing:
           defaultRegion: NS
           allowCrossBorder: false
-    BulkUpsertCarriersRequest:
-      type: object
-      required:
-      - carriers
-      x-property-order:
-      - carriers
-      properties:
-        carriers:
-          type: array
-          maxItems: 20
-          description: Array of carriers to create or update. Maximum 20 carriers per request.
-          items:
-            $ref: '#/components/schemas/CarrierRequest'
-    CarrierContactRequest:
-      type: object
-      x-property-order:
-      - tmsId
-      - name
-      - email
-      - phone
-      - phoneExtension
-      - preferredContactMode
-      - roles
-      properties:
-        name:
-          type: string
-          description: Contact name
-        email:
-          type: string
-          format: email
-          description: Contact email address. Either email or phone is required.
-        phone:
-          type: string
-          description: Phone number in E.164 format (e.g., +13125551234). Either email or phone is required.
-        phoneExtension:
-          type: string
-          description: Phone extension
-        tmsId:
-          type: string
-          description: TMS identifier for matching existing contacts. If provided, the system will match and update the existing contact.
-        roles:
-          type: array
-          items:
-            type: string
-            enum:
-            - ACCOUNTANT
-            - AP_REP
-            - DISPATCHER
-            - DRIVER
-            - OTHER
-          description: 'Carrier contact roles:
-
-            - `ACCOUNTANT` — Accountant
-
-            - `AP_REP` — manages invoices and payments
-
-            - `DISPATCHER` — Dispatcher
-
-            - `DRIVER` — Driver
-
-            - `OTHER` — Other
-
-            '
-        preferredContactMode:
-          type: string
-          enum:
-          - EMAIL
-          - PHONE_CALL
-          - TEXT_MESSAGE
-          - TELEGRAM
-          description: Preferred method of contact
-    BrokerageContactRequest:
-      type: object
-      x-property-order:
-      - tmsId
-      - name
-      - email
-      - phone
-      - phoneExtension
-      - preferredContactMode
-      - roles
-      properties:
-        name:
-          type: string
-          description: Contact name
-        email:
-          type: string
-          format: email
-          description: Contact email address
-        phone:
-          type: string
-          description: Phone number in E.164 format (e.g., +13125551234)
-        phoneExtension:
-          type: string
-          description: Phone extension
-        tmsId:
-          type: string
-          description: TMS identifier for matching existing contacts. If provided, the system will match and update the existing contact.
-        roles:
-          type: array
-          items:
-            type: string
-            enum:
-            - CARRIER_REP
-            - ACCOUNT_MANAGER
-            - OPERATIONS_REP
-            - OPERATIONS_MANAGER
-            - BOOKED_BY
-            - CUSTOMER_REP
-            - CUSTOMER_TEAM
-            - AP_REP
-            - AFTER_HOURS_REP
-          description: 'The employee''s role(s) on each load. Possible values: `CARRIER_REP` — rep who gets commission credit for the load, `OPERATIONS_REP` — manages day-to-day operations on the load, `OPERATIONS_MANAGER` — brokerage-side manager or supervisor, `ACCOUNT_MANAGER` — manages the customer relationship, `CUSTOMER_REP` — sales rep to the customer, `CUSTOMER_TEAM` — part of the broader customer team, `BOOKED_BY` — party who booked the load, `AP_REP` — Accounts Payable Specialist, who manages invoice and payment processes, `AFTER_HOURS_REP` — contact available outside of regular business hours.
-
-            '
-        preferredContactMode:
-          type: string
-          enum:
-          - EMAIL
-          - PHONE_CALL
-          - TEXT_MESSAGE
-          - TELEGRAM
-          description: Preferred method of contact
   securitySchemes:
     httpBasic:
       type: http

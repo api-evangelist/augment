@@ -1,0 +1,1009 @@
+openapi: 3.2.0
+info:
+  title: Augment Quote Management API
+  description: 'Augment is now SOC 2 Type II Certified
+
+
+    The Augment API endpoints are calls your system makes to manage loads,
+
+    carriers, and webhook configuration.
+
+    The latest version of the Augment API is hosted online.
+
+
+    ## API Endpoints
+
+
+    Endpoints your system calls to interact with Augment:
+
+
+    - Load Management
+
+    - Carrier Management
+
+    - CSV Imports
+
+    - Quote Management - implemented by the
+
+    rate provider and called by Augment
+
+    - Models
+
+    - Webhook Endpoints
+
+    - Webhook Event Subscriptions
+
+
+    Webhook management access is gated. Request access from Augment before using
+
+    these endpoints. After access is enabled, you can self-manage the webhook
+
+    endpoints that receive event payloads and the webhook event subscriptions
+
+    that control which events are sent to each endpoint.
+
+
+    Use Webhook Endpoints to create and
+
+    update the HTTPS destinations where Augment sends webhook payloads. Use
+
+    Webhook Event Subscriptions to
+
+    choose event types for each endpoint and send test deliveries.
+
+
+    Outbound webhook payloads, including Track & Trace events, are documented
+
+    separately in the Webhooks reference. Subscriptions created
+
+    through the public webhook management APIs deliver version 2 webhook payloads only.
+
+
+    Quote Management is the exception to all
+
+    of the above: that endpoint is implemented by the rate provider and called by
+
+    Augment, which cannot retrieve quotes until it is live.
+
+
+    ## Resources
+
+
+    * Homepage
+
+    * LinkedIn
+
+    * Jobs - we''re hiring!
+
+
+    ## Developer Notes
+
+
+    All date-time fields are represented as strings. The date-time notation is defined by RFC 3339, section 5.6. Examples:
+
+    - `2025-08-21T12:34:56Z`
+
+    - `2025-08-21T04:34:56-08:00`
+
+
+    However, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.
+
+
+    Example:
+
+    - `2025-08-21T12:34:56`'
+  version: 2.90.1
+servers:
+- url: https://api.prod.goaugment.com
+security:
+- httpBasic: []
+tags:
+- name: Quote Management
+  description: 'Rate quoting. This is the one endpoint in this reference implemented by the rate provider and called by Augment: Augment submits a shipment, the provider prices it and returns the applicable rates. Augment cannot retrieve quotes until the endpoint is live.
+
+
+    During setup the provider supplies Augment with the endpoint URL, the authentication method, a test endpoint where one exists, and the expected response time together with any rate limit to be observed. An API key in a request header is the usual arrangement; OAuth client credentials are also supported. Augment issues one request per quote, so volume tracks quoting activity rather than load count.
+
+
+    Conventions across the endpoint: money is a decimal number with two places rather than a string, margin is a whole percent (`17`, not `0.17`), fuel surcharge is a dollar amount, weight is an object carrying a value and a unit, dimensions are whole inches, and distances are statute miles. Dates are ISO 8601, with `quotedAt` in UTC.'
+paths:
+  /rates/quote:
+    post:
+      operationId: createRateQuote
+      tags:
+      - Quote Management
+      servers:
+      - url: https://rates.example.com/v1
+        description: 'Placeholder. The endpoint is hosted by the rate provider, so the base URL, the path, and the authentication scheme are determined by the provider. Actual values are supplied to Augment during setup.
+
+          '
+      summary: Request a rate quote
+      description: 'This endpoint is implemented by the rate provider and called by Augment. Every other endpoint in this reference operates in the opposite direction, so the distinction warrants emphasis: Augment acts as the HTTP client, and cannot retrieve quotes until the endpoint is available on the provider side. The path and base URL shown above are placeholders for the values the provider assigns.
+
+
+        Each request describes a single shipment and expects the rates that apply to it. `mode`, `rateType`, two stops carrying a city and a state, and `equipment.equipmentType` are always present. The remaining fields are included when Augment holds a value and omitted when it does not, so an omitted optional field should be read as unknown rather than as a default. An omitted `isHazmat`, for example, does not indicate that the freight is non-hazardous.
+
+
+        `dimensions` is optional, but Augment includes it whenever a value is available, so that the rate provider rather than Augment determines whether a shipment is legal or oversize. Where oversize freight falls outside the scope of an initial build, `dimensions` may be disregarded and the field reserved for later use.
+
+
+        Where a shipment cannot be priced, the response must be `200` with an empty `rates` array and a populated `noRateReason`. This condition must not be reported with an error status: an error prevents Augment from distinguishing between "no rate exists" and "the endpoint is unavailable", and the two require opposite handling. 4xx and 5xx responses are reserved for malformed requests, authentication failures, and genuine faults.
+
+
+        One request is sent per rep. When a customer email reaches several of your reps, Augment sends one request for each, with its own `augmentQuoteId` and that rep as `QUOTE_OWNER`. Create one quote per request and do not merge them.
+
+
+        A request that repeats an `augmentQuoteId` already sent is an update to that quote, not a new quote. Augment resends it when the customer replies on the same thread with changes. Treat the call as idempotent: apply the latest values and return the same `externalId`.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RateQuoteRequest'
+            example:
+              mode: FTL
+              rateType: SPOT
+              stops:
+              - sequence: 1
+                stopActivity: PICKUP
+                address:
+                  city: Houston
+                  stateOrProvince: TX
+                  postalCode: '77002'
+                  country: US
+              - sequence: 2
+                stopActivity: DELIVERY
+                address:
+                  city: Avon
+                  stateOrProvince: IN
+                  postalCode: null
+                  country: US
+              equipment:
+                equipmentType: FLATBED
+              weight:
+                value: 44000
+                unit: LB
+              dimensions:
+                lengthInches: 636
+                widthInches: 126
+                heightInches: 102
+              commodity: Steel coil
+              pickupDate: '2026-09-03'
+              totalMiles: 1015
+              tarpSize: 8 foot
+              isHazmat: false
+              hazmatUnNumber: null
+              accessorials:
+              - TARPS
+              customerName: PALRAM Americas
+              numberTruckloads: 1
+              referenceNumbers:
+              - name: TENDER_NUMBER
+                value: '0507150210'
+              contacts:
+              - role: QUOTE_OWNER
+                email: rep@provider.example.com
+              - role: QUOTE_REQUESTER
+                name: Jane Shipper
+              email:
+                direction: INBOUND
+                messageId: <abc123@mail.shipper.example.com>
+                sentAt: '2026-09-02T14:05:00Z'
+                subject: Spot quote request Houston, TX to Avon, IN
+                participants:
+                  from:
+                    name: Jane Shipper
+                    address: jane@shipper.example.com
+                  to:
+                  - address: rep@provider.example.com
+                  cc: []
+                body: Can you quote a flatbed of steel coil, Houston TX to Avon IN, 44,000 lbs, pick up 9/3?
+                summary: Spot quote, flatbed steel coil, Houston TX to Avon IN, 44,000 lbs, pickup 9/3
+                classification: QUOTE_REQUEST
+                attachmentCount: 0
+              customData: {}
+              augmentQuoteId: 01kzry3mzq8f4h2n7v9x1c3b5d
+      responses:
+        '200':
+          description: 'The applicable rates. Also the response for a shipment that cannot be priced: an empty `rates` array plus a `noRateReason`.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateQuoteResponse'
+              example:
+                augmentQuoteId: 01kzry3mzq8f4h2n7v9x1c3b5d
+                externalId: Q-448120
+                quotedAt: '2026-08-27T14:22:10Z'
+                currency: USD
+                totalMiles: 1015
+                rates:
+                - source: ATS_SPECIALIZED
+                  linehaul: 4800
+                  fuelSurcharge: 1000
+                  fuelSurchargePct: 20.8
+                  allInTotal: 5800
+                  costPerMile: 4.73
+                  marginPct: 17
+                  accessorials:
+                  - code: PERMITS
+                    label: Permit charges
+                    amount: 4.18
+                    basis: FLAT
+                  - code: OVERSIZE
+                    label: OD over 10 feet
+                    amount: 0.45
+                    basis: PER_MILE
+                  - code: STOP_OFF_CHARGE
+                    label: Stop-off fee
+                    amount: 150
+                    basis: PER_STOP
+                - source: DAT
+                  linehaul: 4550
+                  fuelSurcharge: 980
+                  fuelSurchargePct: null
+                  allInTotal: 5530
+                  costPerMile: 4.48
+                  marginPct: null
+                  accessorials: []
+                noRateReason: null
+                noRateDetail: null
+        '400':
+          description: Malformed request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '500':
+          description: 'Rating failed. Reserved for genuine faults. A shipment that simply cannot be priced is a 200 with a `noRateReason`.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+components:
+  schemas:
+    RateQuoteResponse:
+      type: object
+      description: 'The rates that apply to the shipment. `rates` is empty and `noRateReason` is set where the shipment cannot be priced.
+
+        '
+      required:
+      - augmentQuoteId
+      - quotedAt
+      - currency
+      - rates
+      x-property-order:
+      - augmentQuoteId
+      - externalId
+      - quotedAt
+      - currency
+      - totalMiles
+      - rates
+      - noRateReason
+      - noRateDetail
+      properties:
+        augmentQuoteId:
+          type: string
+          description: The `augmentQuoteId` from the request, echoed back unchanged
+        externalId:
+          type:
+          - string
+          - 'null'
+          description: 'Your id for the quote this request created, such as the TMS quote number. Augment stores it against `augmentQuoteId`.
+
+            '
+        quotedAt:
+          type: string
+          format: date-time
+          description: When the rate was produced, in UTC
+        currency:
+          type: string
+          enum:
+          - USD
+          - CAD
+          description: 'Currency for every money field in the response. Cross-border lanes are in scope, so CAD is supported.
+
+            '
+        totalMiles:
+          type:
+          - number
+          - 'null'
+          description: 'The mileage the rates were actually priced against. Augment prefers this over the estimate it sent, and extends `PER_MILE` accessorials with it.
+
+            '
+        rates:
+          type: array
+          description: 'One entry per rating source. Empty where the shipment cannot be priced.
+
+
+            A list keyed by `source` rather than a fixed field per rater means adding a source later is additive instead of a breaking change.
+
+            '
+          items:
+            $ref: '#/components/schemas/Rate'
+        noRateReason:
+          type:
+          - string
+          - 'null'
+          description: 'Why there is no rate. Required when `rates` is empty, and null whenever `rates` has at least one entry.
+
+
+            An enum rather than free text so Augment can route the quote without parsing a message. `MISSING_REQUIRED_INPUT` is the only value Augment can act on automatically: the request was well formed but did not carry a value the provider requires, so Augment can obtain it from the customer and retry. Every other value is final for that shipment and routes the quote to a rep.
+
+            '
+          enum:
+          - LANE_NOT_SERVICED
+          - NO_CAPACITY
+          - EQUIPMENT_NOT_SUPPORTED
+          - HAZMAT_NOT_SUPPORTED
+          - OVERSIZE_OUT_OF_SCOPE
+          - COMMODITY_RESTRICTED
+          - CUSTOMER_NOT_FOUND
+          - MISSING_REQUIRED_INPUT
+          - RATE_UNAVAILABLE
+          - OTHER
+          - null
+        noRateDetail:
+          type:
+          - string
+          - 'null'
+          description: 'Optional free text expanding on `noRateReason`, shown to the rep working the quote. Augment does not parse it.
+
+            '
+    QuoteEquipmentType:
+      type: string
+      description: 'A subset of the platform equipment enum, weighted toward specialized and oversize trailers.
+
+
+        Closed set for this endpoint. The full platform enum runs to over a hundred values and carries aliases for the same trailer, so provider trailer codes should be mapped onto these values, with `OTHER` sent where nothing fits, rather than a synonym Augment may not map back.
+
+        '
+      enum:
+      - DRY_VAN
+      - REEFER
+      - FLATBED
+      - FLATBED_WITH_TARPS
+      - FLATBED_OVERDIMENSION
+      - FLATBED_STRETCH
+      - STEP_DECK
+      - STEP_DECK_OR_REM_GOOSENECK_RGN
+      - DOUBLE_DROP
+      - LOWBOY
+      - LOWBOY_OR_REM_GOOSENECK_RGN
+      - LOWBOY_OVERDIMENSION
+      - REMOVABLE_GOOSENECK
+      - CONESTOGA
+      - STRETCH_TRAILER
+      - WALKING_FLOOR
+      - OTHER
+    QuoteContact:
+      type: object
+      required:
+      - role
+      x-property-order:
+      - role
+      - name
+      - email
+      properties:
+        role:
+          type: string
+          enum:
+          - QUOTE_OWNER
+          - QUOTE_REQUESTER
+          description: '`QUOTE_OWNER` is the provider''s rep who owns the quote. `QUOTE_REQUESTER` is the customer contact who asked for it.
+
+            '
+        name:
+          type:
+          - string
+          - 'null'
+          description: Contact name, when known
+        email:
+          type:
+          - string
+          - 'null'
+          format: email
+          description: Contact email address, when known
+    QuoteEmailAddress:
+      type: object
+      required:
+      - address
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: Display name, when present
+        address:
+          type: string
+          format: email
+          description: Email address
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
+    QuoteEmail:
+      type:
+      - object
+      - 'null'
+      description: 'The email that triggered this quote. When one thread carries several quote requests, this is the message that produced this quote, not the first message in the thread.
+
+        '
+      x-property-order:
+      - direction
+      - messageId
+      - sentAt
+      - subject
+      - participants
+      - body
+      - summary
+      - classification
+      - attachmentCount
+      properties:
+        direction:
+          type: string
+          enum:
+          - INBOUND
+          description: Direction of the email relative to the provider's rep
+        messageId:
+          type:
+          - string
+          - 'null'
+          description: 'Internet Message-ID of the triggering email (the RFC 5322 `Message-ID` header). It stays the same across folders and mailboxes. To open the email in Microsoft 365, look it up with Microsoft Graph: `GET /users/{rep}/messages?$filter=internetMessageId eq ''{messageId}''`, which returns the message `id` and `webLink`.
+
+            '
+        sentAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the triggering email was sent, in UTC
+        subject:
+          type:
+          - string
+          - 'null'
+          description: Subject line of the triggering email
+        participants:
+          type: object
+          description: Sender and recipients of the triggering email
+          properties:
+            from:
+              $ref: '#/components/schemas/QuoteEmailAddress'
+            to:
+              type: array
+              items:
+                $ref: '#/components/schemas/QuoteEmailAddress'
+            cc:
+              type: array
+              items:
+                $ref: '#/components/schemas/QuoteEmailAddress'
+        body:
+          type:
+          - string
+          - 'null'
+          description: 'Plain-text body of the triggering email, as received. A reply or forward includes the quoted history it carried.
+
+            '
+        summary:
+          type:
+          - string
+          - 'null'
+          description: 'Short summary of the request, written by Augment. A convenience for the rep; `body` stays the source of truth.
+
+            '
+        classification:
+          type:
+          - string
+          - 'null'
+          description: 'How Augment classified the email, for example `QUOTE_REQUEST`.
+
+            '
+        attachmentCount:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Number of attachments on the triggering email, when known
+    RateAccessorial:
+      type: object
+      description: 'One priced accessorial. `basis` is what lets a flat permit charge and a per-mile oversize charge share one shape.
+
+        '
+      required:
+      - code
+      - amount
+      - basis
+      x-property-order:
+      - code
+      - label
+      - amount
+      - basis
+      properties:
+        code:
+          $ref: '#/components/schemas/AccessorialsEnum'
+        label:
+          type:
+          - string
+          - 'null'
+          description: The charge as the provider words it, shown to the rep
+        amount:
+          type: number
+          description: 'The amount, read according to `basis`. A `PER_MILE` amount is the rate per mile, not the extended total.
+
+            '
+        basis:
+          type: string
+          description: 'How `amount` applies. `FLAT` is charged once for the shipment, `PER_MILE` is multiplied by the route mileage, and `PER_STOP` is charged for each stop beyond the first pickup and last delivery.
+
+            '
+          enum:
+          - FLAT
+          - PER_MILE
+          - PER_STOP
+    Rate:
+      type: object
+      description: 'One rate from one rating source.
+
+
+        `linehaul`, `fuelSurcharge` and `allInTotal` are all required every time. Augment does not add the parts up and does not subtract them out of the total. When they disagree it flags the rate for a person instead of picking a number to trust.
+
+        '
+      required:
+      - source
+      - linehaul
+      - fuelSurcharge
+      - allInTotal
+      x-property-order:
+      - source
+      - linehaul
+      - fuelSurcharge
+      - fuelSurchargePct
+      - allInTotal
+      - costPerMile
+      - marginPct
+      - accessorials
+      properties:
+        source:
+          type: string
+          description: 'The system or model that produced the rate.
+
+
+            Not a closed set. New rating sources are added over time and Augment tolerates a value it has not seen, so the examples below are not exhaustive. Values should use UPPER_SNAKE_CASE, and a given source''s value should remain stable between responses.
+
+
+            The values are vendor-neutral on purpose: the same field carries a specialized in-house rate, a market rate, or a model added later, without either side reserving vendor-specific names.
+
+            '
+          examples:
+          - ATS_SPECIALIZED
+          - DAT
+          - CONTRACT_TARIFF
+          - INTERNAL_MODEL
+          - RATE_HISTORY
+        linehaul:
+          type: number
+          description: Linehaul amount, before fuel and accessorials
+        fuelSurcharge:
+          type: number
+          description: 'Fuel surcharge in dollars, not a percent. Send 0 rather than leaving it out when a rate carries no fuel surcharge.
+
+            '
+        fuelSurchargePct:
+          type:
+          - number
+          - 'null'
+          description: 'The fuel surcharge as a whole percent, where the provider holds it in that form. Sent alongside `fuelSurcharge`, never instead of it.
+
+            '
+        allInTotal:
+          type: number
+          description: 'Total rate including linehaul, fuel and any accessorials already rolled in.
+
+            '
+        costPerMile:
+          type:
+          - number
+          - 'null'
+          description: 'Cost per mile for this rate, where the provider calculates it
+
+            '
+        marginPct:
+          type:
+          - number
+          - 'null'
+          description: 'Margin as a whole percent: 17, not 0.17.
+
+
+            When a rate carries a margin, Augment seeds its margin selector with it and does not stack a second margin on top; a rep override is still tracked. Send null when the source has no margin of its own, as with a raw market rate.
+
+            '
+        accessorials:
+          type: array
+          description: 'The accessorials that apply to this shipment on this rate, with amounts. Send an empty array when none do.
+
+
+            Augment asks for these per rate instead of keeping its own table, because a table cannot represent a route-dependent charge such as metro tolls, bridge and island fees, or county and city permits, and goes stale silently whenever a charge changes on the provider side.
+
+            '
+          items:
+            $ref: '#/components/schemas/RateAccessorial'
+    AccessorialsEnum:
+      type: string
+      description: 'Accessorial code representing an additional service or requirement for a load. This is not a closed set — new accessorial codes may be added at any time. Values are normalized to UPPER_SNAKE_CASE (e.g., `inside delivery` → `INSIDE_DELIVERY`).
+
+        '
+      examples:
+      - AFTER_HOURS
+      - BULK_HEAD
+      - CHAINS
+      - CONSTRUCTION_SITE
+      - DELIVERY_APPOINTMENT
+      - DETENTION
+      - DETENTION_LOADING
+      - DETENTION_UNLOADING
+      - DRIVER_ASSIST
+      - DRIVER_COUNT
+      - E_TRACKING
+      - FOOD_GRADE
+      - FORKLIFT
+      - GENERAL_LIABILITY
+      - GUARANTEED_APPOINTMENT_DELIVERY
+      - HAZMAT
+      - HIGH_VALUE
+      - HIGH_VISIBILITY
+      - HOLIDAY
+      - INSIDE_DELIVERY
+      - INSIDE_PICKUP
+      - LAYOVER
+      - LIFTGATE
+      - LIMITED_ACCESS
+      - LOAD_BAR
+      - LUMPER
+      - MILITARY_BASE
+      - NOTIFY_BEFORE_ARRIVAL
+      - OVERSIZE
+      - OVERWEIGHT
+      - OVER_LENGTH_SHIPMENT
+      - PICKUP_APPOINTMENT
+      - POD_REQUIRED
+      - PROTECT_FROM_FREEZE
+      - RAMPS
+      - RESIDENTIAL
+      - SIGNATURE_REQUIRED
+      - SORT_AND_SEGREGATE
+      - STOP_OFF_CHARGE
+      - STRAPS
+      - TANKER_ENDORSED
+      - TARGETED_COMMODITY
+      - TARPS
+      - TEAM_SERVICE
+      - TEMPERATURE_REQUIREMENT
+      - TRADESHOW
+      - TRAILER_CLEANING
+      - TONU
+      - TRAILER_INTERCHANGE
+      - TWIC
+      - WEEKEND
+    RateQuoteRequest:
+      type: object
+      description: 'One shipment to be priced. `mode`, `rateType`, `stops`, `equipment` and `augmentQuoteId` are always sent. The rest is sent when Augment has it, so treat a missing field as unknown rather than as a default.
+
+        '
+      required:
+      - mode
+      - rateType
+      - stops
+      - equipment
+      - augmentQuoteId
+      x-property-order:
+      - mode
+      - rateType
+      - stops
+      - equipment
+      - weight
+      - dimensions
+      - commodity
+      - pickupDate
+      - totalMiles
+      - tarpSize
+      - isHazmat
+      - hazmatUnNumber
+      - accessorials
+      - customerName
+      - numberTruckloads
+      - wellspaceInches
+      - referenceNumbers
+      - contacts
+      - email
+      - customData
+      - augmentQuoteId
+      properties:
+        mode:
+          description: Transportation mode. Same values as `Load.mode`.
+          enum:
+          - DRAYAGE
+          - EXPEDITE
+          - FTL
+          - LTL
+          - PARTIAL
+        rateType:
+          description: 'The commercial basis of the rate being asked for. Same values as `Load.rateType`.
+
+            '
+          enum:
+          - CONTRACT
+          - DEDICATED
+          - PROJECT
+          - SPOT
+        stops:
+          type: array
+          minItems: 2
+          description: 'The route in sequence. One `PICKUP` and one `DELIVERY` is the floor and is enough to return a rate.
+
+
+            This is an array rather than an origin and destination pair so a third or later stop is visible in the request. You cannot charge a stop-off fee against a lane that doesn''t show the stop.
+
+            '
+          items:
+            $ref: '#/components/schemas/QuoteStop'
+        equipment:
+          type: object
+          description: Equipment needed to move the shipment
+          required:
+          - equipmentType
+          properties:
+            equipmentType:
+              $ref: '#/components/schemas/QuoteEquipmentType'
+        weight:
+          type:
+          - object
+          - 'null'
+          description: 'Total shipment weight. An object rather than a bare number, matching the load contract, so the unit is never guessed.
+
+            '
+          x-property-order:
+          - value
+          - unit
+          properties:
+            value:
+              type: number
+              description: Weight amount
+            unit:
+              type: string
+              enum:
+              - LB
+              - KG
+              description: Unit of measure for the weight
+        dimensions:
+          type:
+          - object
+          - 'null'
+          description: 'Overall shipment dimensions in whole inches. Legal width runs to roughly 12 feet; wider than that generally needs escorts.
+
+            '
+          x-property-order:
+          - lengthInches
+          - widthInches
+          - heightInches
+          properties:
+            lengthInches:
+              type: integer
+              description: Overall length in whole inches
+            widthInches:
+              type: integer
+              description: Overall width in whole inches
+            heightInches:
+              type: integer
+              description: Overall height in whole inches
+        commodity:
+          type:
+          - string
+          - 'null'
+          description: Free-text description of the freight
+        pickupDate:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: Requested pickup day
+        totalMiles:
+          type:
+          - number
+          - 'null'
+          description: 'Augment''s mileage estimate, when it has one. Advisory only: rating should use the provider''s own mileage, which is then returned on the response.
+
+            '
+        tarpSize:
+          type:
+          - string
+          - 'null'
+          description: Tarp size requirement, when the freight needs tarping
+        isHazmat:
+          type:
+          - boolean
+          - 'null'
+          description: 'Whether the shipment carries hazardous materials. Missing means unknown, not false.
+
+            '
+        hazmatUnNumber:
+          type:
+          - string
+          - 'null'
+          pattern: ^UN[0-9]{4}$
+          description: 'UN number for the hazardous material, `UN` followed by four digits. Sent only when `isHazmat` is true and the source document carried the number.
+
+            '
+          examples:
+          - UN1090
+          - UN1203
+        accessorials:
+          type:
+          - array
+          - 'null'
+          description: 'Accessorial codes Augment already knows the shipment needs, such as `TARPS` or `TWIC`. Advisory only. You return the priced accessorials on each rate and are not limited to what''s listed here.
+
+            '
+          items:
+            $ref: '#/components/schemas/AccessorialsEnum'
+        customerName:
+          type:
+          - string
+          - 'null'
+          description: The shipper the quote is for, when a customer rate applies
+        augmentQuoteId:
+          type: string
+          description: 'Augment''s id for this quote. Echo it back unchanged. Treat it as an opaque string.
+
+            '
+        numberTruckloads:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          description: 'Number of truckloads on this lane. Missing means 1. One request covers one lane; several truckloads on the same lane are counted here rather than sent as separate requests.
+
+            '
+        wellspaceInches:
+          type:
+          - integer
+          - 'null'
+          description: 'Well space needed, in whole inches, for drop-deck freight. A separate field rather than part of `dimensions`, because it describes the trailer requirement, not the freight.
+
+            '
+        referenceNumbers:
+          type:
+          - array
+          - 'null'
+          description: 'Reference numbers the customer put on the request, such as a tender or spot-bid number. Use them to recognize a follow-up on the same request.
+
+            '
+          items:
+            type: object
+            required:
+            - name
+            - value
+            properties:
+              name:
+                $ref: '#/components/schemas/QuoteReferenceNumberName'
+              value:
+                type: string
+        contacts:
+          type: array
+          description: 'People on the quote. Exactly one `QUOTE_OWNER` is always sent: the rep whose mailbox received the request. `QUOTE_REQUESTER` is the customer contact who asked, when known.
+
+            '
+          items:
+            $ref: '#/components/schemas/QuoteContact'
+        email:
+          $ref: '#/components/schemas/QuoteEmail'
+        customData:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+          description: 'Additional fields Augment can reliably parse from the email, agreed with each provider during setup, such as a customer-specific code. Keys and values are defined per provider. Ignore any key you do not use.
+
+            '
+    QuoteReferenceNumberName:
+      description: Kind of reference number on a quote request
+      enum:
+      - TENDER_NUMBER
+      - PO_NUMBER
+      - BOL_NUMBER
+      - OTHER
+    QuoteStop:
+      type: object
+      description: 'One stop on the route. A rate request describes a geographic point rather than a facility, so no street address is sent.
+
+        '
+      required:
+      - sequence
+      - stopActivity
+      - address
+      x-property-order:
+      - sequence
+      - stopActivity
+      - address
+      properties:
+        sequence:
+          type: integer
+          minimum: 1
+          description: 'Position of the stop in the route. Starts at 1 and goes up by 1 for each stop after it.
+
+            '
+        stopActivity:
+          enum:
+          - PICKUP
+          - DELIVERY
+        address:
+          type: object
+          description: 'A geographic point. The field names match `LoadRouteStop.address`, but only `city`, `stateOrProvince` and `country` are required. Quote requests routinely arrive with no ZIP, and street lines are never sent.
+
+            '
+          required:
+          - city
+          - stateOrProvince
+          - country
+          x-property-order:
+          - city
+          - stateOrProvince
+          - postalCode
+          - country
+          properties:
+            city:
+              type: string
+              description: City name
+            stateOrProvince:
+              type: string
+              description: State or province code
+            postalCode:
+              type:
+              - string
+              - 'null'
+              description: Postal or ZIP code, when the source document had one
+            country:
+              type: string
+              enum:
+              - US
+              - CA
+              - MX
+              description: Two-letter ISO country code
+  securitySchemes:
+    httpBasic:
+      type: http
+      scheme: basic
+      description: 'Authenticate with HTTP Basic auth by sending an empty username and your API key as the password, equivalent to encoding :<API_KEY> in the Basic credential.
+
+        '
+x-ext-urls: {}

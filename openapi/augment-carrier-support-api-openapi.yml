@@ -6,8 +6,93 @@ info:
 
     The Augment API endpoints are calls your system makes to manage loads,
 
-    carriers, and webhook configuration.'
-  version: 20.0.1
+    carriers, and webhook configuration.
+
+    The latest version of the Augment API is hosted online.
+
+
+    ## API Endpoints
+
+
+    Endpoints your system calls to interact with Augment:
+
+
+    - Load Management
+
+    - Carrier Management
+
+    - CSV Imports
+
+    - Quote Management - implemented by the
+
+    rate provider and called by Augment
+
+    - Models
+
+    - Webhook Endpoints
+
+    - Webhook Event Subscriptions
+
+
+    Webhook management access is gated. Request access from Augment before using
+
+    these endpoints. After access is enabled, you can self-manage the webhook
+
+    endpoints that receive event payloads and the webhook event subscriptions
+
+    that control which events are sent to each endpoint.
+
+
+    Use Webhook Endpoints to create and
+
+    update the HTTPS destinations where Augment sends webhook payloads. Use
+
+    Webhook Event Subscriptions to
+
+    choose event types for each endpoint and send test deliveries.
+
+
+    Outbound webhook payloads, including Track & Trace events, are documented
+
+    separately in the Webhooks reference. Subscriptions created
+
+    through the public webhook management APIs deliver version 2 webhook payloads only.
+
+
+    Quote Management is the exception to all
+
+    of the above: that endpoint is implemented by the rate provider and called by
+
+    Augment, which cannot retrieve quotes until it is live.
+
+
+    ## Resources
+
+
+    * Homepage
+
+    * LinkedIn
+
+    * Jobs - we''re hiring!
+
+
+    ## Developer Notes
+
+
+    All date-time fields are represented as strings. The date-time notation is defined by RFC 3339, section 5.6. Examples:
+
+    - `2025-08-21T12:34:56Z`
+
+    - `2025-08-21T04:34:56-08:00`
+
+
+    However, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.
+
+
+    Example:
+
+    - `2025-08-21T12:34:56`'
+  version: 2.90.1
 servers:
 - url: https://api.prod.goaugment.com
 security:

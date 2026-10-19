@@ -1,0 +1,460 @@
+openapi: 3.2.0
+info:
+  title: Augment Facility Management API
+  description: 'Augment is now SOC 2 Type II Certified
+
+
+    The Augment API endpoints are calls your system makes to manage loads,
+
+    carriers, and webhook configuration.
+
+    The latest version of the Augment API is hosted online.
+
+
+    ## API Endpoints
+
+
+    Endpoints your system calls to interact with Augment:
+
+
+    - Load Management
+
+    - Carrier Management
+
+    - CSV Imports
+
+    - Quote Management - implemented by the
+
+    rate provider and called by Augment
+
+    - Models
+
+    - Webhook Endpoints
+
+    - Webhook Event Subscriptions
+
+
+    Webhook management access is gated. Request access from Augment before using
+
+    these endpoints. After access is enabled, you can self-manage the webhook
+
+    endpoints that receive event payloads and the webhook event subscriptions
+
+    that control which events are sent to each endpoint.
+
+
+    Use Webhook Endpoints to create and
+
+    update the HTTPS destinations where Augment sends webhook payloads. Use
+
+    Webhook Event Subscriptions to
+
+    choose event types for each endpoint and send test deliveries.
+
+
+    Outbound webhook payloads, including Track & Trace events, are documented
+
+    separately in the Webhooks reference. Subscriptions created
+
+    through the public webhook management APIs deliver version 2 webhook payloads only.
+
+
+    Quote Management is the exception to all
+
+    of the above: that endpoint is implemented by the rate provider and called by
+
+    Augment, which cannot retrieve quotes until it is live.
+
+
+    ## Resources
+
+
+    * Homepage
+
+    * LinkedIn
+
+    * Jobs - we''re hiring!
+
+
+    ## Developer Notes
+
+
+    All date-time fields are represented as strings. The date-time notation is defined by RFC 3339, section 5.6. Examples:
+
+    - `2025-08-21T12:34:56Z`
+
+    - `2025-08-21T04:34:56-08:00`
+
+
+    However, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.
+
+
+    Example:
+
+    - `2025-08-21T12:34:56`'
+  version: 2.90.1
+servers:
+- url: https://api.prod.goaugment.com
+security:
+- httpBasic: []
+tags:
+- name: Facility Management
+  description: Public API endpoints for creating and updating facilities.
+paths:
+  /v2/facilities:
+    post:
+      operationId: upsertFacility
+      tags:
+      - Facility Management
+      summary: Create or update a facility
+      description: 'Create or update a single facility, keyed on the `externalId` you send. An `externalId` not yet seen for your brokerage creates a facility; one already stored updates it.
+
+
+        **This is a whole-record replace, not a partial update.** Any field omitted from the body is cleared on an existing facility rather than left as it was. Send the complete record on every call. Posting a facility without `notes`, for example, erases notes already stored against it.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicFacilityRequest'
+      responses:
+        '200':
+          description: Facility created or updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicFacilityResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '422':
+          description: 'A field is missing or invalid. `details` names the field.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+  /v2/facilities/bulk:
+    post:
+      operationId: bulkUpsertFacilities
+      tags:
+      - Facility Management
+      summary: Bulk create or update facilities
+      description: 'Create or update up to 20 facilities in one request. The response returns one result per input record, in the same order.
+
+
+        **Every record is a whole-record replace**, on the same terms as the single-facility route above. Omitted fields are cleared.
+
+
+        Records are processed independently. A record that fails a value check, such as a malformed email or an unknown country, is returned with `status: FAILED` and the rest still apply.
+
+
+        If any record is missing `externalId` or `name`, or has a field of the wrong type, the whole request is rejected with a `422` and nothing is written.
+
+
+        More than 20 facilities is rejected with a `400`.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkUpsertFacilitiesRequest'
+      responses:
+        '200':
+          description: 'Bulk operation completed. Check each entry in `results`; a `200` does not mean every record succeeded.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkUpsertFacilitiesResponse'
+        '400':
+          description: Batch size exceeded; send at most 20 facilities per request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '422':
+          description: 'A facility is missing a required field or has a field of the wrong type. Nothing is written.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+components:
+  schemas:
+    PublicFacilityAddressRequest:
+      type: object
+      description: 'Address as posted. An omitted `country` resolves to US.
+
+        '
+      required:
+      - street1
+      - city
+      - postalCode
+      x-property-order:
+      - street1
+      - street2
+      - city
+      - stateOrProvince
+      - postalCode
+      - country
+      properties:
+        street1:
+          type: string
+          example: 1200 W Loop S
+        street2:
+          type: string
+          nullable: true
+          example: Suite 400
+        city:
+          type: string
+          example: Houston
+        stateOrProvince:
+          type: string
+          nullable: true
+          description: 'Uppercased and validated against the country. Required for US addresses.
+
+            '
+          example: TX
+        postalCode:
+          type: string
+          example: '77027'
+        country:
+          type: string
+          description: 'ISO alpha-2 or alpha-3 code, or a country name. Stored as alpha-2.
+
+            '
+          example: US
+    BulkUpsertFacilitiesResponse:
+      type: object
+      x-property-order:
+      - total
+      - successCount
+      - failureCount
+      - results
+      properties:
+        total:
+          type: integer
+          description: Number of facilities in the request.
+          example: 2
+        successCount:
+          type: integer
+          description: Number written.
+        failureCount:
+          type: integer
+          description: Number that failed.
+        results:
+          type: array
+          description: One result per input index, in request order.
+          items:
+            $ref: '#/components/schemas/PublicFacilityResult'
+    PublicFacilityResponse:
+      type: object
+      x-property-order:
+      - facilityId
+      - externalId
+      - name
+      - address
+      - email
+      - phone
+      - phoneExtension
+      - notes
+      properties:
+        facilityId:
+          type: string
+          description: Augment's identifier for the facility.
+        externalId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        address:
+          allOf:
+          - $ref: '#/components/schemas/PublicFacilityAddress'
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        phoneExtension:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
+    PublicFacilityResult:
+      type: object
+      description: One entry per input index, in request order.
+      x-property-order:
+      - index
+      - status
+      - externalId
+      - facilityId
+      - error
+      properties:
+        index:
+          type: integer
+          description: Position of the facility in the request array.
+          example: 0
+        status:
+          $ref: '#/components/schemas/PublicFacilityResultStatus'
+        externalId:
+          type: string
+          nullable: true
+        facilityId:
+          type: string
+          nullable: true
+          description: Set when the record was written; null on failure.
+        error:
+          type: string
+          nullable: true
+          description: Why this record failed; null on success.
+    PublicFacilityResultStatus:
+      type: string
+      enum:
+      - SUCCESS
+      - FAILED
+      description: Whether this record was written.
+    BulkUpsertFacilitiesRequest:
+      type: object
+      required:
+      - facilities
+      x-property-order:
+      - facilities
+      properties:
+        facilities:
+          type: array
+          maxItems: 20
+          description: Maximum 20 per request.
+          items:
+            $ref: '#/components/schemas/PublicFacilityRequest'
+    PublicFacilityAddress:
+      type: object
+      description: Address as stored, with every field resolved.
+      x-property-order:
+      - street1
+      - street2
+      - city
+      - stateOrProvince
+      - postalCode
+      - country
+      properties:
+        street1:
+          type: string
+        street2:
+          type: string
+          nullable: true
+        city:
+          type: string
+        stateOrProvince:
+          type: string
+          nullable: true
+        postalCode:
+          type: string
+        country:
+          type: string
+    PublicFacilityRequest:
+      type: object
+      required:
+      - externalId
+      - name
+      x-property-order:
+      - externalId
+      - name
+      - address
+      - email
+      - phone
+      - phoneExtension
+      - notes
+      properties:
+        externalId:
+          type: string
+          maxLength: 255
+          description: Your identifier for the facility. Used as the upsert key.
+          example: EXP-00142
+        name:
+          type: string
+          maxLength: 255
+          example: Houston Distribution Center
+        address:
+          allOf:
+          - $ref: '#/components/schemas/PublicFacilityAddressRequest'
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: dock@example.com
+        phone:
+          type: string
+          nullable: true
+          description: Normalized to E.164.
+          example: '+17135550100'
+        phoneExtension:
+          type: string
+          maxLength: 30
+          nullable: true
+          example: '204'
+        notes:
+          type: string
+          nullable: true
+  securitySchemes:
+    httpBasic:
+      type: http
+      scheme: basic
+      description: 'Authenticate with HTTP Basic auth by sending an empty username and your API key as the password, equivalent to encoding :<API_KEY> in the Basic credential.
+
+        '
+x-ext-urls: {}

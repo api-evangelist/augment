@@ -1,0 +1,74 @@
+openapi: 3.2.0
+info:
+  title: Augment Carrier Support API
+  description: 'Augment is now SOC 2 Type II Certified
+
+
+    The Augment API endpoints are calls your system makes to manage loads,
+
+    carriers, and webhook configuration.'
+  version: 20.0.1
+servers:
+- url: https://api.prod.goaugment.com
+security:
+- httpBasic: []
+tags:
+- name: Carrier Support
+  description: Public API endpoints for correlating carrier issues (detention, lumper, TONU, etc.) with the matching incidents in your TMS. Access is gated by brokerage; talk to Augment before using these endpoints.
+paths:
+  /v2/carrier-issues/external-ref:
+    post:
+      operationId: reportCarrierIssueExternalId
+      tags:
+      - Carrier Support
+      summary: Report the external incident id for a carrier issue
+      description: 'After you receive a `CARRIER_ISSUE_UPDATED` webhook and create the incident in your own TMS, call this endpoint with the `carrierIssueId` from that webhook and your incident id (`externalId`). Augment stores the correlation so subsequent `CARRIER_ISSUE_UPDATED` events for the same issue include your `externalId` — letting you update the existing incident in place instead of creating a duplicate.
+
+
+        The call is idempotent: sending it again for the same `carrierIssueId` just updates the stored `externalId`. It is optional — if you never call it, events keep arriving without an `externalId` and nothing else changes.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarrierIssueExternalRefRequest'
+            example:
+              carrierIssueId: 01JCARRIERISSUERECORD00001
+              externalId: TMS-INC-30275
+      responses:
+        '204':
+          description: External reference recorded
+        '422':
+          description: Invalid payload
+components:
+  schemas:
+    CarrierIssueExternalRefRequest:
+      type: object
+      description: 'Correlates a carrier issue from a CARRIER_ISSUE_UPDATED webhook with the matching incident id in your TMS.
+
+        '
+      required:
+      - carrierIssueId
+      - externalId
+      x-property-order:
+      - carrierIssueId
+      - externalId
+      properties:
+        carrierIssueId:
+          type: string
+          description: 'The correlation token from the CARRIER_ISSUE_UPDATED webhook payload.
+
+            '
+          example: 01JCARRIERISSUERECORD00001
+        externalId:
+          type: string
+          description: The incident id in your TMS.
+          example: TMS-INC-30275
+  securitySchemes:
+    httpBasic:
+      type: http
+      scheme: basic
+      description: 'Authenticate with HTTP Basic auth by sending an empty username and your API key as the password, equivalent to encoding :<API_KEY> in the Basic credential.
+
+        '
+x-ext-urls: {}

@@ -1,13 +1,17 @@
 {
   "provider": "augment",
   "sources": [
-    "_original/augment-openapi-original.json"
+    "_original/augment-openapi.json"
   ],
   "outputs": [
     "augment-api-key-api-openapi.yml",
+    "augment-csv-imports-api-openapi.yml",
     "augment-carrier-management-api-openapi.yml",
     "augment-carrier-support-api-openapi.yml",
+    "augment-facility-management-api-openapi.yml",
     "augment-load-management-api-openapi.yml",
+    "augment-purchase-order-management-api-openapi.yml",
+    "augment-quote-management-api-openapi.yml",
     "augment-webhook-endpoints-api-openapi.yml",
     "augment-webhook-event-subscriptions-api-openapi.yml"
   ],
@@ -16,15 +20,8 @@
   "warnings": [],
   "notes": [
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
-    "augment-openapi-original.json: upgraded openapi 3.1.1 -> OpenAPI 3.2.0",
-    "apis.yml register: already-registered"
+    "augment-openapi.json: upgraded openapi 3.1.1 -> OpenAPI 3.2.0",
+    "apis.yml register: written (+4 apis, 10 total)"
   ],
-  "skipped": [
-    "augment-api-key-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "augment-carrier-management-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "augment-carrier-support-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "augment-load-management-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "augment-webhook-endpoints-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "augment-webhook-event-subscriptions-api-openapi.yml: previously refined output, superseded by openapi/_original/"
-  ]
+  "skipped": []
 }

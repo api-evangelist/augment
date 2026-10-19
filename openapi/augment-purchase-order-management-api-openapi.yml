@@ -1,0 +1,572 @@
+openapi: 3.2.0
+info:
+  title: Augment Purchase Order Management API
+  description: 'Augment is now SOC 2 Type II Certified
+
+
+    The Augment API endpoints are calls your system makes to manage loads,
+
+    carriers, and webhook configuration.
+
+    The latest version of the Augment API is hosted online.
+
+
+    ## API Endpoints
+
+
+    Endpoints your system calls to interact with Augment:
+
+
+    - Load Management
+
+    - Carrier Management
+
+    - CSV Imports
+
+    - Quote Management - implemented by the
+
+    rate provider and called by Augment
+
+    - Models
+
+    - Webhook Endpoints
+
+    - Webhook Event Subscriptions
+
+
+    Webhook management access is gated. Request access from Augment before using
+
+    these endpoints. After access is enabled, you can self-manage the webhook
+
+    endpoints that receive event payloads and the webhook event subscriptions
+
+    that control which events are sent to each endpoint.
+
+
+    Use Webhook Endpoints to create and
+
+    update the HTTPS destinations where Augment sends webhook payloads. Use
+
+    Webhook Event Subscriptions to
+
+    choose event types for each endpoint and send test deliveries.
+
+
+    Outbound webhook payloads, including Track & Trace events, are documented
+
+    separately in the Webhooks reference. Subscriptions created
+
+    through the public webhook management APIs deliver version 2 webhook payloads only.
+
+
+    Quote Management is the exception to all
+
+    of the above: that endpoint is implemented by the rate provider and called by
+
+    Augment, which cannot retrieve quotes until it is live.
+
+
+    ## Resources
+
+
+    * Homepage
+
+    * LinkedIn
+
+    * Jobs - we''re hiring!
+
+
+    ## Developer Notes
+
+
+    All date-time fields are represented as strings. The date-time notation is defined by RFC 3339, section 5.6. Examples:
+
+    - `2025-08-21T12:34:56Z`
+
+    - `2025-08-21T04:34:56-08:00`
+
+
+    However, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.
+
+
+    Example:
+
+    - `2025-08-21T12:34:56`'
+  version: 2.90.1
+servers:
+- url: https://api.prod.goaugment.com
+security:
+- httpBasic: []
+tags:
+- name: Purchase Order Management
+  description: API endpoints for creating and retrieving purchase orders together with their line items.
+paths:
+  /v1/purchase-orders:
+    get:
+      operationId: getPurchaseOrder
+      tags:
+      - Purchase Order Management
+      summary: Get purchase order by number
+      description: Retrieve a purchase order and its line items by the purchase order number you assigned. Purchase order numbers are unique within your system.
+      parameters:
+      - name: purchaseOrderNumber
+        in: query
+        required: true
+        schema:
+          type: string
+        description: The purchase order number
+        example: PO-1001
+      responses:
+        '200':
+          description: Purchase order found and returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '404':
+          description: Purchase order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+    post:
+      operationId: createPurchaseOrder
+      tags:
+      - Purchase Order Management
+      summary: Create purchase order
+      description: 'Create a purchase order along with its line items and its vendor and buyer contact records, in a single call.
+
+
+        This endpoint creates only. A `purchaseOrderNumber` you have already used returns `409 Conflict` rather than updating the existing purchase order.
+
+
+        The vendor and contacts are matched before being created: reusing a `vendor.vendorCode` or a contact you have sent before links the new purchase order to the existing record instead of duplicating it.
+
+
+        `purchaseOrderDate` accepts either a calendar day (`2026-08-18`) or a full timestamp; only the UTC calendar day is stored.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrderRequest'
+            example:
+              purchaseOrder:
+                purchaseOrderNumber: PO-1001
+                internalPurchaseOrderNumber: INT-7
+                status: OPEN
+                purchaseOrderDate: '2026-08-18'
+              lineItems:
+              - lineNumber: '1'
+                sku: SKU-1
+                description: Canned tomatoes, 12 ct
+                orderedQuantity: 100
+                openQuantity: 100
+                unitOfMeasure: CASE
+                unitPrice: '12.50'
+                currency: USD
+                status: OPEN
+                expectedArrivalDate: '2026-09-02'
+              vendor:
+                name: Acme Foods
+                vendorCode: ACME
+              vendorContact:
+                name: Vic Vendor
+                email: vic@acmefoods.example
+              buyerContact:
+                name: Dana Buyer
+                email: dana@example.com
+                phone: '+13125550100'
+                phoneExtension: '204'
+      responses:
+        '201':
+          description: Purchase order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '409':
+          description: 'A purchase order with this purchaseOrderNumber already exists for your system
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+components:
+  schemas:
+    PurchaseOrderResponse:
+      type: object
+      description: A purchase order with its line items.
+      additionalProperties: false
+      required:
+      - id
+      - purchaseOrderNumber
+      - status
+      - purchaseOrderDate
+      - lineItems
+      - createdAt
+      - updatedAt
+      x-property-order:
+      - id
+      - purchaseOrderNumber
+      - internalPurchaseOrderNumber
+      - status
+      - purchaseOrderDate
+      - customData
+      - lineItems
+      - createdAt
+      - updatedAt
+      properties:
+        id:
+          type: string
+          description: Augment's identifier for the purchase order.
+          example: 01JPURCHASEORDERRECORD0001
+        purchaseOrderNumber:
+          type: string
+          example: PO-1001
+        internalPurchaseOrderNumber:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/PurchaseOrderStatus'
+        purchaseOrderDate:
+          type: string
+          format: date
+          description: The stored UTC calendar day.
+          example: '2026-08-18'
+        customData:
+          type: object
+          nullable: true
+        lineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrderLineItemResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    PurchaseOrderLineItemResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - lineNumber
+      - currency
+      x-property-order:
+      - id
+      - lineNumber
+      - sku
+      - description
+      - orderedQuantity
+      - openQuantity
+      - unitOfMeasure
+      - unitPrice
+      - currency
+      - status
+      - expectedArrivalDate
+      - customData
+      properties:
+        id:
+          type: string
+          description: Augment's identifier for the line item.
+        lineNumber:
+          type: string
+        sku:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        orderedQuantity:
+          type: integer
+          nullable: true
+        openQuantity:
+          type: integer
+          nullable: true
+        unitOfMeasure:
+          type: string
+          nullable: true
+        unitPrice:
+          type: string
+          nullable: true
+        currency:
+          type: string
+        status:
+          $ref: '#/components/schemas/PurchaseOrderStatus'
+        expectedArrivalDate:
+          type: string
+          format: date
+          nullable: true
+          description: The stored UTC calendar day this line is expected to arrive.
+          example: '2026-09-02'
+        customData:
+          type: object
+          nullable: true
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
+    PurchaseOrderLineItemRequest:
+      type: object
+      description: One ordered line on a purchase order.
+      additionalProperties: false
+      required:
+      - lineNumber
+      x-property-order:
+      - lineNumber
+      - sku
+      - description
+      - orderedQuantity
+      - openQuantity
+      - unitOfMeasure
+      - unitPrice
+      - currency
+      - status
+      - expectedArrivalDate
+      - customData
+      properties:
+        lineNumber:
+          type: string
+          description: Your line identifier. Unique within the purchase order.
+          example: '1'
+        sku:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+          maxLength: 1000
+        orderedQuantity:
+          type: integer
+          nullable: true
+        openQuantity:
+          type: integer
+          nullable: true
+        unitOfMeasure:
+          type: string
+          nullable: true
+          example: CASE
+        unitPrice:
+          type: string
+          nullable: true
+          description: 'Non-negative decimal string with up to 8 integer and 2 fractional digits.
+
+            '
+          example: '12.50'
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          default: USD
+          description: ISO 4217 currency code. Defaults to USD when omitted.
+        status:
+          $ref: '#/components/schemas/PurchaseOrderStatus'
+        expectedArrivalDate:
+          type: string
+          nullable: true
+          description: 'Day this line is expected to arrive. A calendar day (`2026-09-02`) or a full timestamp is accepted; only the UTC calendar day is stored. Send `null` to clear it.
+
+            '
+          example: '2026-09-02'
+        customData:
+          type: object
+          nullable: true
+          description: Arbitrary JSON key-value data you want carried on the line.
+    PurchaseOrderRequest:
+      type: object
+      description: 'Creates a purchase order together with its line items and its vendor and buyer contact records.
+
+        '
+      additionalProperties: false
+      required:
+      - purchaseOrder
+      - lineItems
+      - vendor
+      - buyerContact
+      x-property-order:
+      - purchaseOrder
+      - lineItems
+      - vendor
+      - vendorContact
+      - buyerContact
+      properties:
+        purchaseOrder:
+          type: object
+          additionalProperties: false
+          required:
+          - purchaseOrderNumber
+          - status
+          - purchaseOrderDate
+          x-property-order:
+          - purchaseOrderNumber
+          - internalPurchaseOrderNumber
+          - status
+          - purchaseOrderDate
+          - customData
+          properties:
+            purchaseOrderNumber:
+              type: string
+              description: Your purchase order number. Unique within your system.
+              example: PO-1001
+            internalPurchaseOrderNumber:
+              type: string
+              nullable: true
+            status:
+              $ref: '#/components/schemas/PurchaseOrderStatus'
+            purchaseOrderDate:
+              type: string
+              description: 'Day the purchase order was issued. A calendar day (`2026-08-18`) or a full timestamp is accepted; only the UTC calendar day is stored.
+
+                '
+              example: '2026-08-18'
+            customData:
+              type: object
+              nullable: true
+        lineItems:
+          type: array
+          description: The ordered lines. May be empty.
+          items:
+            $ref: '#/components/schemas/PurchaseOrderLineItemRequest'
+        vendor:
+          type: object
+          description: 'The vendor shipping the purchase order. Matched on vendorCode within your system: an existing vendor is reused rather than duplicated.
+
+            '
+          additionalProperties: false
+          required:
+          - name
+          - vendorCode
+          x-property-order:
+          - name
+          - vendorCode
+          properties:
+            name:
+              type: string
+              example: Acme Foods
+            vendorCode:
+              type: string
+              description: Your vendor identifier. Unique within your system.
+              example: ACME
+        vendorContact:
+          type: object
+          nullable: true
+          description: 'A contact at the vendor. At least one of email or phone is required when supplied.
+
+            '
+          additionalProperties: false
+          x-property-order:
+          - name
+          - email
+          - phone
+          properties:
+            name:
+              type: string
+              nullable: true
+            email:
+              type: string
+              format: email
+              nullable: true
+              example: vic@acmefoods.example
+            phone:
+              type: string
+              nullable: true
+              description: E.164 format, including the country code.
+              example: '+13125550100'
+        buyerContact:
+          type: object
+          description: 'The buying contact at your organization. At least one of email or phone is required.
+
+            '
+          additionalProperties: false
+          x-property-order:
+          - name
+          - externalId
+          - email
+          - phone
+          - phoneExtension
+          properties:
+            name:
+              type: string
+              nullable: true
+            externalId:
+              type: string
+              nullable: true
+            email:
+              type: string
+              format: email
+              nullable: true
+              example: dana@example.com
+            phone:
+              type: string
+              nullable: true
+              description: E.164 format, including the country code.
+              example: '+13125550100'
+            phoneExtension:
+              type: string
+              nullable: true
+              description: Digits only.
+              example: '204'
+    PurchaseOrderStatus:
+      type: string
+      enum:
+      - OPEN
+      - CLOSED
+      - CANCELED
+      description: Lifecycle state of a purchase order or one of its line items.
+  securitySchemes:
+    httpBasic:
+      type: http
+      scheme: basic
+      description: 'Authenticate with HTTP Basic auth by sending an empty username and your API key as the password, equivalent to encoding :<API_KEY> in the Basic credential.
+
+        '
+x-ext-urls: {}

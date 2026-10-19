@@ -6,8 +6,93 @@ info:
 
     The Augment API endpoints are calls your system makes to manage loads,
 
-    carriers, and webhook configuration.'
-  version: 20.0.1
+    carriers, and webhook configuration.
+
+    The latest version of the Augment API is hosted online.
+
+
+    ## API Endpoints
+
+
+    Endpoints your system calls to interact with Augment:
+
+
+    - Load Management
+
+    - Carrier Management
+
+    - CSV Imports
+
+    - Quote Management - implemented by the
+
+    rate provider and called by Augment
+
+    - Models
+
+    - Webhook Endpoints
+
+    - Webhook Event Subscriptions
+
+
+    Webhook management access is gated. Request access from Augment before using
+
+    these endpoints. After access is enabled, you can self-manage the webhook
+
+    endpoints that receive event payloads and the webhook event subscriptions
+
+    that control which events are sent to each endpoint.
+
+
+    Use Webhook Endpoints to create and
+
+    update the HTTPS destinations where Augment sends webhook payloads. Use
+
+    Webhook Event Subscriptions to
+
+    choose event types for each endpoint and send test deliveries.
+
+
+    Outbound webhook payloads, including Track & Trace events, are documented
+
+    separately in the Webhooks reference. Subscriptions created
+
+    through the public webhook management APIs deliver version 2 webhook payloads only.
+
+
+    Quote Management is the exception to all
+
+    of the above: that endpoint is implemented by the rate provider and called by
+
+    Augment, which cannot retrieve quotes until it is live.
+
+
+    ## Resources
+
+
+    * Homepage
+
+    * LinkedIn
+
+    * Jobs - we''re hiring!
+
+
+    ## Developer Notes
+
+
+    All date-time fields are represented as strings. The date-time notation is defined by RFC 3339, section 5.6. Examples:
+
+    - `2025-08-21T12:34:56Z`
+
+    - `2025-08-21T04:34:56-08:00`
+
+
+    However, when using local time, do not include the trailing `Z` or timezone offset in the date-time string.
+
+
+    Example:
+
+    - `2025-08-21T12:34:56`'
+  version: 2.90.1
 servers:
 - url: https://api.prod.goaugment.com
 security:
@@ -61,6 +146,10 @@ paths:
       tags:
       - Load Management
       summary: Create or update load
+      description: 'Create a load, or replace an existing load matched by `loadNumber`.
+
+
+        The whole payload is validated on every request. Which fields are required depends on the load''s `status`: stop appointment windows are optional while the load is a `DRAFT` and required on every route stop once the load reaches `CUSTOMER_CONFIRMED` or later. See Load Status Validation for the full status-by-status breakdown.'
       requestBody:
         required: true
         content:
@@ -114,13 +203,157 @@ paths:
         '204':
           description: Load created successfully
         '400':
-          description: Bad request (work in progress)
+          description: 'Malformed JSON request body, or a bad request rejected while processing the load. Field-level validation failures are returned as `422` instead.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+        '422':
+          description: 'Validation failed. `errorCode` is `VALIDATION_ERROR` and `details` is keyed by the field path that failed, using the same indexes as the arrays you sent. Status-based failures — such as a route stop missing `expectedArrivalWindowStart` on a load at `CUSTOMER_CONFIRMED` — are reported here.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorBody'
+              example:
+                message: Unprocessable Entity
+                errorCode: VALIDATION_ERROR
+                details:
+                  _errors: []
+                  load:
+                    _errors: []
+                    route:
+                      '0':
+                        _errors: []
+                        expectedArrivalWindowStart:
+                          _errors:
+                          - expectedArrivalWindowStart is required once a load reaches CUSTOMER_CONFIRMED
+                        expectedArrivalWindowEnd:
+                          _errors:
+                          - expectedArrivalWindowEnd is required once a load reaches CUSTOMER_CONFIRMED
+                      _errors: []
     patch:
       operationId: patchLoad
       tags:
       - Load Management
       summary: Patch a load
-      description: Apply one or more patch operations to an existing load using a JSON Patch-inspired format (RFC 6902).
+      description: 'Apply one or more patch operations to an existing load using a JSON Patch-inspired format (RFC 6902). Each operation targets a specific field by JSON Pointer path and specifies how to change it. Operations are applied to the stored load and the merged result is then
+
+        validated as a whole. A patch can therefore be rejected because of
+
+        fields it did not touch. Most commonly, replacing `/status` with
+
+        `CUSTOMER_CONFIRMED` or a later status fails when the stored route stops
+
+        have no appointment windows — see
+
+        Load Status Validation. ## Supported operations
+
+
+        | `op` | Description |
+
+        |---------|-------------|
+
+        | `add` | Set a value or insert into an array at a specific index. |
+
+        | `remove` | Remove a value or array element. |
+
+        | `replace` | Replace an existing value. |
+
+        | `append` | *(Custom)* Append an item to the end of an array. |
+
+        | `upsert` | *(Custom)* Update an existing array element matching the `where` condition, or insert a new one if no match is found. |
+
+
+        ## Allowed paths
+
+
+        Operations are validated against an allowlist of supported paths. Attempts to modify other paths will be rejected. | `path` | Supported operations | Value example |
+
+        |--------|---------------------|---------------|
+
+        | `/status` | `add`, `replace` | `"DISPATCHED"` |
+
+        | `/mode` | `add`, `replace` | `"FTL"` |
+
+        | `/loadType` | `add`, `replace` | `"SPOT"` |
+
+        | `/equipment` | `add`, `replace` | `"DRY_VAN"` |
+
+        | `/equipmentDescription` | `add`, `replace` | `"53ft Dry Van"` |
+
+        | `/commodity` | `add`, `replace` | `"Electronics"` |
+
+        | `/service` | `add`, `replace` | `"STANDARD"` |
+
+        | `/targetRate` | `add`, `replace` | `1250.00` |
+
+        | `/maxRate` | `add`, `replace` | `3000.00` |
+
+        | `/totalRate` | `add`, `replace` | `2750.00` |
+
+        | `/highValueAmount` | `add`, `replace` | `50000` |
+
+        | `/totalMiles` | `add`, `replace` | `1200` |
+
+        | `/tarpSize` | `add`, `replace` | `"40x48"` |
+
+        | `/customerName` | `add`, `replace` | `"Acme Corp"` |
+
+        | `/customerContact` | `add`, `replace` | `"Jane Smith"` |
+
+        | `/customerNotes` | `add`, `replace` | `"Call before delivery"` |
+
+        | `/customerId` | `add`, `replace` | `"ACME-001"` |
+
+        | `/isPostedToDAT` | `add`, `replace` | `true` |
+
+        | `/bidExpiration` | `add`, `replace` | `"2025-08-21T12:34:56Z"` |
+
+        | `/lastLocationUpdate` | `add`, `replace` | `"2025-10-15T20:20:00Z"` |
+
+        | `/weight` | `add`, `replace` | `{"value": 45000, "unit": "LB"}` |
+
+        | `/dimensions` | `add`, `replace` | `{"lengthInches": 600, "widthInches": 96, "heightInches": 108}` |
+
+        | `/minimumTemperature` | `add`, `replace` | `{"value": 32, "unit": "F"}` |
+
+        | `/maximumTemperature` | `add`, `replace` | `{"value": 68, "unit": "F"}` |
+
+        | `/minimumBulkHeadTemperature` | `add`, `replace` | `{"value": 35, "unit": "F"}` |
+
+        | `/maximumBulkHeadTemperature` | `add`, `replace` | `{"value": 65, "unit": "F"}` |
+
+        | `/externalTrackingStatus` | `add`, `replace` | `{"source": "MACROPOINT", "code": "READY"}` |
+
+        | `/customData` | `add`, `replace` | `{"key": "value"}` |
+
+        | `/notes` | `add`, `remove`, `append`, `upsert` | `{"text": "Driver is 30 min out"}` |
+
+        | `/accessorials` | `add`, `remove`, `append`, `upsert` | `"HAZMAT"` |
+
+        | `/referenceNumbers` | `add`, `remove`, `append`, `upsert` | `{"name": "PO_NUMBER", "value": "PO-12345"}` |
+
+        | `/trackingEvents` | `add`, `remove`, `append`, `upsert` | `{"eventType": "PICKED_UP", "eventSource": "CARRIER_API", "eventUtc": "2025-08-21T12:34:56Z"}` |
+
+        | `/bidCustomValues` | `add`, `remove`, `append`, `upsert` | `{"name": "rush", "value": "true"}` |
+
+        | `/commodityItems` | `add`, `remove`, `append`, `upsert` | `{"quantity": 10, "description": "boxes"}` |
+
+        | `/route` | `add`, `remove`, `append`, `upsert` | `{"sequence": 1, "stopActivity": "PICKUP"}` |
+
+        | `/carrier` | `add`, `remove`, `replace` | `add`: assign a carrier when the load has none. `replace`: replace the carrier already on the load. Both use `value` shaped as **LoadPatchCarrier**. `remove`: unassign the carrier (omit `value`). |
+
+        | `/carrier/drivers` | `append`, `replace` | `append`: one **LoadPatchCarrierDriver**.'
       requestBody:
         required: true
         content:
@@ -173,7 +406,9 @@ paths:
         '204':
           description: Load patched successfully
         '400':
-          description: Bad request — invalid operation, disallowed path, or missing required field
+          description: 'Bad request — invalid operation, disallowed path, missing required field, or a merged result that fails validation (for example moving `/status` to `CUSTOMER_CONFIRMED` while stored route stops have no appointment windows). `details` carries the underlying validation output as a string.
+
+            '
           content:
             application/json:
               schema:
@@ -202,6 +437,18 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TrackingEventRequest'
+            example:
+              loadNumber: '1330559'
+              trackingEvent:
+                eventSource: MACROPOINT
+                eventType: INFO
+                eventUtc: '2026-09-11T23:00:25Z'
+                city: St Louis
+                stateOrProvince: MO
+                latitude: 38.56045466
+                longitude: -90.4000096
+                nextEtaUtc: '2026-09-12T08:01:05Z'
+                notes: 'Location update received. Locator: 6166485924, Source: Ping'
       responses:
         '204':
           description: Load updated successfully
@@ -209,29 +456,617 @@ paths:
           description: Bad request (work in progress)
 components:
   schemas:
-    LoadCustomData:
+    CommodityItem:
+      type: object
+      description: A commodity item on the load
+      properties:
+        quantity:
+          type: integer
+          description: Number of items
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the commodity
+        totalWeightLbs:
+          type:
+          - number
+          - 'null'
+          description: Total weight in pounds
+        lengthInches:
+          type:
+          - integer
+          - 'null'
+        widthInches:
+          type:
+          - integer
+          - 'null'
+        heightInches:
+          type:
+          - integer
+          - 'null'
+        freightClass:
+          type:
+          - string
+          - 'null'
+        nmfc:
+          type:
+          - string
+          - 'null'
+        density:
+          type:
+          - number
+          - 'null'
+        pickupSequence:
+          type:
+          - integer
+          - 'null'
+          description: Sequence number of the pickup stop for this item
+        deliverySequence:
+          type:
+          - integer
+          - 'null'
+          description: Sequence number of the delivery stop for this item
+    TrackingEventRequest:
+      type: object
+      required:
+      - loadNumber
+      - trackingEvent
+      x-property-order:
+      - loadNumber
+      - trackingEvent
+      properties:
+        loadNumber:
+          type: string
+        trackingEvent:
+          $ref: '#/components/schemas/TrackingEvent'
+    CarrierPaymentStatus:
+      type: object
+      required:
+      - carrierId
+      - status
+      x-property-order:
+      - carrierId
+      - status
+      - scheduledPaymentDate
+      - actualPaymentDate
+      - paymentMethod
+      - paymentReferenceNumbers
+      properties:
+        carrierId:
+          type: string
+          description: 'Brokerage-side external carrier identifier (the `externalId` used elsewhere in the API). Resolved against `(brokerageKey, carrierId)`, which is unique. Required on every entry.
+
+            '
+        status:
+          type: string
+          enum:
+          - PAID
+          - SCHEDULED
+          - OTHER
+          description: 'Explicit payment status. `OTHER` is a catch-all for states not yet promoted to first-class enum values (e.g., PARTIAL, APPROVED, DISPUTED, FAILED); additional values may be added in a backward-compatible way.
+
+            '
+        scheduledPaymentDate:
+          type: string
+          format: date
+          description: Scheduled payment date (YYYY-MM-DD, UTC).
+        actualPaymentDate:
+          type: string
+          format: date
+          description: Actual payment date (YYYY-MM-DD, UTC).
+        paymentMethod:
+          type: string
+          enum:
+          - ACH
+          - CHECK
+          description: Payment method used.
+        paymentReferenceNumbers:
+          type: array
+          description: 'Broker-side transaction or confirmation IDs associated with the payment (e.g., TriumphPay confirmation IDs). A list supports split payments and multiple confirmation IDs per payment.
+
+            '
+          items:
+            type: string
+    Customer:
+      type: object
+      required:
+      - name
+      x-property-order:
+      - customerId
+      - name
+      properties:
+        customerId:
+          type: string
+        name:
+          type: string
+    LoadShipment:
+      type: object
+      required:
+      - loadShipmentRef
+      x-property-order:
+      - loadShipmentRef
+      - loadShipmentInternalRef
+      - shipmentRef
+      - status
+      - referenceNumbers
+      - accessorials
+      - notes
+      - route
+      - items
+      - minTemperatureF
+      - maxTemperatureF
+      - service
+      - customer
+      properties:
+        loadShipmentRef:
+          type: string
+          description: Unique identifier for the load shipment.
+        loadShipmentInternalRef:
+          type: string
+          description: Optional internal load shipment ID in the TMS. Use loadShipmentRef as the main ID.
+        shipmentRef:
+          type: string
+        status:
+          allOf:
+          - type: string
+          - description: Status of the load shipment
+          - $ref: '#/components/schemas/LoadStatus'
+        referenceNumbers:
+          type: array
+          items:
+            type: object
+            required:
+            - name
+            - value
+            x-property-order:
+            - name
+            - value
+            properties:
+              name:
+                $ref: '#/components/schemas/LoadReferenceNumberName'
+              value:
+                type: string
+        accessorials:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessorialsEnum'
+        notes:
+          type: array
+          items:
+            type: object
+            required:
+            - timestamp
+            - text
+            - author
+            x-property-order:
+            - timestamp
+            - text
+            - author
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              text:
+                type: string
+                description: Content of the note
+              author:
+                type: string
+                description: Author of the note
+        route:
+          allOf:
+          - type: object
+            required:
+            - loadSequence
+            properties:
+              loadSequence:
+                type: integer
+                description: The sequence number of the stop in overall load route.
+          - $ref: '#/components/schemas/LoadRouteStop'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoadItem'
+        minTemperatureF:
+          type: number
+          description: Minimum temperature requirement in Fahrenheit
+        maxTemperatureF:
+          type: number
+          description: Maximum temperature requirement in Fahrenheit
+        service:
+          $ref: '#/components/schemas/LoadService'
+          description: Service type for the load
+        customer:
+          $ref: '#/components/schemas/Customer'
+    Brokerage:
+      type: object
+      x-property-order:
+      - contacts
+      properties:
+        contacts:
+          type: array
+          items:
+            type: object
+            required:
+            - role
+            - name
+            x-property-order:
+            - id
+            - name
+            - phone
+            - phoneExtension
+            - email
+            - role
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              phone:
+                type: string
+                description: Phone number in E.164 format (e.g., +12081234567) or common local format. Supports US, CA, MX, PH.
+                example: '+12081234567'
+              phoneExtension:
+                type: string
+                description: Phone number extension (numeric only).
+              email:
+                type: string
+              role:
+                type: array
+                description: 'The employee''s role(s) on each load. Possible values: `CARRIER_REP` — rep who gets commission credit for the load, `CARRIER_TEAM` — team responsible for carrier-facing operations and relationships, `OPERATIONS_REP` — manages day-to-day operations on the load, `OPERATIONS_MANAGER` — brokerage-side manager or supervisor, `ACCOUNT_MANAGER` — manages the customer relationship, `CUSTOMER_REP` — sales rep to the customer, `CUSTOMER_TEAM` — part of the broader customer team, `BOOKED_BY` — party who booked the load, `AP_REP` — manages invoices and payments, `AFTER_HOURS_REP` — contact available outside of regular business hours.
+
+                  '
+                items:
+                  enum:
+                  - ACCOUNT_MANAGER
+                  - OPERATIONS_REP
+                  - OPERATIONS_MANAGER
+                  - CARRIER_REP
+                  - CARRIER_TEAM
+                  - CUSTOMER_TEAM
+                  - BOOKED_BY
+                  - CUSTOMER_REP
+                  - AP_REP
+                  - AFTER_HOURS_REP
+    ApiErrorBody:
+      type: object
+      required:
+      - message
+      x-property-order:
+      - message
+      - errorCode
+      - details
+      properties:
+        message:
+          type: string
+          description: An error message
+        errorCode:
+          type: string
+          description: An error code
+        details:
+          oneOf:
+          - type: object
+          - type: string
+          description: Additional error details
+    LoadNote:
+      type: object
+      required:
+      - timestamp
+      - text
+      - author
+      x-property-order:
+      - timestamp
+      - text
+      - author
+      properties:
+        timestamp:
+          $ref: '#/components/schemas/InputDateTimeUtc'
+          description: When the note was created
+        text:
+          type: string
+          description: Note content
+        author:
+          type: string
+          description: Who created the note (e.g. email address or system name)
+    PackageType:
+      type: string
+      enum:
+      - PALLET
+      - PIECE
+      - CARTON
+      - TOTE
+      - SKID
+      - CRATE
+      - BOX
+      - DRUM
+      - CASE
+      - BUNDLE
+      - OTHER
+      - FLOOR_LOADED
+      - ROLL
+      - SHEET
+    TrackingEventContact:
+      type: object
+      description: Contact information for a person associated with a tracking event.
+      x-property-order:
+      - id
+      - name
+      - phone
+      - phoneExtension
+      - email
+      properties:
+        id:
+          type: string
+          description: Identifier of the contact in the TMS system.
+        name:
+          type: string
+          description: Full name of the contact.
+        phone:
+          type: string
+          description: Phone number in E.164 format (e.g., +12081234567) or common local format. Supports US, CA, MX, PH.
+          example: '+12081234567'
+        phoneExtension:
+          type: string
+          description: Phone number extension (numeric only).
+        email:
+          type: string
+          description: Email address of the contact.
+    RouteStop:
+      type: object
+      description: A stop in the load route
+      required:
+      - sequenceNumber
+      - activityType
+      - address
+      properties:
+        sequenceNumber:
+          type: integer
+          description: The sequence number of the stop in the route (1-indexed)
+          example: 1
+        externalId:
+          type:
+          - string
+          - 'null'
+          description: External ID for the stop (if provided)
+        activityType:
+          type: string
+          enum:
+          - PICKUP
+          - DELIVERY
+          description: Type of activity at this stop
+        address:
+          type: object
+          description: Stop address
+          properties:
+            name:
+              type:
+              - string
+              - 'null'
+              description: Location name
+            company:
+              type:
+              - string
+              - 'null'
+              description: Company name
+            street1:
+              type:
+              - string
+              - 'null'
+              description: Street address line 1
+            street2:
+              type:
+              - string
+              - 'null'
+              description: Street address line 2
+            city:
+              type: string
+              description: City name
+            stateOrProvince:
+              type: string
+              description: State or province code
+            postalCode:
+              type:
+              - string
+              - 'null'
+              description: Postal or ZIP code
+            country:
+              type: string
+              description: Country code (2-letter ISO)
+        timezone:
+          type:
+          - string
+          - 'null'
+          description: IANA timezone for the stop location
+          example: America/Los_Angeles
+        stopNotes:
+          type:
+          - string
+          - 'null'
+          description: Notes for this stop
+        facilityCode:
+          type:
+          - string
+          - 'null'
+          description: Facility code
+        scheduleTypes:
+          type: array
+          items:
+            type: string
+            enum:
+            - APPOINTMENT
+            - FIRST_COME_FIRST_SERVE
+          description: Scheduling types for the stop
+        expectedStopWindowStart:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Expected stop window start time
+        expectedStopWindowEnd:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Expected stop window end time
+        expectedDropWindowStart:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Expected drop window start time (for drop trailers)
+        expectedDropWindowEnd:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Expected drop window end time (for drop trailers)
+        actualArrivalTime:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Actual arrival time at the stop
+        actualDepartureTime:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Actual departure time from the stop
+        mustArriveByDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date and time by which the carrier must arrive at this stop
+        customData:
+          description: 'Client-specific metadata for this stop, or `null` when none is stored.
+
+            '
+          oneOf:
+          - $ref: '#/components/schemas/StopCustomData'
+          - type: 'null'
+    StopCustomData:
       type: object
       nullable: true
-      description: 'Optional client-specific metadata for the load. Use string keys; each value may be a string, number, boolean, array of JSON-safe values, or a nested object with the same rules. The serialized JSON must not exceed 10,000 characters.
+      description: 'Optional client-specific metadata for this stop. Use string keys; each value may be a string, number, boolean, array of JSON-safe values, or a nested object with the same rules. The serialized JSON must not exceed 2,000 characters.
 
 
-        If you want Augie to use values from customData in automated workflows, coordinate the expected keys and meanings with Augment. Your SOPs or workflow instructions may need to be updated so Augie knows when and how to reference those values.
+        Use this field to attach stop-specific references such as pickup numbers, BOL numbers, or PO numbers to individual stops rather than flattening them into load-level `customData`.
 
 
-        On update, sending this field replaces the stored value. Omitting it preserves the existing value, while sending `null` clears it.
+        On update, sending this field replaces the stored value for that stop. Because routes are replaced wholesale on every write, omitting `customData` from a stop clears it to `null`. Send `null` explicitly to clear a previously stored value.
 
         '
       additionalProperties: true
       example:
-        customerLoadId: ABC-12345
-        priorityTier: 2
-        whiteGloveDelivery: true
-        tags:
-        - rush
-        - high-value
-        routing:
-          region: NE
-          requiresAppointment: true
+        pickupNumber: PU-111
+        bolNumber: '0007031665'
+        dock:
+          door: '42'
+    TrackingEvent:
+      type: object
+      required:
+      - eventType
+      - eventSource
+      - eventUtc
+      x-property-order:
+      - eventType
+      - eventSource
+      - eventUtc
+      - isLocalTime
+      - nextSequence
+      - nextEtaUtc
+      - city
+      - country
+      - stateOrProvince
+      - postalCode
+      - latitude
+      - longitude
+      - temperatureF
+      - notes
+      - dispatcher
+      - driver
+      properties:
+        nextSequence:
+          type: integer
+          description: Sequence number of the stop `nextEtaUtc` applies to, matching `LoadRouteStop.sequence`.
+          example: 2
+        nextEtaUtc:
+          allOf:
+          - $ref: '#/components/schemas/InputDateTimeUtc'
+          - description: 'Next estimated arrival time as a UTC ISO 8601 timestamp with an offset (e.g. ending in `Z`, as in `2026-09-12T08:01:05Z`). When `isLocalTime` is true, send a naive local timestamp with no offset instead (e.g. `2026-09-12T03:01:05`).
+
+              '
+        eventType:
+          description: Type of tracking event.
+          enum:
+          - DELAYED
+          - INFO
+          - PICKED_UP
+          - PING
+          - COVERED
+          - DISPATCHED
+          example: INFO
+        eventSource:
+          description: How the tracking data was obtained.
+          enum:
+          - 4KITES
+          - CARRIER_API
+          - HIGHWAY
+          - MACROPOINT
+          - P44
+          - PHONE_EMAIL
+          - SMC3
+          - TEXT
+          - TMS
+          - TRUCKER_TOOLS
+          - OTHER
+          example: MACROPOINT
+        eventUtc:
+          allOf:
+          - $ref: '#/components/schemas/InputDateTimeUtc'
+          - description: 'Event time as a UTC ISO 8601 timestamp with an offset (e.g. ending in `Z`, as in `2026-09-11T23:00:25Z`). When `isLocalTime` is true, send a naive local timestamp with no offset instead (e.g. `2026-09-11T18:00:25`).
+
+              '
+        isLocalTime:
+          type: boolean
+          description: 'When true, `eventUtc` and `nextEtaUtc` (if present) are treated as naive local times and converted to UTC using the timezone resolved from `latitude`/`longitude`, `postalCode`, or `city`/`stateOrProvince` (in that priority order); `country` (defaults to `US`) helps disambiguate the `postalCode` lookup. One of `latitude`/`longitude`, `postalCode`, or `city`/`stateOrProvince` must be present when `isLocalTime` is true.
+
+            '
+        city:
+          type: string
+          description: City closest to the event location.
+          example: St Louis
+        country:
+          type: string
+          description: 'Country of the event location, as an ISO 3166-1 alpha-2 code. Used to disambiguate the `postalCode` lookup when `isLocalTime` is true; defaults to `US` when omitted. Only `US`, `CA`, and `MX` are currently supported for this lookup — any other value falls back to `US`.
+
+            '
+          example: US
+        stateOrProvince:
+          type: string
+          description: State or province closest to the event location.
+          example: MO
+        postalCode:
+          type: string
+        latitude:
+          type: number
+          example: 38.56045466
+        longitude:
+          type: number
+          example: -90.4000096
+        temperatureF:
+          type: number
+          description: Temperature in Fahrenheit, if reported by the source.
+          example: 26
+        notes:
+          type: string
+          description: Free-text context from the carrier communication.
+          example: 'Location update received. Locator: 6166485924, Source: Ping'
+        dispatcher:
+          $ref: '#/components/schemas/TrackingEventContact'
+        driver:
+          $ref: '#/components/schemas/TrackingEventContact'
     LoadV2Response:
       type: object
       description: 'Enriched load data including tracking events, reference numbers, notes, customers, and shipment information.
@@ -311,8 +1146,10 @@ components:
           - 'null'
           enum:
           - DRAYAGE
+          - EXPEDITE
           - FTL
           - LTL
+          - PARTIAL
           - null
           description: Load transportation mode
         loadType:
@@ -596,40 +1433,24 @@ components:
           type: string
           format: date-time
           description: Timestamp when the load was last updated
-    LoadItemUnit:
-      type: object
-      required:
-      - unitType
-      - quantity
-      x-property-order:
-      - unitType
-      - quantity
-      properties:
-        unitType:
-          $ref: '#/components/schemas/PackageType'
-        quantity:
-          type: number
-          description: Quantity of this unit type.
-    LoadNote:
-      type: object
-      required:
-      - timestamp
-      - text
-      - author
-      x-property-order:
-      - timestamp
-      - text
-      - author
-      properties:
-        timestamp:
-          $ref: '#/components/schemas/InputDateTimeUtc'
-          description: When the note was created
-        text:
-          type: string
-          description: Note content
-        author:
-          type: string
-          description: Who created the note (e.g. email address or system name)
+    LoadStatus:
+      description: 'The load''s lifecycle status. `CANCELED`, `ERROR`, and `ARCHIVED` are terminal or administrative states rather than lifecycle stages; a load in any status can move to one of them. Validation requirements vary by status — see [Load Status Validation](/guide/start-developing/load-status-validation).
+
+        '
+      enum:
+      - DRAFT
+      - CUSTOMER_CONFIRMED
+      - COVERED
+      - DISPATCHED
+      - AT_PICKUP
+      - IN_TRANSIT
+      - AT_DELIVERY
+      - DELIVERED
+      - POD_COLLECTED
+      - PAID
+      - CANCELED
+      - ERROR
+      - ARCHIVED
     LoadRequest:
       type: object
       required:
@@ -653,7 +1474,12 @@ components:
           items:
             $ref: '#/components/schemas/TrackingEvent'
         carrier:
-          $ref: '#/components/schemas/Carrier'
+          description: 'The carrier on the load. Send `null` to clear the carrier assigned to the load. When you send an object, `name` and `dotNumber` are required, and every entry in `drivers` needs a `phone`. A carrier object that fails validation is reported as one `body.carrier` entry in the 422 `details`; its `message` names the nested field.
+
+            '
+          oneOf:
+          - $ref: '#/components/schemas/Carrier'
+          - type: 'null'
         brokerage:
           $ref: '#/components/schemas/Brokerage'
         customer:
@@ -665,227 +1491,13 @@ components:
             '
           items:
             $ref: '#/components/schemas/CarrierPaymentStatus'
-    RouteStop:
-      type: object
-      description: A stop in the load route
-      required:
-      - sequenceNumber
-      - activityType
-      - address
-      properties:
-        sequenceNumber:
-          type: integer
-          description: The sequence number of the stop in the route (1-indexed)
-          example: 1
-        externalId:
-          type:
-          - string
-          - 'null'
-          description: External ID for the stop (if provided)
-        activityType:
-          type: string
-          enum:
-          - PICKUP
-          - DELIVERY
-          description: Type of activity at this stop
-        address:
-          type: object
-          description: Stop address
-          properties:
-            name:
-              type:
-              - string
-              - 'null'
-              description: Location name
-            company:
-              type:
-              - string
-              - 'null'
-              description: Company name
-            street1:
-              type:
-              - string
-              - 'null'
-              description: Street address line 1
-            street2:
-              type:
-              - string
-              - 'null'
-              description: Street address line 2
-            city:
-              type: string
-              description: City name
-            stateOrProvince:
-              type: string
-              description: State or province code
-            postalCode:
-              type:
-              - string
-              - 'null'
-              description: Postal or ZIP code
-            country:
-              type: string
-              description: Country code (2-letter ISO)
-        timezone:
-          type:
-          - string
-          - 'null'
-          description: IANA timezone for the stop location
-          example: America/Los_Angeles
-        stopNotes:
-          type:
-          - string
-          - 'null'
-          description: Notes for this stop
-        facilityCode:
-          type:
-          - string
-          - 'null'
-          description: Facility code
-        scheduleTypes:
-          type: array
-          items:
-            type: string
-            enum:
-            - APPOINTMENT
-            - FIRST_COME_FIRST_SERVE
-          description: Scheduling types for the stop
-        expectedStopWindowStart:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Expected stop window start time
-        expectedStopWindowEnd:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Expected stop window end time
-        expectedDropWindowStart:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Expected drop window start time (for drop trailers)
-        expectedDropWindowEnd:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Expected drop window end time (for drop trailers)
-        actualArrivalTime:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Actual arrival time at the stop
-        actualDepartureTime:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Actual departure time from the stop
-        mustArriveByDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: The date and time by which the carrier must arrive at this stop
-    LoadStatus:
+    LoadService:
       enum:
-      - DRAFT
-      - CUSTOMER_CONFIRMED
-      - COVERED
-      - DISPATCHED
-      - AT_PICKUP
-      - IN_TRANSIT
-      - AT_DELIVERY
-      - DELIVERED
-      - POD_COLLECTED
-      - PAID
-      - CANCELED
-      - ERROR
-      - ARCHIVED
-    InputDateTimeUtc:
-      type: string
-      format: date-time
-      examples:
-      - '2025-08-21T12:34:56Z'
-      - '2025-08-21T04:34:56-08:00'
-    ApiErrorBody:
-      type: object
-      required:
-      - message
-      x-property-order:
-      - message
-      - errorCode
-      - details
-      properties:
-        message:
-          type: string
-          description: An error message
-        errorCode:
-          type: string
-          description: An error code
-        details:
-          oneOf:
-          - type: object
-          - type: string
-          description: Additional error details
-    AccessorialsEnum:
-      type: string
-      description: 'Accessorial code representing an additional service or requirement for a load. This is not a closed set — new accessorial codes may be added at any time. Values are normalized to UPPER_SNAKE_CASE (e.g., `inside delivery` → `INSIDE_DELIVERY`).
-
-        '
-      examples:
-      - AFTER_HOURS
-      - BULK_HEAD
-      - CHAINS
-      - CONSTRUCTION_SITE
-      - DELIVERY_APPOINTMENT
-      - DETENTION
-      - DETENTION_LOADING
-      - DETENTION_UNLOADING
-      - DRIVER_ASSIST
-      - DRIVER_COUNT
-      - E_TRACKING
-      - FOOD_GRADE
-      - FORKLIFT
-      - GENERAL_LIABILITY
-      - HAZMAT
-      - HIGH_VALUE
-      - HIGH_VISIBILITY
-      - HOLIDAY
-      - INSIDE_DELIVERY
-      - INSIDE_PICKUP
-      - LAYOVER
-      - LIFTGATE
-      - LIMITED_ACCESS
-      - LOAD_BAR
-      - LUMPER
-      - MILITARY_BASE
-      - NOTIFY_BEFORE_ARRIVAL
-      - OVERSIZE
-      - OVERWEIGHT
-      - PICKUP_APPOINTMENT
-      - POD_REQUIRED
-      - RAMPS
-      - RESIDENTIAL
-      - SIGNATURE_REQUIRED
-      - SORT_AND_SEGREGATE
-      - STRAPS
-      - TANKER_ENDORSED
-      - TARGETED_COMMODITY
-      - TARPS
-      - TEAM_SERVICE
-      - TEMPERATURE_REQUIREMENT
-      - TRADESHOW
-      - TRAILER_CLEANING
-      - TONU
-      - TRAILER_INTERCHANGE
-      - TWIC
-      - WEEKEND
+      - HOTSHOT
+      - PARTIAL
+      - STANDARD
+      - TIME_CRITICAL
+      - VOLUME
     Carrier:
       type: object
       required:
@@ -940,589 +1552,6 @@ components:
               phoneExtension:
                 type: string
                 description: Phone number extension (numeric only).
-    LoadShipment:
-      type: object
-      required:
-      - loadShipmentRef
-      x-property-order:
-      - loadShipmentRef
-      - loadShipmentInternalRef
-      - shipmentRef
-      - status
-      - referenceNumbers
-      - accessorials
-      - notes
-      - route
-      - items
-      - minTemperatureF
-      - maxTemperatureF
-      - service
-      - customer
-      properties:
-        loadShipmentRef:
-          type: string
-          description: Unique identifier for the load shipment.
-        loadShipmentInternalRef:
-          type: string
-          description: Optional internal load shipment ID in the TMS. Use loadShipmentRef as the main ID.
-        shipmentRef:
-          type: string
-        status:
-          allOf:
-          - type: string
-          - description: Status of the load shipment
-          - $ref: '#/components/schemas/LoadStatus'
-        referenceNumbers:
-          type: array
-          items:
-            type: object
-            required:
-            - name
-            - value
-            x-property-order:
-            - name
-            - value
-            properties:
-              name:
-                $ref: '#/components/schemas/LoadReferenceNumberName'
-              value:
-                type: string
-        accessorials:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccessorialsEnum'
-        notes:
-          type: array
-          items:
-            type: object
-            required:
-            - timestamp
-            - text
-            - author
-            x-property-order:
-            - timestamp
-            - text
-            - author
-            properties:
-              timestamp:
-                type: string
-                format: date-time
-              text:
-                type: string
-                description: Content of the note
-              author:
-                type: string
-                description: Author of the note
-        route:
-          allOf:
-          - type: object
-            required:
-            - loadSequence
-            properties:
-              loadSequence:
-                type: integer
-                description: The sequence number of the stop in overall load route.
-          - $ref: '#/components/schemas/LoadRouteStop'
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/LoadItem'
-        minTemperatureF:
-          type: number
-          description: Minimum temperature requirement in Fahrenheit
-        maxTemperatureF:
-          type: number
-          description: Maximum temperature requirement in Fahrenheit
-        service:
-          $ref: '#/components/schemas/LoadService'
-          description: Service type for the load
-        customer:
-          $ref: '#/components/schemas/Customer'
-    LoadReferenceNumberName:
-      enum:
-      - BILLED_DATE
-      - BOOKING_NUMBER
-      - BOL_NUMBER
-      - CONSIGNEE_NUMBER
-      - CONTAINER_NUMBER
-      - DAT_POSTING_ID
-      - PICKUP_NUMBER
-      - PO_NUMBER
-      - POSTING_GROUP_ID
-      - PRO_NUMBER
-      - RELEASED_DATE
-      - REQUIRED_DOCS
-      - SHIPPER_NUMBER
-      - TMS_LOAD_STATUS
-      - TRAILER_NUMBER
-      - TRUCK_NUMBER
-      - OTHER
-    LoadCustomer:
-      type: object
-      description: Customer associated with the load
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: Customer name
-          example: Acme Corporation
-        customerId:
-          type:
-          - string
-          - 'null'
-          description: Customer identifier
-          example: ACME-001
-        customerContact:
-          type:
-          - string
-          - 'null'
-          description: Customer contact information
-    LoadPatchOperation:
-      oneOf:
-      - title: remove
-        type: object
-        required:
-        - op
-        - path
-        properties:
-          op:
-            type: string
-            enum:
-            - remove
-          path:
-            type: string
-            description: 'A JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) identifying the field to operate on. Must be one of the allowed paths documented in the PATCH endpoint description.
-
-              '
-            example: /status
-      - title: add / replace / append
-        type: object
-        required:
-        - op
-        - path
-        - value
-        properties:
-          op:
-            type: string
-            enum:
-            - add
-            - replace
-            - append
-            description: 'The operation to perform. `add` and `replace` follow [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902). `append` is a custom extension that pushes a new element onto an array field.
-
-              '
-          path:
-            type: string
-            description: 'A JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) identifying the field to operate on. Must be one of the allowed paths documented in the PATCH endpoint description.
-
-              '
-            example: /status
-          value:
-            description: The value to set or insert.
-      - title: upsert
-        type: object
-        required:
-        - op
-        - path
-        - value
-        - where
-        properties:
-          op:
-            type: string
-            enum:
-            - upsert
-            description: 'Custom operation that updates an existing array element matching the `where` condition, or inserts a new one if no match is found.
-
-              '
-          path:
-            type: string
-            description: 'A JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) identifying the array field to operate on. Must be one of the allowed paths documented in the PATCH endpoint description.
-
-              '
-          value:
-            description: The element to insert or use as the replacement.
-          where:
-            type: object
-            description: 'A map of field names to expected values used to identify an existing array element. If a matching element is found it is replaced with `value`; otherwise `value` is appended.
-
-              '
-            additionalProperties: true
-            example:
-              sequence: 1
-    ExternalTrackingStatus:
-      type: object
-      required:
-      - source
-      - message
-      - code
-      - updatedAt
-      x-property-order:
-      - source
-      - message
-      - code
-      - updatedAt
-      properties:
-        source:
-          enum:
-          - MACROPOINT
-          - P44
-          - OTHER
-          description: The source system or service providing the tracking status
-        message:
-          type: string
-          description: Human-readable message describing the current tracking status
-          examples:
-          - Tracking Now
-          - Ready to Track
-          - Requesting App Install
-        code:
-          $ref: '#/components/schemas/ExternalTrackingStatusCode'
-        updatedAt:
-          allOf:
-          - $ref: '#/components/schemas/InputDateTimeUtc'
-          - description: The timestamp when the tracking status was last updated in UTC, or with a specific timezone offset
-    PackageType:
-      type: string
-      enum:
-      - PALLET
-      - PIECE
-      - CARTON
-      - TOTE
-      - SKID
-      - CRATE
-      - BOX
-      - DRUM
-      - CASE
-      - BUNDLE
-      - OTHER
-      - FLOOR_LOADED
-      - ROLL
-      - SHEET
-    CarrierContact:
-      type: object
-      description: Optional contact object. If provided, role is required.
-      required:
-      - role
-      x-property-order:
-      - id
-      - name
-      - phone
-      - phoneExtension
-      - email
-      - role
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        phone:
-          type: string
-          description: Phone number in E.164 format (e.g., +12081234567) or common local format. Supports US, CA, MX, PH.
-          example: '+12081234567'
-        phoneExtension:
-          type: string
-          description: Phone number extension (numeric only).
-        email:
-          type: string
-        role:
-          description: 'Required if contact is provided.
-
-            - `AP_REP` — Accounts Payable Specialist
-
-            - `DISPATCHER` — Dispatcher
-
-            '
-          enum:
-          - AP_REP
-          - DISPATCHER
-    TrackingEvent:
-      type: object
-      required:
-      - eventType
-      - eventSource
-      - eventUtc
-      x-property-order:
-      - eventType
-      - eventSource
-      - eventUtc
-      - nextSequence
-      - nextEtaUtc
-      - city
-      - stateOrProvince
-      - postalCode
-      - latitude
-      - longitude
-      - temperatureF
-      - notes
-      - dispatcher
-      - driver
-      properties:
-        nextSequence:
-          type: integer
-        nextEtaUtc:
-          allOf:
-          - $ref: '#/components/schemas/InputDateTimeUtc'
-          - description: Next estimated arrival time in UTC, or with a specific timezone offset
-        eventType:
-          enum:
-          - DELAYED
-          - INFO
-          - PICKED_UP
-          - PING
-          - COVERED
-          - DISPATCHED
-        eventSource:
-          enum:
-          - 4KITES
-          - CARRIER_API
-          - HIGHWAY
-          - MACROPOINT
-          - P44
-          - PHONE_EMAIL
-          - SMC3
-          - TEXT
-          - TMS
-          - TRUCKER_TOOLS
-          - OTHER
-        eventUtc:
-          allOf:
-          - $ref: '#/components/schemas/InputDateTimeUtc'
-          - description: Event time in UTC, or with a specific timezone offset
-        city:
-          type: string
-        stateOrProvince:
-          type: string
-        postalCode:
-          type: string
-        latitude:
-          type: number
-        longitude:
-          type: number
-        temperatureF:
-          type: number
-        notes:
-          type: string
-        dispatcher:
-          $ref: '#/components/schemas/TrackingEventContact'
-        driver:
-          $ref: '#/components/schemas/TrackingEventContact'
-    Brokerage:
-      type: object
-      x-property-order:
-      - contacts
-      properties:
-        contacts:
-          type: array
-          items:
-            type: object
-            required:
-            - role
-            - name
-            x-property-order:
-            - id
-            - name
-            - phone
-            - phoneExtension
-            - email
-            - role
-            properties:
-              id:
-                type: string
-              name:
-                type: string
-              phone:
-                type: string
-                description: Phone number in E.164 format (e.g., +12081234567) or common local format. Supports US, CA, MX, PH.
-                example: '+12081234567'
-              phoneExtension:
-                type: string
-                description: Phone number extension (numeric only).
-              email:
-                type: string
-              role:
-                type: array
-                description: 'The employee''s role(s) on each load. Possible values: `CARRIER_REP` — rep who gets commission credit for the load, `OPERATIONS_REP` — manages day-to-day operations on the load, `OPERATIONS_MANAGER` — brokerage-side manager or supervisor, `ACCOUNT_MANAGER` — manages the customer relationship, `CUSTOMER_REP` — sales rep to the customer, `CUSTOMER_TEAM` — part of the broader customer team, `BOOKED_BY` — party who booked the load, `AP_REP` — manages invoices and payments, `AFTER_HOURS_REP` — contact available outside of regular business hours.
-
-                  '
-                items:
-                  enum:
-                  - ACCOUNT_MANAGER
-                  - OPERATIONS_REP
-                  - OPERATIONS_MANAGER
-                  - CARRIER_REP
-                  - CUSTOMER_TEAM
-                  - BOOKED_BY
-                  - CUSTOMER_REP
-                  - AP_REP
-                  - AFTER_HOURS_REP
-    TrackingEventContact:
-      type: object
-      description: Contact information for a person associated with a tracking event.
-      x-property-order:
-      - id
-      - name
-      - phone
-      - phoneExtension
-      - email
-      properties:
-        id:
-          type: string
-          description: Identifier of the contact in the TMS system.
-        name:
-          type: string
-          description: Full name of the contact.
-        phone:
-          type: string
-          description: Phone number in E.164 format (e.g., +12081234567) or common local format. Supports US, CA, MX, PH.
-          example: '+12081234567'
-        phoneExtension:
-          type: string
-          description: Phone number extension (numeric only).
-        email:
-          type: string
-          description: Email address of the contact.
-    CarrierAddress:
-      type: object
-      description: 'Carrier address on a load. Optional on the parent object; when present, include every required field below.
-
-        '
-      required:
-      - street1
-      - city
-      - stateOrProvince
-      - postalCode
-      - country
-      x-property-order:
-      - company
-      - locationName
-      - street1
-      - street2
-      - city
-      - stateOrProvince
-      - postalCode
-      - country
-      properties:
-        company:
-          type: string
-        locationName:
-          type: string
-        street1:
-          type: string
-          description: Required when address is provided
-        street2:
-          type: string
-        city:
-          type: string
-          description: Required when address is provided
-        stateOrProvince:
-          type: string
-          description: Required when address is provided
-        postalCode:
-          type: string
-          description: Required when address is provided
-        country:
-          type: string
-          description: 'Required when address is provided. 2-letter ISO country code: https://www.iban.com/country-codes'
-    LoadItem:
-      type: object
-      required:
-      - quantity
-      - totalWeightLbs
-      x-property-order:
-      - quantity
-      - packagingUnit
-      - handlingUnit
-      - description
-      - totalWeightLbs
-      - lengthInches
-      - widthInches
-      - heightInches
-      - freightClass
-      - nmfc
-      - density
-      - pickupSequence
-      - deliverySequence
-      properties:
-        quantity:
-          type: integer
-          description: Item quantity. Required if item is provided.
-        packagingUnit:
-          $ref: '#/components/schemas/LoadItemUnit'
-          description: 'How the item is packaged, such as 60 cartons. Prefer this field when packaging quantity differs from item quantity or handling quantity.
-
-            '
-        handlingUnit:
-          $ref: '#/components/schemas/LoadItemUnit'
-          description: 'How the freight is handled or moved, such as 3 pallets. Prefer this field when handling quantity differs from item quantity or packaging quantity.
-
-            '
-        description:
-          type: string
-          description: Commodity description for this item. Augment's AI agent uses this value verbatim when speaking with carriers.
-        totalWeightLbs:
-          type: number
-          description: Required if item is provided
-        lengthInches:
-          type: integer
-        widthInches:
-          type: integer
-        heightInches:
-          type: integer
-        freightClass:
-          type: string
-          enum:
-          - '50'
-          - '55'
-          - '60'
-          - '65'
-          - '70'
-          - '77.5'
-          - '85'
-          - '92.5'
-          - '100'
-          - '110'
-          - '125'
-          - '150'
-          - '175'
-          - '200'
-          - '250'
-          - '300'
-          - '400'
-          - '500'
-        nmfc:
-          type: string
-        density:
-          type: number
-        pickupSequence:
-          type: integer
-        deliverySequence:
-          type: integer
-    LoadService:
-      enum:
-      - HOTSHOT
-      - PARTIAL
-      - STANDARD
-      - TIME_CRITICAL
-      - VOLUME
-    LoadPatchRequest:
-      type: object
-      required:
-      - loadReference
-      - operations
-      x-property-order:
-      - loadReference
-      - operations
-      properties:
-        loadReference:
-          type: string
-          description: The load number (brokerage load ID) of the load to patch.
-          example: LOAD-12345
-        operations:
-          type: array
-          description: One or more patch operations to apply, in order.
-          items:
-            $ref: '#/components/schemas/LoadPatchOperation'
     Load:
       type: object
       required:
@@ -1569,8 +1598,10 @@ components:
         mode:
           enum:
           - DRAYAGE
+          - EXPEDITE
           - FTL
           - LTL
+          - PARTIAL
         rateType:
           enum:
           - CONTRACT
@@ -1579,6 +1610,9 @@ components:
           - SPOT
         status:
           $ref: '#/components/schemas/LoadStatus'
+          description: 'The load''s lifecycle status. The status determines which fields are required: stop appointment windows are optional at `DRAFT` and required on every route stop at `CUSTOMER_CONFIRMED` and later. A load with no status set is treated as `DRAFT`. See [Load Status Validation](/guide/start-developing/load-status-validation).
+
+            '
         referenceNumbers:
           type: array
           items:
@@ -1599,6 +1633,7 @@ components:
           x-property-order:
           - equipmentType
           - description
+          - dimensions
           properties:
             equipmentType:
               description: Required if equipment object is provided
@@ -1724,6 +1759,35 @@ components:
             description:
               type: string
               description: A field suitable for mapping the exact string value that the source system stores for equipment type
+            dimensions:
+              type: object
+              description: Physical dimensions of the equipment/trailer. At least one of length, width, or height is required if this object is provided.
+              required:
+              - unit
+              x-property-order:
+              - length
+              - width
+              - height
+              - unit
+              properties:
+                length:
+                  type: number
+                  description: Length, in the given unit. Must be positive.
+                width:
+                  type: number
+                  description: Width, in the given unit. Must be positive.
+                height:
+                  type: number
+                  description: Height, in the given unit. Must be positive.
+                unit:
+                  type: string
+                  enum:
+                  - IN
+                  - CM
+                  - FT
+                  - M
+                  - YD
+                  description: Unit of measure for length, width, and height
         accessorials:
           type: array
           items:
@@ -1827,82 +1891,434 @@ components:
             '
         customData:
           $ref: '#/components/schemas/LoadCustomData'
-    CommodityItem:
+    LoadPatchOperation:
+      oneOf:
+      - title: remove
+        type: object
+        required:
+        - op
+        - path
+        properties:
+          op:
+            type: string
+            enum:
+            - remove
+          path:
+            type: string
+            description: 'A JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) identifying the field to operate on. Must be one of the allowed paths documented in the PATCH endpoint description.
+
+              '
+            example: /status
+      - title: add / replace / append
+        type: object
+        required:
+        - op
+        - path
+        - value
+        properties:
+          op:
+            type: string
+            enum:
+            - add
+            - replace
+            - append
+            description: 'The operation to perform. `add` and `replace` follow [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902). `append` is a custom extension that pushes a new element onto an array field.
+
+              '
+          path:
+            type: string
+            description: 'A JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) identifying the field to operate on. Must be one of the allowed paths documented in the PATCH endpoint description.
+
+              '
+            example: /status
+          value:
+            description: The value to set or insert.
+      - title: upsert
+        type: object
+        required:
+        - op
+        - path
+        - value
+        - where
+        properties:
+          op:
+            type: string
+            enum:
+            - upsert
+            description: 'Custom operation that updates an existing array element matching the `where` condition, or inserts a new one if no match is found.
+
+              '
+          path:
+            type: string
+            description: 'A JSON Pointer ([RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901)) identifying the array field to operate on. Must be one of the allowed paths documented in the PATCH endpoint description.
+
+              '
+          value:
+            description: The element to insert or use as the replacement.
+          where:
+            type: object
+            description: 'A map of field names to expected values used to identify an existing array element. If a matching element is found it is replaced with `value`; otherwise `value` is appended.
+
+              '
+            additionalProperties: true
+            example:
+              sequence: 1
+    LoadItemUnit:
       type: object
-      description: A commodity item on the load
+      required:
+      - unitType
+      - quantity
+      x-property-order:
+      - unitType
+      - quantity
       properties:
+        unitType:
+          $ref: '#/components/schemas/PackageType'
         quantity:
-          type: integer
-          description: Number of items
-        description:
-          type:
-          - string
-          - 'null'
-          description: Description of the commodity
-        totalWeightLbs:
-          type:
-          - number
-          - 'null'
-          description: Total weight in pounds
-        lengthInches:
-          type:
-          - integer
-          - 'null'
-        widthInches:
-          type:
-          - integer
-          - 'null'
-        heightInches:
-          type:
-          - integer
-          - 'null'
-        freightClass:
-          type:
-          - string
-          - 'null'
-        nmfc:
-          type:
-          - string
-          - 'null'
-        density:
-          type:
-          - number
-          - 'null'
-        pickupSequence:
-          type:
-          - integer
-          - 'null'
-          description: Sequence number of the pickup stop for this item
-        deliverySequence:
-          type:
-          - integer
-          - 'null'
-          description: Sequence number of the delivery stop for this item
-    TrackingEventRequest:
+          type: number
+          description: Quantity of this unit type.
+    CarrierContact:
       type: object
+      description: Optional contact object. If provided, role is required.
       required:
-      - loadNumber
-      - trackingEvent
+      - role
       x-property-order:
-      - loadNumber
-      - trackingEvent
-      properties:
-        loadNumber:
-          type: string
-        trackingEvent:
-          $ref: '#/components/schemas/TrackingEvent'
-    Customer:
-      type: object
-      required:
+      - id
       - name
-      x-property-order:
-      - customerId
-      - name
+      - phone
+      - phoneExtension
+      - email
+      - role
       properties:
-        customerId:
+        id:
           type: string
         name:
           type: string
+        phone:
+          type: string
+          description: Phone number in E.164 format (e.g., +12081234567) or common local format. Supports US, CA, MX, PH.
+          example: '+12081234567'
+        phoneExtension:
+          type: string
+          description: Phone number extension (numeric only).
+        email:
+          type: string
+        role:
+          description: 'Required if contact is provided.
+
+            - `AP_REP` — Accounts Payable Specialist
+
+            - `DISPATCHER` — Dispatcher
+
+            - `AFTER_HOURS_DISPATCHER` — dispatcher to contact outside of regular business hours
+
+            - `WEEKEND_DISPATCHER` — dispatcher to contact on weekends
+
+            - `BOOKING` — handles load booking
+
+            - `TRACKING` — handles load tracking
+
+            '
+          enum:
+          - AP_REP
+          - DISPATCHER
+          - AFTER_HOURS_DISPATCHER
+          - WEEKEND_DISPATCHER
+          - BOOKING
+          - TRACKING
+    LoadItem:
+      type: object
+      required:
+      - quantity
+      - totalWeightLbs
+      x-property-order:
+      - quantity
+      - packagingUnit
+      - handlingUnit
+      - description
+      - totalWeightLbs
+      - lengthInches
+      - widthInches
+      - heightInches
+      - freightClass
+      - nmfc
+      - density
+      - pickupSequence
+      - deliverySequence
+      properties:
+        quantity:
+          type: integer
+          description: Item quantity. Required if item is provided.
+        packagingUnit:
+          $ref: '#/components/schemas/LoadItemUnit'
+          description: 'How the item is packaged, such as 60 cartons. Prefer this field when packaging quantity differs from item quantity or handling quantity.
+
+            '
+        handlingUnit:
+          $ref: '#/components/schemas/LoadItemUnit'
+          description: 'How the freight is handled or moved, such as 3 pallets. Prefer this field when handling quantity differs from item quantity or packaging quantity.
+
+            '
+        description:
+          type: string
+          description: Commodity description for this item. Augment's AI agent uses this value verbatim when speaking with carriers.
+        totalWeightLbs:
+          type: number
+          description: Required if item is provided
+        lengthInches:
+          type: integer
+        widthInches:
+          type: integer
+        heightInches:
+          type: integer
+        freightClass:
+          type: string
+          enum:
+          - '50'
+          - '55'
+          - '60'
+          - '65'
+          - '70'
+          - '77.5'
+          - '85'
+          - '92.5'
+          - '100'
+          - '110'
+          - '125'
+          - '150'
+          - '175'
+          - '200'
+          - '250'
+          - '300'
+          - '400'
+          - '500'
+        nmfc:
+          type: string
+        density:
+          type: number
+        pickupSequence:
+          type: integer
+        deliverySequence:
+          type: integer
+    CarrierAddress:
+      type: object
+      description: 'Carrier address on a load. Optional on the parent object; when present, include every required field below.
+
+        '
+      required:
+      - street1
+      - city
+      - stateOrProvince
+      - postalCode
+      - country
+      x-property-order:
+      - company
+      - locationName
+      - street1
+      - street2
+      - city
+      - stateOrProvince
+      - postalCode
+      - country
+      properties:
+        company:
+          type: string
+        locationName:
+          type: string
+        street1:
+          type: string
+          description: Required when address is provided
+        street2:
+          type: string
+        city:
+          type: string
+          description: Required when address is provided
+        stateOrProvince:
+          type: string
+          description: Required when address is provided
+        postalCode:
+          type: string
+          description: Required when address is provided
+        country:
+          type: string
+          description: 'Required when address is provided. 2-letter ISO country code: https://www.iban.com/country-codes'
+    LoadCustomData:
+      type: object
+      nullable: true
+      description: 'Optional client-specific metadata for the load. Use string keys; each value may be a string, number, boolean, array of JSON-safe values, or a nested object with the same rules. The serialized JSON must not exceed 10,000 characters.
+
+
+        If you want Augie to use values from customData in automated workflows, coordinate the expected keys and meanings with Augment. Your SOPs or workflow instructions may need to be updated so Augie knows when and how to reference those values.
+
+
+        On update, sending this field replaces the stored value. Omitting it preserves the existing value, while sending `null` clears it.
+
+        '
+      additionalProperties: true
+      example:
+        customerLoadId: ABC-12345
+        priorityTier: 2
+        whiteGloveDelivery: true
+        tags:
+        - rush
+        - high-value
+        routing:
+          region: NE
+          requiresAppointment: true
+    LoadPatchRequest:
+      type: object
+      required:
+      - loadReference
+      - operations
+      x-property-order:
+      - loadReference
+      - operations
+      properties:
+        loadReference:
+          type: string
+          description: The load number (brokerage load ID) of the load to patch.
+          example: LOAD-12345
+        operations:
+          type: array
+          description: One or more patch operations to apply, in order.
+          items:
+            $ref: '#/components/schemas/LoadPatchOperation'
+    ExternalTrackingStatus:
+      type: object
+      required:
+      - source
+      - message
+      - code
+      - updatedAt
+      x-property-order:
+      - source
+      - message
+      - code
+      - updatedAt
+      properties:
+        source:
+          enum:
+          - MACROPOINT
+          - P44
+          - OTHER
+          description: The source system or service providing the tracking status
+        message:
+          type: string
+          description: Human-readable message describing the current tracking status
+          examples:
+          - Tracking Now
+          - Ready to Track
+          - Requesting App Install
+        code:
+          $ref: '#/components/schemas/ExternalTrackingStatusCode'
+        updatedAt:
+          allOf:
+          - $ref: '#/components/schemas/InputDateTimeUtc'
+          - description: The timestamp when the tracking status was last updated in UTC, or with a specific timezone offset
+    LoadReferenceNumberName:
+      enum:
+      - BILLED_DATE
+      - BOOKING_NUMBER
+      - BOL_NUMBER
+      - CONSIGNEE_NUMBER
+      - CONTAINER_NUMBER
+      - CONTROL_NUMBER
+      - DAT_POSTING_ID
+      - PICKUP_NUMBER
+      - PO_NUMBER
+      - POSTING_GROUP_ID
+      - PRO_NUMBER
+      - RELEASED_DATE
+      - REQUIRED_DOCS
+      - SHIPPER_NUMBER
+      - TMS_LOAD_STATUS
+      - TRAILER_NUMBER
+      - TRUCK_NUMBER
+      - OTHER
+    InputDateTimeUtc:
+      type: string
+      format: date-time
+      examples:
+      - '2025-08-21T12:34:56Z'
+      - '2025-08-21T04:34:56-08:00'
+    LoadCustomer:
+      type: object
+      description: Customer associated with the load
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Customer name
+          example: Acme Corporation
+        customerId:
+          type:
+          - string
+          - 'null'
+          description: Customer identifier
+          example: ACME-001
+        customerContact:
+          type:
+          - string
+          - 'null'
+          description: Customer contact information
+    AccessorialsEnum:
+      type: string
+      description: 'Accessorial code representing an additional service or requirement for a load. This is not a closed set — new accessorial codes may be added at any time. Values are normalized to UPPER_SNAKE_CASE (e.g., `inside delivery` → `INSIDE_DELIVERY`).
+
+        '
+      examples:
+      - AFTER_HOURS
+      - BULK_HEAD
+      - CHAINS
+      - CONSTRUCTION_SITE
+      - DELIVERY_APPOINTMENT
+      - DETENTION
+      - DETENTION_LOADING
+      - DETENTION_UNLOADING
+      - DRIVER_ASSIST
+      - DRIVER_COUNT
+      - E_TRACKING
+      - FOOD_GRADE
+      - FORKLIFT
+      - GENERAL_LIABILITY
+      - GUARANTEED_APPOINTMENT_DELIVERY
+      - HAZMAT
+      - HIGH_VALUE
+      - HIGH_VISIBILITY
+      - HOLIDAY
+      - INSIDE_DELIVERY
+      - INSIDE_PICKUP
+      - LAYOVER
+      - LIFTGATE
+      - LIMITED_ACCESS
+      - LOAD_BAR
+      - LUMPER
+      - MILITARY_BASE
+      - NOTIFY_BEFORE_ARRIVAL
+      - OVERSIZE
+      - OVERWEIGHT
+      - OVER_LENGTH_SHIPMENT
+      - PICKUP_APPOINTMENT
+      - POD_REQUIRED
+      - PROTECT_FROM_FREEZE
+      - RAMPS
+      - RESIDENTIAL
+      - SIGNATURE_REQUIRED
+      - SORT_AND_SEGREGATE
+      - STOP_OFF_CHARGE
+      - STRAPS
+      - TANKER_ENDORSED
+      - TARGETED_COMMODITY
+      - TARPS
+      - TEAM_SERVICE
+      - TEMPERATURE_REQUIREMENT
+      - TRADESHOW
+      - TRAILER_CLEANING
+      - TONU
+      - TRAILER_INTERCHANGE
+      - TWIC
+      - WEEKEND
     ExternalTrackingStatusCode:
       enum:
       - READY
@@ -1912,15 +2328,17 @@ components:
       description: Status code indicating the current state of external tracking
     LoadRouteStop:
       type: object
+      description: 'A stop on the load''s route. `expectedArrivalWindowStart` and `expectedArrivalWindowEnd` are the only fields whose requirement depends on the load''s status: they are optional while the load is a `DRAFT`, and required on every stop once the load reaches `CUSTOMER_CONFIRMED` or a later lifecycle status. See [Load Status Validation](/guide/start-developing/load-status-validation).
+
+        '
       required:
       - sequence
       - stopActivity
       - address
-      - expectedArrivalWindowStart
-      - expectedArrivalWindowEnd
       x-property-order:
       - sequence
       - externalId
+      - facilityCode
       - stopActivity
       - address
       - notes
@@ -1934,6 +2352,7 @@ components:
       - isLocalTime
       - schedulingType
       - handlingType
+      - customData
       properties:
         sequence:
           type: integer
@@ -1941,6 +2360,13 @@ components:
         externalId:
           type: string
           description: Optional external ID for the stop. This is used to link the stop to an external system.
+        facilityCode:
+          type:
+          - string
+          - 'null'
+          description: 'Identifier of the facility where the stop takes place, matching the facility''s external ID in your TMS. Stored as provided and not checked against a known facility, so an unrecognized code is accepted rather than rejected.
+
+            '
         stopActivity:
           enum:
           - PICKUP
@@ -1986,11 +2412,15 @@ components:
         expectedArrivalWindowStart:
           allOf:
           - $ref: '#/components/schemas/InputDateTimeUtc'
-          - description: Expected arrival window start time in UTC, or with a specific timezone offset
+          - description: 'Expected arrival window start time in UTC, or with a specific timezone offset. Optional at `DRAFT`; required once the load reaches `CUSTOMER_CONFIRMED` or later. Must be at or before `expectedArrivalWindowEnd` whenever both are present.
+
+              '
         expectedArrivalWindowEnd:
           allOf:
           - $ref: '#/components/schemas/InputDateTimeUtc'
-          - description: Expected arrival window end time in UTC, or with a specified timezone offset
+          - description: 'Expected arrival window end time in UTC, or with a specified timezone offset. Optional at `DRAFT`; required once the load reaches `CUSTOMER_CONFIRMED` or later.
+
+              '
         actualArrivalTime:
           allOf:
           - $ref: '#/components/schemas/InputDateTimeUtc'
@@ -2038,54 +2468,8 @@ components:
             - L (Live) indicates live loading or unloading where the driver stays with the trailer.
 
             '
-    CarrierPaymentStatus:
-      type: object
-      required:
-      - carrierId
-      - status
-      x-property-order:
-      - carrierId
-      - status
-      - scheduledPaymentDate
-      - actualPaymentDate
-      - paymentMethod
-      - paymentReferenceNumbers
-      properties:
-        carrierId:
-          type: string
-          description: 'Brokerage-side external carrier identifier (the `externalId` used elsewhere in the API). Resolved against `(brokerageKey, carrierId)`, which is unique. Required on every entry.
-
-            '
-        status:
-          type: string
-          enum:
-          - PAID
-          - SCHEDULED
-          - OTHER
-          description: 'Explicit payment status. `OTHER` is a catch-all for states not yet promoted to first-class enum values (e.g., PARTIAL, APPROVED, DISPUTED, FAILED); additional values may be added in a backward-compatible way.
-
-            '
-        scheduledPaymentDate:
-          type: string
-          format: date
-          description: Scheduled payment date (YYYY-MM-DD, UTC).
-        actualPaymentDate:
-          type: string
-          format: date
-          description: Actual payment date (YYYY-MM-DD, UTC).
-        paymentMethod:
-          type: string
-          enum:
-          - ACH
-          - CHECK
-          description: Payment method used.
-        paymentReferenceNumbers:
-          type: array
-          description: 'Broker-side transaction or confirmation IDs associated with the payment (e.g., TriumphPay confirmation IDs). A list supports split payments and multiple confirmation IDs per payment.
-
-            '
-          items:
-            type: string
+        customData:
+          $ref: '#/components/schemas/StopCustomData'
   securitySchemes:
     httpBasic:
       type: http

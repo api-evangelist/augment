@@ -159,6 +159,62 @@ apis:
     url: openapi/augment-webhook-event-subscriptions-api-openapi.yml
   - type: APIReference
     url: https://apidocs.goaugment.com/reference
+- aid: augment:augment-csv-imports-api
+  name: Augment CSV Imports API
+  description: Public API endpoint for submitting CSV files for asynchronous ingestion into Augment.
+  humanURL: https://apidocs.goaugment.com/
+  baseURL: https://api.prod.goaugment.com
+  tags:
+  - CSV Imports
+  properties:
+  - type: OpenAPI
+    url: openapi/augment-csv-imports-api-openapi.yml
+- aid: augment:augment-facility-management-api
+  name: Augment Facility Management API
+  description: Public API endpoints for creating and updating facilities.
+  humanURL: https://apidocs.goaugment.com/
+  baseURL: https://api.prod.goaugment.com
+  tags:
+  - Facility Management
+  properties:
+  - type: OpenAPI
+    url: openapi/augment-facility-management-api-openapi.yml
+- aid: augment:augment-purchase-order-management-api
+  name: Augment Purchase Order Management API
+  description: >-
+    API endpoints for creating and retrieving purchase orders together with their line items.
+  humanURL: https://apidocs.goaugment.com/
+  baseURL: https://api.prod.goaugment.com
+  tags:
+  - Purchase Order Management
+  properties:
+  - type: OpenAPI
+    url: openapi/augment-purchase-order-management-api-openapi.yml
+- aid: augment:augment-quote-management-api
+  name: Augment Quote Management API
+  description: >-
+    Rate quoting. This is the one endpoint in this reference implemented by the rate provider and called
+    by Augment: Augment submits a shipment, the provider prices it and returns the applicable rates. Augment
+    cannot retrieve quotes until the endpoint is live.
+
+
+    During setup the provider supplies Augment with the endpoint URL, the authentication method, a test
+    endpoint where one exists, and the expected response time together with any rate limit to be observed.
+    An API key in a request header is the usual arrangement; OAuth client credentials are also supported.
+    Augment issues one request per quote, so volume tracks quoting activity rather than load count.
+
+
+    Conventions across the endpoint: money is a decimal number with two places rather than a string, margin
+    is a whole percent (`17`, not `0.17`), fuel surcharge is a dollar amount, weight is an object carrying
+    a value and a unit, dimensions are whole inches, and distances are statute miles. Dates are ISO 8601,
+    with `quotedAt` in UTC.
+  humanURL: https://apidocs.goaugment.com/
+  baseURL: https://api.prod.goaugment.com
+  tags:
+  - Quote Management
+  properties:
+  - type: OpenAPI
+    url: openapi/augment-quote-management-api-openapi.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
